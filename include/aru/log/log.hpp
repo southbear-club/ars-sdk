@@ -29,49 +29,10 @@
 #include <string>
 #include <vector>
 #include <sys/time.h>
-
-// 自定义输出接口
-// 使用glog时直接配置为LOG(severity)
-
-#if 0
-#include <stdio.h>
-#include <time.h>
-#include <iostream>
-
-namespace aru {
-
-namespace log {
-
-static inline std::string libasty_log_timespec(void) {
-    struct timeval tv;
-    time_t t = time(nullptr);
-    gettimeofday(&tv, &t);
-    struct tm *tm = nullptr;
-    tm = localtime(&tv.tv_sec);
-    char buf[32] = "";
-    sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%03ld", tm->tm_year + 1900, tm->tm_mon + 1,
-            tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, (long)tv.tv_usec / 1000);
-
-    return buf;
-}
-
-}  // namespace log
-
-}  // namespace aru
-
-#define ARU_LOG_STREAM(severity)                                                           \
-    std::cout << "" << aru::log::libasty_log_timespec() << " " << __FILE__ << ":" << __LINE__ \
-              << ":" << __func__ << "]["                                                       \
-              << aru::log::LogLevelName::level_names[aru::log::LogLevel::LOG_##severity] << "]"
-#else
 #include <glog/logging.h>
 #include <glog/raw_logging.h>
 #include <cstring>
 #include <fstream>
-
-#define ARU_LOG_STREAM(severity) LOG(severity)
-
-#endif  // !ARU_LOG_STREAM
 
 #ifndef ARU_LOG_MODULE_NAME
 #define ARU_LOG_MODULE_NAME "NON"
@@ -82,7 +43,7 @@ static inline std::string libasty_log_timespec(void) {
     if (aru::log::filter_log_level(log_object, ARU_LOG_MODULE_NAME,       \
                                     aru::log::LogLevel::LOG_##severity)) { \
     } else                                                                  \
-        ARU_LOG_STREAM(severity) << "[" ARU_LOG_MODULE_NAME "] "
+        LOG(severity) << "[" ARU_LOG_MODULE_NAME "] "
 
 namespace aru {
 

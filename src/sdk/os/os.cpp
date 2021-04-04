@@ -15,27 +15,63 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file in_log.hpp
+ * @file os.cpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-03
+ * @date 2021-04-04
  * 
  * @copyright MIT
  * 
  */
-#pragma once
-
-#include "aru/log/log.hpp"
+#include "aru/sdk/os/os.hpp"
+#include <stdexcept>
+#include <sys/utsname.h>
 
 namespace aru {
 
-namespace log {
+namespace sdk {
 
-LogFilter *get_log_filter(void);
+// uname 系统信息
+class UnameInfo {
+public:
+    UnameInfo() {
+        if (uname(&info_) < 0) {
+            throw std::runtime_error("get uname error");
+        }
+    }
+    struct utsname info_;
+};
 
-#define ARU_IN_LOG(severity) ARU_LOG(severity, aru::log::get_log_filter())
+static UnameInfo uname_info;
 
-}  // namespace log
+// 获取平台架构
+const char *os_get_arch(void) {
+    return uname_info.info_.machine;
+}
 
-}  // namespace aru
+// 获取平台信息
+const char *os_get_platform(void) {
+    // TODO
+    return nullptr;
+}
+
+// 获取系统名称
+const char *os_get_sysname(void) {
+    return uname_info.info_.sysname;
+}
+
+// 获取处理器信息
+const char *os_get_processor(void) {
+    // TODO
+    return nullptr;
+}
+
+// 获取系统版本
+const char *os_get_version(void) {
+    return uname_info.info_.version;
+}
+
+} // namespace sdk
+
+} // namespace aru

@@ -24,7 +24,7 @@
  * @copyright MIT
  * 
  */
-#include "log.hpp"
+#include "aru/log/log.hpp"
 
 namespace aru {
 

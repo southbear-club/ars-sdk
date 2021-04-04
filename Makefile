@@ -37,6 +37,8 @@ all: pack demo ut
 .PHONY: config
 config:
 	@mkdir -p build
+	@mkdir -p include
+	@mkdir -p lib
 	@echo "\033[32mpython3 config.py\033[0m"
 	@python3 config.py --spath=$(ROOT_DIR)/src --dpath=$(ROOT_DIR)/build \
 	--version=$(RELEASE_VERSION) --build-version=$(BUILD_VERSION) --build-time="$(COMPILE_TIME)" \

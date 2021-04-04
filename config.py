@@ -45,7 +45,7 @@ vars_dict = {
     'version_build':            options.build_version,
     'build_time':               options.build_time,
     'mode':                     "debug" if options.debug == 'y' else "release",
-    'debug':                    "1" if options.debug == 'n' else "0",
+    'debug':                    "0" if options.debug == 'n' else "1",
     'aru_athor':                'wotsen(astralrovers@outlook.com)',
     'plat':                     sys.platform,
     'arch':                     platform.machine(),

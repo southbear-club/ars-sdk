@@ -24,7 +24,7 @@
  * @copyright MIT
  * 
  */
-#include "md5.hpp"
+#include "aru/sdk/crypto/md5.hpp"
 #include <string.h>
 
 namespace aru {

@@ -15,27 +15,44 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file in_log.hpp
+ * @file poll.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-03
+ * @date 2021-04-04
  * 
  * @copyright MIT
  * 
  */
 #pragma once
-
-#include "aru/log/log.hpp"
+#include <time.h>
+#include <poll.h>
 
 namespace aru {
 
-namespace log {
+namespace sdk {
 
-LogFilter *get_log_filter(void);
+enum {
+    poll_in = POLLIN,
+    poll_out = POLLOUT,
+    poll_err = POLLERR,
+};
 
-#define ARU_IN_LOG(severity) ARU_LOG(severity, aru::log::get_log_filter())
+static inline int poll(struct pollfd *fds, nfds_t nfds, int timeout) {
+    return ::poll(fds, nfds, timeout);
+}
 
-}  // namespace log
+/**
+ * @brief poll超时等待
+ *
+ * @param fd 描述符
+ * @param how 方式，r-可读，w-可写
+ * @param w 超时时间，单位ms
+ *
+ * @return 小于0异常，0超时，1正常
+ */
+int poll_wait(int fd, char how, time_t w);
 
-}  // namespace aru
+}
+
+}

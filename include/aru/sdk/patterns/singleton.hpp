@@ -15,27 +15,29 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file in_log.hpp
+ * @file singleton.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-03
+ * @date 2021-04-04
  * 
  * @copyright MIT
  * 
  */
 #pragma once
 
-#include "aru/log/log.hpp"
-
 namespace aru {
 
-namespace log {
+namespace sdk {
 
-LogFilter *get_log_filter(void);
+#ifndef DISALLOW_COPY_AND_ASSIGN
 
-#define ARU_IN_LOG(severity) ARU_LOG(severity, aru::log::get_log_filter())
+#define DISALLOW_COPY_AND_ASSIGN(Type) \
+    Type(const Type&) = delete; \
+    void operator=(const Type&) = delete
 
-}  // namespace log
+#endif
 
-}  // namespace aru
+} // namespace sdk
+
+} // namespace aru

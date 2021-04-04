@@ -15,27 +15,33 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file in_log.hpp
+ * @file coredump.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-03
+ * @date 2021-04-04
  * 
  * @copyright MIT
  * 
  */
 #pragma once
 
-#include "aru/log/log.hpp"
+#include <stddef.h>
 
 namespace aru {
 
-namespace log {
+namespace sdk {
 
-LogFilter *get_log_filter(void);
+/**
+ * @brief Set the up coredump object
+ *
+ * @param path_dir : coredump生成路径
+ * @param core_size : 文件大小
+ * @return true : 设置成功
+ * @return false : 设置失败
+ */
+bool setup_coredump(const char *path_dir, size_t core_size);
 
-#define ARU_IN_LOG(severity) ARU_LOG(severity, aru::log::get_log_filter())
+} // namespace sdk
 
-}  // namespace log
-
-}  // namespace aru
+} // namespace aru

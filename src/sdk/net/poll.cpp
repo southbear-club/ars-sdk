@@ -15,27 +15,75 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file in_log.hpp
+ * @file poll.cpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-03
+ * @date 2021-04-04
  * 
  * @copyright MIT
  * 
  */
-#pragma once
-
-#include "aru/log/log.hpp"
+#include "aru/sdk/net/poll.hpp"
 
 namespace aru {
 
-namespace log {
+namespace sdk {
 
-LogFilter *get_log_filter(void);
+int poll_wait(int fd, char how, time_t w) {
+    int event = poll_err;
 
-#define ARU_IN_LOG(severity) ARU_LOG(severity, aru::log::get_log_filter())
+    if (how == 'r') {
+        event |= poll_in;
+    } else if (how == 'w') {
+        event |= poll_out;
+    } else {
+        return -1;
+    }
 
-}  // namespace log
+    struct pollfd fds;
+    fds.fd = fd;
+    fds.events = event;
+    fds.revents = 0;
 
-}  // namespace aru
+    int r = sdk::poll(&fds, 1, w);
+
+    // 异常
+    if (r < 0) {
+        return r;
+    }
+
+    // 超时
+    if (r == 0) {
+        return 0;
+    }
+
+    // 对端异常或套接字异常
+    if ((fds.revents & POLLHUP) || (fds.revents & POLLERR)) {
+        return -1;
+    }
+
+    // 套接字不匹配
+    if (fds.fd != fd) {
+        return 0;
+    }
+
+    if (how == 'r') {
+        if (fds.revents & poll_in) {
+            return 1;
+        }
+    } else if (how == 'w') {
+        event |= poll_out;
+        if (fds.revents & poll_out) {
+            return 1;
+        }
+    } else {
+
+    }
+
+    return 0;
+}
+
+}
+
+}

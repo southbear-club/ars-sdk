@@ -15,11 +15,11 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aru.hpp
+ * @file aligin.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-03
+ * @date 2021-04-04
  * 
  * @copyright MIT
  * 
@@ -29,42 +29,12 @@
 
 namespace aru {
 
-#define ARU_MODULE_TABLE(XX) \
-    XX(SDK_CRYPTO, "sdk-crypto")
+namespace sdk {
 
-/**
- * @brief 获取版本号
- * 
- * @return int 1.0.0 ==> 0x1 00 00
- */
-int version(void);
+#define aru_align(d, a) (((d) + (a - 1)) & ~(a - 1))
+#define aru_align_ptr(p, a) \
+    (uint8_t *)(((uintptr_t)(p) + ((uintptr_t)a - 1)) & ~((uintptr_t)a - 1))
 
-/**
- * @brief 版本号，字符串形式
- * 
- * @return const char* 
- */
-const char *version_string(void);
-
-/**
- * @brief 构建版本
- * 
- * @return uint64_t 年月日时分秒
- */
-uint64_t version_build(void);
-
-/**
- * @brief 编译时间
- * 
- * @return const char* 
- */
-const char *build_time(void);
-
-/**
- * @brief 获取版本模式，debug, realease
- * 
- * @return const char* 
- */
-const char *version_mode(void);
+} // namespace sdk
 
 } // namespace aru

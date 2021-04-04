@@ -26,7 +26,7 @@
  */
 #pragma once
 
-#include "log/log.hpp"
+#include "aru/log/log.hpp"
 
 aru::log::LogFilter *get_log_filter(void);
 

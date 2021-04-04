@@ -25,7 +25,7 @@
  * 
  */
 #include "in_log.hpp"
-#include "../aru.hpp"
+#include "aru/aru.hpp"
 
 namespace aru {
 

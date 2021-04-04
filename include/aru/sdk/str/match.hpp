@@ -15,27 +15,34 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file in_log.hpp
+ * @file match.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-03
+ * @date 2021-04-04
  * 
  * @copyright MIT
  * 
  */
 #pragma once
 
-#include "aru/log/log.hpp"
+#include <string>
 
 namespace aru {
 
-namespace log {
+namespace sdk {
 
-LogFilter *get_log_filter(void);
+// 邮箱校验
+bool email_match(const std::string &email);
+// 手机号码校验
+bool zh_cellphone_number_match(const std::string &number);
+// 身份证校验
+bool id_card_match(const std::string &number);
+// ipv4 校验
+bool ipv4_match(const std::string &ip);
+// ipv6 校验
+bool ipv6_match(const std::string &ip);
 
-#define ARU_IN_LOG(severity) ARU_LOG(severity, aru::log::get_log_filter())
-
-}  // namespace log
+}  // namespace sdk
 
 }  // namespace aru

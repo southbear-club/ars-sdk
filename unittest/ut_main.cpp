@@ -41,9 +41,31 @@ using ::testing::TestInfo;
 using ::testing::TestPartResult;
 using ::testing::UnitTest;
 
+namespace ttt
+{
+
+typedef struct {
+    size_t a;
+} st1_t;
+
+class LogOutTest {
+public:
+    LogOutTest() {}
+
+    void get_st1(st1_t &t) {
+        t.a = 10;
+        LOG(INFO) << "t.a = " << t.a << "\n";
+    }
+};
+
+} // namespace ttt
+
 class AruEnvironment : public testing::Environment {
 public:
     virtual void SetUp() {
+        ttt::LogOutTest ts;
+        ttt::st1_t t1;
+        ts.get_st1(t1);
         std::cout << "AruEnvironment SetUp" << std::endl;
 
         // 输出到标准输出而不是文件
@@ -64,7 +86,6 @@ public:
         get_log_filter()->setup_log(logs);
     }
     virtual void TearDown() { std::cout << "AruEnvironment TearDown" << std::endl; }
-
 };
 
 int main(int argc, char** argv) {

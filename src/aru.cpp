@@ -24,7 +24,7 @@
  * @copyright MIT
  * 
  */
-#include "aru.hpp"
+#include "aru/aru.hpp"
 #include "configure.h"
 
 namespace aru {
@@ -41,8 +41,48 @@ uint64_t version_build(void) {
     return ARU_VERSION_BUILD;
 }
 
+bool debug_version(void) {
+    return ARU_DEBUG;
+}
+
+const char *build_time(void) {
+    return ARU_BUILD_TIME;
+}
+
 const char *version_mode(void) {
     return ARU_MODE;
+}
+
+const char *compile_arch(void) {
+    return ARU_ARCH;
+}
+
+const char *compile_plat(void) {
+    return ARU_PLAT;
+}
+
+const char *compile_processor(void) {
+    return ARU_PROCESSOR;
+}
+
+const char *compile_plat_version(void) {
+    return ARU_PLAT_VERSION;
+}
+
+const char *compile_os(void) {
+    return ARU_OS;
+}
+
+const char *compiler_tool(void) {
+    return ARU_COMPILER;
+}
+
+const char *compile_author(void) {
+    return ARU_RELEASE_USER;
+}
+
+const char *lib_author(void) {
+    return ARU_AUTHOR;
 }
 
 } // namespace aru

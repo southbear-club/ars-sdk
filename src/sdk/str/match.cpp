@@ -15,12 +15,52 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file list.hpp
+ * @file match.cpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-03
+ * @date 2021-04-04
  * 
  * @copyright MIT
  * 
  */
+#include "aru/sdk/str/match.hpp"
+#include <regex>
+
+namespace aru {
+
+namespace sdk {
+
+static bool _match(const std::string &str, const std::string &re_str) {
+    std::cmatch cm;
+    std::regex re(re_str.c_str());
+
+    return std::regex_match(str.c_str(), cm, re);
+}
+
+bool email_match(const std::string &email) {
+    return _match(
+        email,
+        "^([A-Za-z0-9_\\-\\.])+\\@([A-Za-z0-9_\\-\\.])+\\.([A-Za-z]{2,4})$");
+}
+
+bool id_card_match(const std::string &number) {
+    return _match(number, "(^\\d{15}$)|(^\\d{17}([0-9]|X)$)");
+}
+
+bool zh_cellphone_number_match(const std::string &number) {
+    return _match(number, "^1[3456789]\\d{9}$");
+}
+
+bool ipv4_match(const std::string &ip) {
+    return _match(ip + ".",
+                  "^((\\d|[1-9]\\d|1\\d\\d|2([0-4]\\d|5[0-5]))\\.){4}$");
+}
+
+bool ipv6_match(const std::string &ip) {
+    return _match(ip + ":", "^(([\\da-fA-F]{1,4}):){8}$");
+}
+
+}  // namespace sdk
+
+}  // namespace aru
