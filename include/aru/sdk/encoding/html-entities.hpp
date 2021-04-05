@@ -15,7 +15,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file platform.hpp
+ * @file html-entities.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
@@ -25,41 +25,36 @@
  * 
  */
 #pragma once
+#include <wchar.h>
 
-#if __SIZEOF_LONG__ == 8
-#define ARU_64BIT 1
-#elif __SIZEOF_LONG__ == 4
-#define ARU_64BIT 0
-#else
-#error "not support"
-#endif
+namespace aru {
+    
+namespace sdk {
 
-#if defined(linux) || defined(__linux) || defined(__linux__)
-    #define ARU_OS_LINUX
-#elif defined(__APPLE__) && (defined(__GNUC__) || defined(__xlC__) || defined(__xlc__))
-    #include <TargetConditionals.h>
-    #if defined(TARGET_OS_MAC) && TARGET_OS_MAC
-        #define ARU_OS_MAC
-    #elif defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-        #define ARU_OS_IOS
-    #endif
-    #define ARU_OS_DARWIN
-#else
-#error "Unsupported operating system platform!"
-#endif
+/// Get HTML entities count
+/// @return html entities count
+int html_entities_count(void);
 
-// ARCH
-#if defined(__i386) || defined(__i386__) || defined(_M_IX86)
-    #define ARU_ARCH_X86
-    #define ARU_ARCH_X86_32
-#elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
-    #define ARU_ARCH_X64
-    #define ARU_ARCH_X86_64
-#elif defined(__arm__)
-    #define ARU_ARCH_ARM
-#elif defined(__aarch64__) || defined(__ARM64__)
-    #define ARU_ARCH_ARM64
-#else
-    #define ARU_ARCH_UNKNOWN
-    #warning "Unknown hardware architecture!"
-#endif
+/// Get HTML entities
+/// @param[in] index from 0 to count-1
+/// @param[out] name entities name
+/// @param[out] number entities number
+void html_entities_get(int index, char name[16], wchar_t *number);
+
+/// decode HTML(UTF-8) content("&lt;" -> "<")
+/// @param[out] dst target string buffer, dst length must > src length
+/// @param[in] src source string
+/// @param[in] srcLen source string length(in bytes)
+/// @return >=0-destination string length, <0-error
+int html_entities_decode(char* dst, const char* src, int srcLen);
+
+/// encode HTML(UTF-8) content("<" -> "&lt;")
+/// @param[out] dst target string buffer, dst length must enough
+/// @param[in] src source string
+/// @param[in] srcLen source string length(in bytes)
+/// @return >=0-destination string length, <0-error
+int html_entities_encode(char* dst, const char* src, int srcLen);
+
+} // namespace sdk
+
+} // namespace aru

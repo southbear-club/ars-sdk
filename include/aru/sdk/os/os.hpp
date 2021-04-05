@@ -30,14 +30,6 @@ namespace aru {
 
 namespace sdk {
 
-#if __SIZEOF_LONG__ == 8
-#define ARU_64BIT 1
-#elif __SIZEOF_LONG__ == 4
-#define ARU_64BIT 0
-#else
-#error "not support"
-#endif
-
 /**
  * @brief 内存信息
  * 

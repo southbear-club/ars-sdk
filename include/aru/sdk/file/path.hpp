@@ -32,6 +32,10 @@ namespace sdk {
 
 #define ARU_MAX_PATH 260
 
+// TODO:
+// join
+// dir
+// ext
 const char *path_basename(const char* filepath);
 const char *path_suffixname(const char* filename);
 

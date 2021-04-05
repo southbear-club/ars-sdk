@@ -54,7 +54,6 @@ $(CONFIG_HEADER):config
 $(TARGET): $(OBJECTS)
 	@$(CXX) $(SHAREDFLG) $(OBJECTS) -o build/lib$@.so $(SO_LIBS) $(LIBS_PATH)
 	@$(AR) build/lib$@.a $(OBJECTS)
-	@rm -f $(CONFIG_HEADER)
 	@echo "\033[35m[---------- build lib success ----------]\033[0m"
 	@echo ""
 

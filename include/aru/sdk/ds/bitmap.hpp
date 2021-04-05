@@ -15,7 +15,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file platform.hpp
+ * @file bitmap.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
@@ -25,41 +25,33 @@
  * 
  */
 #pragma once
+#include <stdint.h>
+#include <stddef.h>
 
-#if __SIZEOF_LONG__ == 8
-#define ARU_64BIT 1
-#elif __SIZEOF_LONG__ == 4
-#define ARU_64BIT 0
-#else
-#error "not support"
-#endif
+namespace aru {
+    
+namespace sdk {
 
-#if defined(linux) || defined(__linux) || defined(__linux__)
-    #define ARU_OS_LINUX
-#elif defined(__APPLE__) && (defined(__GNUC__) || defined(__xlC__) || defined(__xlc__))
-    #include <TargetConditionals.h>
-    #if defined(TARGET_OS_MAC) && TARGET_OS_MAC
-        #define ARU_OS_MAC
-    #elif defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
-        #define ARU_OS_IOS
-    #endif
-    #define ARU_OS_DARWIN
-#else
-#error "Unsupported operating system platform!"
-#endif
+void bitmap_zero(uint8_t* bitmap, size_t nbits);
+void bitmap_fill(uint8_t* bitmap, size_t nbits);
+void bitmap_copy(uint8_t *bitmap, const uint8_t *src, size_t nbits);
 
-// ARCH
-#if defined(__i386) || defined(__i386__) || defined(_M_IX86)
-    #define ARU_ARCH_X86
-    #define ARU_ARCH_X86_32
-#elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
-    #define ARU_ARCH_X64
-    #define ARU_ARCH_X86_64
-#elif defined(__arm__)
-    #define ARU_ARCH_ARM
-#elif defined(__aarch64__) || defined(__ARM64__)
-    #define ARU_ARCH_ARM64
-#else
-    #define ARU_ARCH_UNKNOWN
-    #warning "Unknown hardware architecture!"
-#endif
+void bitmap_set(uint8_t *bitmap, size_t start, size_t len);
+void bitmap_clear(uint8_t *bitmap, size_t start, size_t len);
+
+void bitmap_or(uint8_t* result, const uint8_t* src1, const uint8_t* src2, size_t nbits);
+void bitmap_and(uint8_t* result, const uint8_t* src1, const uint8_t* src2, size_t nbits);
+void bitmap_xor(uint8_t* result, const uint8_t* src1, const uint8_t* src2, size_t nbits);
+
+size_t bitmap_count_leading_zero(const uint8_t* bitmap, size_t nbits);
+size_t bitmap_count_next_zero(const uint8_t* bitmap, size_t nbits, size_t start);
+size_t bitmap_find_first_zero(const uint8_t* bitmap, size_t nbits);
+size_t bitmap_find_next_zero(const uint8_t* bitmap, size_t nbits, size_t start);
+size_t bitmap_weight(const uint8_t* bitmap, size_t nbits);
+
+/// @return 0-not set, other-set to 1
+int bitmap_test_bit(const uint8_t* bitmap, size_t bits);
+
+} // namespace sdk
+
+} // namespace aru
