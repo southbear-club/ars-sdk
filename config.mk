@@ -9,6 +9,11 @@ endif
 # 调试模式使能
 DEBUG = n
 
+# 使用的加密套件
+# WITH_OPENSSL
+# WITH_MBEDTLS
+# MBEDTLS_SSL_CACHE_C
+
 # make path
 export MAKE := "/usr/bin/make"
 
@@ -35,9 +40,8 @@ LIBS_PATH := -L$(ROOT_DIR)/lib -L/usr/local/lib -L/usr/lib
 # 		  -lmongocxx-static -lbsoncxx-static -lmongoc-static-1.0 -lbson-static-1.0 \
 # 		  -lssl -lcrypto -lz
 
-ST_LIBS_UT = -lgtest -lglog
+ST_LIBS_UT = -lgtest -lglog -lgflags
 
-# glog
 SO_LIBS = -lpthread -lc #-ldl -lrt -lresolv
 
 DMARCROS := -DLANGUAGE_ZH -DSOFT_VERSION=\"$(RELEASE_VERSION)\" \

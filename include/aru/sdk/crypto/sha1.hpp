@@ -15,60 +15,57 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file sha1.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-05
  * 
  * @copyright MIT
  * 
  */
 #pragma once
-#include <mutex>
+#include <stdint.h>
 
 namespace aru {
 
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
-#endif
+typedef struct {
+    uint32_t state[5];
+    uint32_t count[2];
+    unsigned char buffer[64];
+} SHA1_CTX;
 
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
+void SHA1Transform(
+    uint32_t state[5],
+    const unsigned char buffer[64]
+    );
 
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
+void SHA1Init(
+    SHA1_CTX * context
+    );
 
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
-    }
+void SHA1Update(
+    SHA1_CTX * context,
+    const unsigned char *data,
+    uint32_t len
+    );
+
+void SHA1Final(
+    unsigned char digest[20],
+    SHA1_CTX * context
+    );
+
+void SHA1(
+    char *hash_out,
+    const char *str,
+    int len);
+
+void aru_sha1(unsigned char* input, uint32_t inputlen, unsigned char digest[20]);
+
+// NOTE: if outputlen > 40: output[40] = '\0'
+void aru_sha1_hex(unsigned char* input, uint32_t inputlen, char* output, uint32_t outputlen);
 
 } // namespace sdk
 

@@ -15,60 +15,38 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file dir.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-05
  * 
  * @copyright MIT
  * 
  */
 #pragma once
-#include <mutex>
+
+#include <string.h>
+#include <time.h>
+
+#include <list>
 
 namespace aru {
 
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
-#endif
+typedef struct dir_s {
+    char    name[256];
+    char    type; // f:file d:dir l:link b:block c:char s:socket p:pipe
+    char    reserverd;
+    unsigned short mode;
+    size_t  size;
+    time_t  atime;
+    time_t  mtime;
+    time_t  ctime;
+} dir_t;
 
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
-
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
-
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
-    }
+int listdir(const char* dir, std::list<dir_t>& dirs);
 
 } // namespace sdk
 

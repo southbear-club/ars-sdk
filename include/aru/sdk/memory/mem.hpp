@@ -15,7 +15,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file mem.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
@@ -25,50 +25,50 @@
  * 
  */
 #pragma once
-#include <mutex>
+#include <stddef.h>
+#include <stdlib.h>
 
 namespace aru {
 
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
-#endif
+typedef struct {
+    void *(*malloc)(size_t);
+    void *(*realloc)(void *, size_t);
+    void *(*calloc)(size_t, size_t);
+    void (*free)(void*);
+} memory_conf_t;
 
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
+void aru_memory_init(const memory_conf_t &conf);
 
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
+void *aru_malloc(size_t size);
+void *aru_realloc(void *oldptr, size_t newsize, size_t oldsize);
+void *aru_calloc(size_t nmemb, size_t size);
+void *aru_zalloc(size_t size);
+void aru_free(void *ptr);
 
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
-    }
+long alloc_cnt(void);
+long free_cnt(void);
+void memroy_check(void);
+
+static inline void memcheck_register(void) {
+    atexit(memroy_check);
+}
+
+#define ARU_ALLOC(ptr, size) \
+    do {\
+        *(void**)&(ptr) = aru::sdk::aru_zalloc(size);\
+    } while (0)
+
+#define ARU_ALLOC_SIZEOF(ptr) ARU_ALLOC(ptr, sizeof(*(ptr)))
+
+#define ARU_FREE(ptr) \
+    do {\
+        if (ptr) {\
+            aru::sdk::aru_free(ptr);\
+            ptr = NULL;\
+        }\
+    } while (0)
 
 } // namespace sdk
 

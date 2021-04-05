@@ -15,7 +15,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file ssl.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
@@ -25,50 +25,56 @@
  * 
  */
 #pragma once
-#include <mutex>
+#include <string.h>
 
 namespace aru {
 
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
+typedef void* ssl_ctx_t; ///> SSL_CTX
+typedef void* ssl_t; ///> SSL
+
+enum {
+    SSL_OK = 0,
+    SSL_WANT_READ = -2,
+    SSL_WANT_WRITE = -3,
+};
+
+typedef struct {
+    const char* crt_file;
+    const char* key_file;
+    const char* ca_file;
+    short       verify_peer;
+    short       endpoint; // 0: server 1: client
+} ssl_ctx_init_param_t;
+
+/*
+const char* ssl_backend() {
+#ifdef WITH_OPENSSL
+    return "openssl";
+#elif defined(WITH_MBEDTLS)
+    return "mbedtls";
+#else
+    return "null";
 #endif
+}
+*/
 
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
+const char* ssl_backend();
+#define ARU_WITH_SSL (strcmp(ssl_backend(), "null") != 0)
 
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
+ssl_ctx_t ssl_ctx_init(ssl_ctx_init_param_t* param);
+void ssl_ctx_cleanup(ssl_ctx_t ssl_ctx);
+ssl_ctx_t ssl_ctx_instance();
 
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
-    }
+ssl_t ssl_new(ssl_ctx_t ssl_ctx, int fd);
+void ssl_free(ssl_t ssl);
+
+int ssl_accept(ssl_t ssl);
+int ssl_connect(ssl_t ssl);
+int ssl_read(ssl_t ssl, void* buf, int len);
+int ssl_write(ssl_t ssl, const void* buf, int len);
+int ssl_close(ssl_t ssl);
 
 } // namespace sdk
 

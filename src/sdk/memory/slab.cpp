@@ -234,7 +234,7 @@ public:
         st.pool_size = pool_->end - pool_->start;
         st.used_pct = st.used_size * 100 / st.pool_size;
 
-        LOG(INFO) << "pool_size : " << st.pool_size << " bytes\n";
+        // LOG(INFO) << "pool_size : " << st.pool_size << " bytes\n";
         // SLAB_LOG(INFO) << "used_size : " << st.used_size << " bytes\n";
         // SLAB_LOG(INFO) << "used_pct : " << st.used_pct << " bytes\n";
 

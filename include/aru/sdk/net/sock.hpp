@@ -28,6 +28,8 @@
 
 #include <time.h>
 #include <string>
+#include <arpa/inet.h>
+#include <sys/un.h>
 
 namespace aru {
 
@@ -78,6 +80,17 @@ typedef struct {
     sock_domain_e type; ///< 域类型
 } sock_addr_t;
 
+#define ARU_SOCKADDR_STRLEN     sizeof(((struct sockaddr_un*)(NULL))->sun_path)
+#define ARU_SOCKADDR_LEN(addr)      aru::sdk::sockaddr_len((sockaddr_u*)addr)
+#define ARU_SOCKADDR_STR(addr, buf) aru::sdk::sockaddr_str((sockaddr_u*)addr, buf, sizeof(buf))
+#define ARU_SOCKADDR_PRINT(addr)    aru::sdk::sockaddr_print((sockaddr_u*)addr)
+typedef union {
+    struct sockaddr     sa;
+    struct sockaddr_in  sin;
+    struct sockaddr_in6 sin6;
+    struct sockaddr_un  sun;
+} sockaddr_u;
+
 /**
  * @brief 链接
  */
@@ -88,6 +101,8 @@ typedef struct {
     sock_protocol_e ip_version;  ///< ip版本
     sock_type_e type;   ///< 传输协议
 } sock_conn_t;
+
+#define ARU_INVALID_SOCKET -1
 
 /**
  * @brief 创建套接字
@@ -287,6 +302,28 @@ int sock_set_recv_buf_len(int fd, size_t len);
 
 // 设置发送缓冲区
 int sock_set_send_buf_len(int fd, size_t len);
+
+// 使用原生类型
+int socketpair(int family, int type, int protocol, int sv[2]);
+
+static inline void sockaddr_set_path(sockaddr_u* addr, const char* path) {
+    addr->sa.sa_family = AF_UNIX;
+    strncpy(addr->sun.sun_path, path, sizeof(addr->sun.sun_path));
+}
+
+int sock_resolver(const char* host, sockaddr_u* addr);
+socklen_t sockaddr_len(sockaddr_u* addr);
+const char* sockaddr_str(sockaddr_u* addr, char* buf, int len);
+const char* sockaddr_ip(sockaddr_u* addr, char *ip, int len);
+uint16_t sockaddr_port(sockaddr_u* addr);
+int sockaddr_set_ip(sockaddr_u* addr, const char* host);
+void sockaddr_set_port(sockaddr_u* addr, int port);
+int sockaddr_set_ipport(sockaddr_u* addr, const char* host, int port);
+static inline void sockaddr_print(sockaddr_u* addr) {
+    char buf[ARU_SOCKADDR_STRLEN] = {0};
+    sockaddr_str(addr, buf, sizeof(buf));
+    puts(buf);
+}
 
 } // !namespace sdk
 

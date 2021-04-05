@@ -15,60 +15,65 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file proc.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-05
  * 
  * @copyright MIT
  * 
  */
 #pragma once
-#include <mutex>
+#include <time.h>
+#include <unistd.h>
 
 namespace aru {
 
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
-#endif
+typedef void (*procedure_t)(void* userdata);
 
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
+typedef struct proc_ctx_s {
+    pid_t           pid; // tid in Windows
+    time_t          start_time;
+    int             spawn_cnt;
+    procedure_t     init;
+    void*           init_userdata;
+    procedure_t     proc;
+    void*           proc_userdata;
+    procedure_t     exit;
+    void*           exit_userdata;
+} proc_ctx_t;
 
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
-
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
+static inline void proc_run(proc_ctx_t* ctx) {
+    if (ctx->init) {
+        ctx->init(ctx->init_userdata);
     }
+    if (ctx->proc) {
+        ctx->proc(ctx->proc_userdata);
+    }
+    if (ctx->exit) {
+        ctx->exit(ctx->exit_userdata);
+    }
+}
+
+static inline int proc_spawn(proc_ctx_t* ctx) {
+    ++ctx->spawn_cnt;
+    ctx->start_time = time(NULL);
+    pid_t pid = fork();
+    if (pid < 0) {
+        return -1;
+    } else if (pid == 0) {
+        // child process
+        ctx->pid = getpid();
+        proc_run(ctx);
+    } else if (pid > 0) {
+        // parent process
+        ctx->pid = pid;
+    }
+    return pid;
+}
 
 } // namespace sdk
 

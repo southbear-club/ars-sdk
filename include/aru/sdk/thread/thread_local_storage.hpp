@@ -15,60 +15,70 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file thread_local_storage.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-05
  * 
  * @copyright MIT
  * 
  */
 #pragma once
-#include <mutex>
+
+#include <pthread.h>
 
 namespace aru {
 
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
-#endif
+typedef pthread_key_t thread_key_t;
+#define ARU_INVALID_THREAD_KEY         0xFFFFFFFF
+#define aru_thread_key_create(pkey)    pthread_key_create(pkey, NULL)
+#define aru_thread_key_delete          pthread_key_delete
+#define aru_thread_get_value           pthread_getspecific
+#define aru_thread_set_value           pthread_setspecific
 
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
-
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
-
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
+class ThreadLocalStorage {
+public:
+    enum {
+        THREAD_NAME = 0,
+        EVENT_LOOP  = 1,
+        MAX_NUM     = 16,
+    };
+    ThreadLocalStorage() {
+        aru_thread_key_create(&key);
     }
+
+    ~ThreadLocalStorage() {
+        aru_thread_key_delete(key);
+    }
+
+    void set(void* val) {
+        aru_thread_set_value(key, val);
+    }
+
+    void* get() {
+        return aru_thread_get_value(key);
+    }
+
+    static void set(int idx, void* val) {
+        return tls[idx].set(val);
+    }
+
+    static void* get(int idx) {
+        return tls[idx].get();
+    }
+
+    static void setThreadName(const char* name) {
+        set(THREAD_NAME, (void*)name);
+    }
+    static const char* threadName();
+
+private:
+    thread_key_t key;
+    static ThreadLocalStorage tls[MAX_NUM];
+};
 
 } // namespace sdk
 

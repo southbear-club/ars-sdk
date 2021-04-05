@@ -38,10 +38,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <arpa/inet.h>
 #include <netinet/tcp.h>
+#include <netdb.h>
 
 #include "aru/sdk/net/poll.hpp"
+#include "aru/sdk/macros/defs.hpp"
 
 namespace aru {
 
@@ -788,6 +789,170 @@ int sock_set_recv_buf_len(int fd, size_t len) {
 // 设置发送缓冲区
 int sock_set_send_buf_len(int fd, size_t len) {
     return setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &len, sizeof(len));
+}
+
+int socketpair(int family, int type, int protocol, int sv[2]) {
+    if (family == AF_UNIX) {
+        return socketpair(family, type, protocol, sv);
+    }
+    if (family != AF_INET || type != SOCK_STREAM) {
+        return -1;
+    }
+    int listenfd, connfd, acceptfd;
+    listenfd = connfd = acceptfd = ARU_INVALID_SOCKET;
+    struct sockaddr_in localaddr;
+    socklen_t addrlen = sizeof(localaddr);
+    memset(&localaddr, 0, addrlen);
+    localaddr.sin_family = AF_INET;
+    localaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    localaddr.sin_port = 0;
+    // listener
+    listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (listenfd < 0) {
+        goto error;
+    }
+    if (bind(listenfd, (struct sockaddr*)&localaddr, addrlen) < 0) {
+        goto error;
+    }
+    if (listen(listenfd, 1) < 0) {
+        goto error;
+    }
+    if (getsockname(listenfd, (struct sockaddr*)&localaddr, &addrlen) < 0) {
+        goto error;
+    }
+    // connector
+    connfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (connfd < 0) {
+        goto error;
+    }
+    if (connect(connfd, (struct sockaddr*)&localaddr, addrlen) < 0) {
+        goto error;
+    }
+    // acceptor
+    acceptfd = accept(listenfd, (struct sockaddr*)&localaddr, &addrlen);
+    if (acceptfd < 0) {
+        goto error;
+    }
+
+    close(listenfd);
+    sv[0] = connfd;
+    sv[1] = acceptfd;
+    return 0;
+error:
+    if (listenfd != ARU_INVALID_SOCKET) {
+        close(listenfd);
+    }
+    if (connfd != ARU_INVALID_SOCKET) {
+        close(connfd);
+    }
+    if (acceptfd != ARU_INVALID_SOCKET) {
+        close(acceptfd);
+    }
+    return -1;
+}
+
+socklen_t sockaddr_len(sockaddr_u* addr) {
+    if (addr->sa.sa_family == AF_INET) {
+        return sizeof(struct sockaddr_in);
+    }
+    else if (addr->sa.sa_family == AF_INET6) {
+        return sizeof(struct sockaddr_in6);
+    }
+    else if (addr->sa.sa_family == AF_UNIX) {
+        return sizeof(struct sockaddr_un);
+    }
+    return sizeof(sockaddr_u);
+}
+
+const char* sockaddr_str(sockaddr_u* addr, char* buf, int len) {
+    char ip[ARU_SOCKADDR_STRLEN] = {0};
+    uint16_t port = 0;
+    if (addr->sa.sa_family == AF_INET) {
+        inet_ntop(AF_INET, &addr->sin.sin_addr, ip, len);
+        port = htons(addr->sin.sin_port);
+        snprintf(buf, len, "%s:%d", ip, port);
+    }
+    else if (addr->sa.sa_family == AF_INET6) {
+        inet_ntop(AF_INET6, &addr->sin6.sin6_addr, ip, len);
+        port = htons(addr->sin6.sin6_port);
+        snprintf(buf, len, "[%s]:%d", ip, port);
+    }
+    else if (addr->sa.sa_family == AF_UNIX) {
+        snprintf(buf, len, "%s", addr->sun.sun_path);
+    }
+    return buf;
+}
+
+int sock_resolver(const char* host, sockaddr_u* addr) {
+    if (inet_pton(AF_INET, host, &addr->sin.sin_addr) == 1) {
+        addr->sa.sa_family = AF_INET; // host is ipv4, so easy ;)
+        return 0;
+    }
+
+    if (inet_pton(AF_INET6, host, &addr->sin6.sin6_addr) == 1) {
+        addr->sa.sa_family = AF_INET6; // host is ipv6
+        return 0;
+    }
+    struct addrinfo* ais = NULL;
+    struct addrinfo hint;
+    hint.ai_flags = 0;
+    hint.ai_family = AF_UNSPEC;
+    hint.ai_socktype = 0;
+    hint.ai_protocol = 0;
+    int ret = getaddrinfo(host, NULL, NULL, &ais);
+    if (ret != 0 || ais == NULL || ais->ai_addrlen == 0 || ais->ai_addr == NULL) {
+        printd("unknown host: %s err:%d:%s\n", host, ret, gai_strerror(ret));
+        return ret;
+    }
+    memcpy(addr, ais->ai_addr, ais->ai_addrlen);
+    freeaddrinfo(ais);
+    return 0;
+}
+
+const char* sockaddr_ip(sockaddr_u* addr, char *ip, int len) {
+    if (addr->sa.sa_family == AF_INET) {
+        return inet_ntop(AF_INET, &addr->sin.sin_addr, ip, len);
+    }
+    else if (addr->sa.sa_family == AF_INET6) {
+        return inet_ntop(AF_INET6, &addr->sin6.sin6_addr, ip, len);
+    }
+    return ip;
+}
+
+uint16_t sockaddr_port(sockaddr_u* addr) {
+    uint16_t port = 0;
+    if (addr->sa.sa_family == AF_INET) {
+        port = htons(addr->sin.sin_port);
+    }
+    else if (addr->sa.sa_family == AF_INET6) {
+        port = htons(addr->sin6.sin6_port);
+    }
+    return port;
+}
+
+int sockaddr_set_ip(sockaddr_u* addr, const char* host) {
+    if (!host || *host == '\0') {
+        addr->sin.sin_family = AF_INET;
+        addr->sin.sin_addr.s_addr = htonl(INADDR_ANY);
+        return 0;
+    }
+    return sock_resolver(host, addr);
+}
+
+void sockaddr_set_port(sockaddr_u* addr, int port) {
+    if (addr->sa.sa_family == AF_INET) {
+        addr->sin.sin_port = ntohs(port);
+    }
+    else if (addr->sa.sa_family == AF_INET6) {
+        addr->sin6.sin6_port = ntohs(port);
+    }
+}
+
+int sockaddr_set_ipport(sockaddr_u* addr, const char* host, int port) {
+    int ret = sockaddr_set_ip(addr, host);
+    if (ret != 0) return ret;
+    sockaddr_set_port(addr, port);
+    return 0;
 }
 
 } // !namespace sdk

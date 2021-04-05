@@ -15,60 +15,71 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file endian.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-05
  * 
  * @copyright MIT
  * 
  */
 #pragma once
-#include <mutex>
+#include "../macros/defs.hpp"
+#include <stdint.h>
+#include <string.h>
 
 namespace aru {
-
+    
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
-#endif
-
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
-
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
-
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
+static inline int detect_endian() {
+    union {
+        char c;
+        short s;
+    } u;
+    u.s = 0x1122;
+    if (u.c == 0x11) {
+        return ARU_BIG_ENDIAN;
     }
+    return ARU_LITTLE_ENDIAN;
+}
+
+template <typename T>
+uint8_t* serialize(uint8_t* buf, T value, int host_endian = LITTLE_ENDIAN, int buf_endian = BIG_ENDIAN) {
+    size_t size = sizeof(T);
+    uint8_t* pDst = buf;
+    uint8_t* pSrc = (uint8_t*)&value;
+
+    if (host_endian == buf_endian) {
+        memcpy(pDst, pSrc, size);
+    }
+    else {
+        for (int i = 0; i < size; ++i) {
+            pDst[i] = pSrc[size-i-1];
+        }
+    }
+
+    return buf+size;
+}
+
+template <typename T>
+uint8_t* deserialize(uint8_t* buf, T* value, int host_endian = LITTLE_ENDIAN, int buf_endian = BIG_ENDIAN) {
+    size_t size = sizeof(T);
+    uint8_t* pSrc = buf;
+    uint8_t* pDst = (uint8_t*)value;
+
+    if (host_endian == buf_endian) {
+        memcpy(pDst, pSrc, size);
+    }
+    else {
+        for (int i = 0; i < size; ++i) {
+            pDst[i] = pSrc[size-i-1];
+        }
+    }
+
+    return buf+size;
+}
 
 } // namespace sdk
 

@@ -15,60 +15,70 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file url.cpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-05
  * 
  * @copyright MIT
  * 
  */
-#pragma once
-#include <mutex>
+#include "aru/sdk/str/url.hpp"
+#include "aru/sdk/macros/defs.hpp"
+#include <stdio.h>
 
 namespace aru {
 
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
-#endif
+static inline bool is_unambiguous(char c) {
+    return ARU_IS_ALPHANUM(c) ||
+           c == '-' ||
+           c == '_' ||
+           c == '.' ||
+           c == '~';
+}
 
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
+static inline unsigned char hex2i(char hex) {
+    return hex <= '9' ? hex - '0' :
+        hex <= 'F' ? hex - 'A' + 10 : hex - 'a' + 10;
+}
 
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
-
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
+std::string url_escape(const char* istr) {
+    std::string ostr;
+    const char* p = istr;
+    char szHex[4] = {0};
+    while (*p != '\0') {
+        if (is_unambiguous(*p)) {
+            ostr += *p;
+        }
+        else {
+            sprintf(szHex, "%%%02X", *p);
+            ostr += szHex;
+        }
+        ++p;
     }
+    return ostr;
+}
+
+std::string url_unescape(const char* istr) {
+    std::string ostr;
+    const char* p = istr;
+    while (*p != '\0') {
+        if (*p == '%' &&
+            ARU_IS_HEX(p[1]) &&
+            ARU_IS_HEX(p[2])) {
+            ostr += ((hex2i(p[1]) << 4) | hex2i(p[2]));
+            p += 3;
+        }
+        else {
+            ostr += *p;
+            ++p;
+        }
+    }
+    return ostr;
+}
 
 } // namespace sdk
 

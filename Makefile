@@ -12,6 +12,9 @@ UT_DIR := unittest
 BUILD_DIR := build
 DIST_DIR := dist
 
+# 配置头文件
+CONFIG_HEADER := $(BUILD_DIR)/configure.h
+
 # 配置
 include config.mk
 
@@ -46,9 +49,12 @@ config:
 	@echo "\033[35m[---- generic configure.h success ------]\033[0m"
 	@echo ""
 
-$(TARGET): config $(OBJECTS)
+$(CONFIG_HEADER):config
+
+$(TARGET): $(OBJECTS)
 	@$(CXX) $(SHAREDFLG) $(OBJECTS) -o build/lib$@.so $(SO_LIBS) $(LIBS_PATH)
 	@$(AR) build/lib$@.a $(OBJECTS)
+	@rm -f $(CONFIG_HEADER)
 	@echo "\033[35m[---------- build lib success ----------]\033[0m"
 	@echo ""
 
@@ -113,7 +119,7 @@ clean:
 
 # dependencies
 -include $(DEPS)
-$(BUILD_DIR)/%.o: %.c*
+$(BUILD_DIR)/%.o: %.c* $(CONFIG_HEADER)
 	@echo "\033[32m$(CXX) $<\033[0m"
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi;\
 	$(CXX) $(OBJCCFLAG) -MM -MT $@ -MF $(patsubst %.o, %.d, $@) $<; \

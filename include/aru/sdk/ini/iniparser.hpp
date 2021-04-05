@@ -15,61 +15,66 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file singleton.hpp
+ * @file iniparser.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-05
  * 
  * @copyright MIT
  * 
  */
 #pragma once
-#include <mutex>
+
+#include <string>
+using std::string;
 
 namespace aru {
-
+    
 namespace sdk {
 
-#ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(Type) ARU_DISABLE_COPY(Type)
-#endif
+#define ARU_DEFAULT_INI_COMMENT "#"
+#define ARU_DEFAULT_INI_DELIM   "="
 
-#define ARU_DISABLE_COPY(Class) \
-    Class(const Class&) = delete; \
-    Class& operator=(const Class&) = delete;
+// fwd
+class IniNode;
 
-#define ARU_SINGLETON_DECL(Class) \
-    public: \
-        static Class* instance(); \
-        static void exitInstance(); \
-    private: \
-        ARU_DISABLE_COPY(Class) \
-        static Class* s_pInstance; \
-        static std::mutex s_mutex;
+class IniParser {
+public:
+    IniParser();
+    ~IniParser();
 
-#define ARU_SINGLETON_IMPL(Class) \
-    Class* Class::s_pInstance = NULL; \
-    std::mutex Class::s_mutex; \
-    Class* Class::instance() { \
-        if (s_pInstance == NULL) { \
-            s_mutex.lock(); \
-            if (s_pInstance == NULL) { \
-                s_pInstance = new Class; \
-            } \
-            s_mutex.unlock(); \
-        } \
-        return s_pInstance; \
-    } \
-    void Class::exitInstance() { \
-        s_mutex.lock(); \
-        if (s_pInstance) {  \
-            delete s_pInstance; \
-            s_pInstance = NULL; \
-        }   \
-        s_mutex.unlock(); \
-    }
+    int LoadFromFile(const char* filepath);
+    int LoadFromMem(const char* data);
+    int Unload();
+    int Reload();
 
+    string DumpString();
+    int Save();
+    int SaveAs(const char* filepath);
+
+    string GetValue(const string& key, const string& section = "");
+    void   SetValue(const string& key, const string& value, const string& section = "");
+
+    // T = [bool, int, float]
+    template<typename T>
+    T Get(const string& key, const string& section = "", T defvalue = 0);
+
+    // T = [bool, int, float]
+    template<typename T>
+    void Set(const string& key, const T& value, const string& section = "");
+
+protected:
+    void DumpString(IniNode* pNode, string& str);
+
+public:
+    string  _comment;
+    string  _delim;
+    string  _filepath;
+private:
+    IniNode* root_;
+};
+    
 } // namespace sdk
 
 } // namespace aru
