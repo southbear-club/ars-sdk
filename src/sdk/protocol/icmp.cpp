@@ -43,7 +43,9 @@ namespace sdk {
 int ping(const char* host, int cnt) {
     static uint16_t seq = 0;
     char ip[64] = {0};
+#ifdef DEBUG
     uint32_t start_tick, end_tick;
+#endif
     uint64_t start_hrtime, end_hrtime;
     int timeout = 0;
     int sendbytes = 64;
@@ -62,12 +64,12 @@ int ping(const char* host, int cnt) {
     //min_rtt = MIN(rtt, min_rtt);
     //max_rtt = MAX(rtt, max_rtt);
     // gethostbyname -> socket -> setsockopt -> sendto -> recvfrom -> close
-    sockaddr_u peeraddr;
+    sock_addr_t peeraddr;
     socklen_t addrlen = sizeof(peeraddr);
     memset(&peeraddr, 0, addrlen);
     int ret = sock_resolver(host, &peeraddr);
     if (ret != 0) return ret;
-    sockaddr_ip(&peeraddr, ip, sizeof(ip));
+    sock_addr_ip(&peeraddr, ip, sizeof(ip));
     int sockfd = socket(peeraddr.sa.sa_family, SOCK_RAW, IPPROTO_ICMP);
     if (sockfd < 0) {
         if (errno == EPERM) {
@@ -93,14 +95,16 @@ int ping(const char* host, int cnt) {
     for (int i = 0; i < sendbytes - (int)sizeof(icmphdr_t); ++i) {
         icmp_req->icmp_data[i] = i;
     }
+#ifdef DEBUG
     start_tick = gettick();
+#endif
     while (cnt-- > 0) {
         // NOTE: checksum
         icmp_req->icmp_seq = ++seq;
         icmp_req->icmp_cksum = 0;
         icmp_req->icmp_cksum = checksum((uint8_t*)icmp_req, sendbytes);
         start_hrtime = gethrtime_us();
-        addrlen = sockaddr_len(&peeraddr);
+        addrlen = sock_addr_len(&peeraddr);
         int nsend = sendto(sockfd, sendbuf, sendbytes, 0, &peeraddr.sa, addrlen);
         if (nsend < 0) {
             continue;
@@ -138,7 +142,9 @@ int ping(const char* host, int cnt) {
         ++ok_cnt;
         if (cnt > 0) sleep(1); // sleep a while, then agian
     }
+#ifdef DEBUG
     end_tick = gettick();
+#endif
     printd("--- %s ping statistics ---\n", host);
     printd("%d packets transmitted, %d received, %d%% packet loss, time %d ms\n",
         send_cnt, recv_cnt, (send_cnt-recv_cnt)*100/(send_cnt==0?1:send_cnt), end_tick-start_tick);

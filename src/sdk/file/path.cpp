@@ -53,8 +53,8 @@ int mkdir_p(const char *dir) {
     if (access(dir, 0) == 0) {
         return EEXIST;
     }
-    char tmp[ARU_MAX_PATH];
-    strncpy(tmp, dir, sizeof(tmp));
+    char tmp[ARU_MAX_PATH] = "0";
+    memcpy(tmp, dir, strlen(dir) < sizeof(tmp) ? strlen(dir) : sizeof(tmp));
     char* p = tmp;
     char delim = '/';
     while (*p) {
@@ -78,8 +78,8 @@ int rmdir_p(const char *dir) {
     if (rmdir(dir) != 0) {
         return EPERM;
     }
-    char tmp[ARU_MAX_PATH];
-    strncpy(tmp, dir, sizeof(tmp));
+    char tmp[ARU_MAX_PATH] = "";
+    memcpy(tmp, dir, strlen(dir) < ARU_MAX_PATH ? strlen(dir) : ARU_MAX_PATH);
     char* p = tmp;
     while (*p) ++p;
     while (--p >= tmp) {

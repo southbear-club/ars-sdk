@@ -84,11 +84,10 @@ int sendmail(const char* smtp_server,
     if (sockfd < 0) {
         return sockfd;
     }
-    sock_addr_t raddr {
-        smtp_server,
-        SMTP_PORT,
-        sock_domain_inet,
-    };
+
+    sock_addr_t raddr;
+    sock_set_ipport(&raddr, smtp_server, SMTP_PORT);
+
     int cret = sock_connect(sockfd, raddr, 5000);
     if (cret < 0) {
         close(sockfd);

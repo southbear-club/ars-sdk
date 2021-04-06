@@ -24,7 +24,6 @@
  * @copyright MIT
  * 
  */
-#pragma once
 #include "aru/sdk/algorithm/bserach.hpp"
 
 namespace aru {

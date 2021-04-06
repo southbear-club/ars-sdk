@@ -1,108 +1,63 @@
 /**
  * Copyright © 2021 <wotsen>.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the “Software”), to deal in the Software without
  * restriction, including without limitation the rights to use, copy, modify, merge, publish,
  * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
  * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * @file sock.hpp
- * @brief 
+ * @brief
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-04
- * 
+ *
  * @copyright MIT
- * 
+ *
  */
 #pragma once
 
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <time.h>
 #include <string>
-#include <arpa/inet.h>
-#include <sys/un.h>
 
 namespace aru {
 
 namespace sdk {
 
-/**
- * @brief 网络传输协议
- */
-typedef enum {
-    sock_trans_tcp = 0,     ///< tcp协议
-    sock_trans_udp,         ///< udp协议
-    sock_trans_raw,         ///< raw
-    sock_trans_invalid = 255,     ///< 无效
-} sock_type_e;
+#define ARU_SOCKADDR_STRLEN sizeof(((struct sockaddr_un*)(NULL))->sun_path)
+#define ARU_SOCKADDR_LEN(addr) aru::sdk::sock_addr_len((sock_addr_t*)addr)
+#define ARU_SOCKADDR_STR(addr, buf) aru::sdk::sock_addr_str((sock_addr_t*)addr, buf, sizeof(buf))
+#define ARU_SOCKADDR_PRINT(addr) aru::sdk::sock_addr_print((sock_addr_t*)addr)
 
-/**
- * @brief ip版本
- */
-typedef enum {
-    sock_ip_v4 = 0,             ///< ipv4
-    sock_ip_v6,                 ///< ipv6
-    sock_ip_version_invalid = 255,    ///< 无效
-} sock_ip_version_e;
+#define ARU_INVALID_SOCKET -1
 
-typedef enum {
-    sock_domain_local = 0,
-    sock_domain_unix,           ///< unix域套接字
-    sock_domain_inet,           ///< ipv4
-    sock_domain_route,
-    sock_domain_key,
-    sock_domain_inet6,          ///< ipv6
-    sock_domain_system,
-    sock_domain_ndrv,
-
-    sock_domain_invalid = 255,
-} sock_domain_e;
-
-typedef enum {
-    sock_ip_protocol_ = 0,
-} sock_protocol_e;
-
-/**
- * @brief 套接字地址
- */
-typedef struct {
-    std::string ip;     ///< ip地址
-    int port;           ///< 端口
-    sock_domain_e type; ///< 域类型
-} sock_addr_t;
-
-#define ARU_SOCKADDR_STRLEN     sizeof(((struct sockaddr_un*)(NULL))->sun_path)
-#define ARU_SOCKADDR_LEN(addr)      aru::sdk::sockaddr_len((sockaddr_u*)addr)
-#define ARU_SOCKADDR_STR(addr, buf) aru::sdk::sockaddr_str((sockaddr_u*)addr, buf, sizeof(buf))
-#define ARU_SOCKADDR_PRINT(addr)    aru::sdk::sockaddr_print((sockaddr_u*)addr)
 typedef union {
-    struct sockaddr     sa;
-    struct sockaddr_in  sin;
+    struct sockaddr sa;
+    struct sockaddr_in sin;
     struct sockaddr_in6 sin6;
-    struct sockaddr_un  sun;
-} sockaddr_u;
+    struct sockaddr_un sun;
+} sock_addr_t;
 
 /**
  * @brief 链接
  */
 typedef struct {
-    int fd;                         ///< 描述符
-    sock_addr_t local;              ///< 本地
-    sock_addr_t remote;             ///< 远端地址
-    sock_protocol_e ip_version;  ///< ip版本
-    sock_type_e type;   ///< 传输协议
+    int fd;              ///< 描述符
+    sock_addr_t local;   ///< 本地
+    sock_addr_t remote;  ///< 远端地址
 } sock_conn_t;
-
-#define ARU_INVALID_SOCKET -1
 
 /**
  * @brief 创建套接字
@@ -113,41 +68,34 @@ typedef struct {
  *
  * @return int 套接字描述符，小于0异常
  */
-int sock_creat_ex(sock_domain_e domain, sock_type_e type, int res);
+static inline int sock_creat(int family, int type, int protocol) {
+    return ::socket(family, type, protocol);
+}
 
 /**
  * @brief 创建套接字
- *
- * @param domain 域类型
- * @param type 传输类型
- *
  * @return int 套接字描述符，小于0异常
  */
-static inline int sock_creat(sock_domain_e domain, sock_type_e type) {
-    return sock_creat_ex(domain, type, 0);
-}
+static inline int sock_creat(int family, int type) { return sock_creat(family, type, 0); }
 
 /**
  * @brief 创建tcp套接字
  *
- * @param domain 域类型，默认ipv4
- *
  * @return int 套接字描述符，小于0异常
  */
-static inline int sock_tcp_creat(sock_domain_e domain=sock_domain_inet) {
-    return sock_creat_ex(domain, sock_trans_tcp, 0);
+static inline int sock_tcp_creat(int family = AF_INET) {
+    return sock_creat(family, SOCK_STREAM, 0);
 }
 
 /**
  * @brief 创建udp套接字
  *
- * @param domain 域类型，默认ipv4
- *
  * @return int 套接字描述符，小于0异常
  */
-static inline int sock_udp_creat(sock_domain_e domain=sock_domain_inet) {
-    return sock_creat_ex(domain, sock_trans_tcp, 0);
-}
+static inline int sock_udp_creat(int family = AF_INET) { return sock_creat(family, SOCK_DGRAM, 0); }
+
+// 使用原生类型
+int sock_pair(int family, int type, int protocol, int sv[2]);
 
 /**
  * @brief 绑定
@@ -157,7 +105,9 @@ static inline int sock_udp_creat(sock_domain_e domain=sock_domain_inet) {
  *
  * @return 小于0异常，0正常
  */
-int sock_bind(int fd, const sock_addr_t &addr);
+int sock_bind(int fd, const char* ip, int port);
+
+static inline int sock_unix_bind(int fd, const char* ip) { return sock_bind(fd, ip, -1); }
 
 /**
  * @brief 监听套接字
@@ -167,7 +117,7 @@ int sock_bind(int fd, const sock_addr_t &addr);
  *
  * @return 小于0异常，0正常
  */
-int sock_listen(int fd, int blocklog);
+static inline int sock_listen(int fd, int blocklog = 5) { return ::listen(fd, blocklog); }
 
 /**
  * @brief accept
@@ -177,7 +127,7 @@ int sock_listen(int fd, int blocklog);
  *
  * @return 小于0异常，accept得到的客户端套接字
  */
-int sock_accept(int fd, sock_addr_t &addr);
+int sock_accept(int fd, sock_addr_t& addr);
 
 /**
  * @brief 连接到服务器
@@ -186,9 +136,9 @@ int sock_accept(int fd, sock_addr_t &addr);
  * @param addr 服务器地址
  * @param ms 使用poll等待，单位ms，-1时为阻塞
  *
- * @return 
+ * @return
  */
-int sock_connect(int fd, sock_addr_t &addr, time_t ms=-1);
+int sock_connect(int fd, sock_addr_t& addr, time_t ms = -1);
 
 /**
  * @brief 关闭套接字
@@ -196,7 +146,7 @@ int sock_connect(int fd, sock_addr_t &addr, time_t ms=-1);
  * @param fd 描述符
  * @param wait 适用于tcp的延迟关闭和reset
  */
-void sock_close2(int fd, time_t wait=0);
+void sock_close2(int fd, time_t wait = 0);
 
 /**
  * @brief 关闭套接字
@@ -211,7 +161,7 @@ void sock_close(int fd);
  * @param fd 套接字描述符
  * @param how 方式，'r'关闭读端SHUT_RD，'w'-关闭写端SHUT_WR，'b'-关闭读写SHUT_RDWR
  */
-void sock_shutdown(int fd, char how='b');
+void sock_shutdown(int fd, char how = 'b');
 
 /**
  * @brief 数据发送
@@ -224,7 +174,7 @@ void sock_shutdown(int fd, char how='b');
  *
  * @return 小于0异常，成功写的数据长度
  */
-ssize_t sock_write(int fd, const void *data, size_t len, time_t w=-1);
+ssize_t sock_write(int fd, const void* data, size_t len, time_t w = -1);
 
 /**
  * @brief 数据接收
@@ -237,7 +187,7 @@ ssize_t sock_write(int fd, const void *data, size_t len, time_t w=-1);
  *
  * @return 小于0异常，成功读到数据长度
  */
-ssize_t sock_read(int fd, void *data, size_t len, time_t w=-1);
+ssize_t sock_read(int fd, void* data, size_t len, time_t w = -1);
 
 /**
  * @brief 数据发送
@@ -250,7 +200,7 @@ ssize_t sock_read(int fd, void *data, size_t len, time_t w=-1);
  *
  * @return 小于0异常，成功写的数据长度
  */
-ssize_t sock_writen(int fd, const void *data, size_t len, time_t w=-1);
+ssize_t sock_writen(int fd, const void* data, size_t len, time_t w = -1);
 
 /**
  * @brief 数据接收
@@ -263,21 +213,15 @@ ssize_t sock_writen(int fd, const void *data, size_t len, time_t w=-1);
  *
  * @return 小于0异常，成功读到数据长度
  */
-ssize_t sock_readn(int fd, void *data, size_t len, time_t w=-1);
+ssize_t sock_readn(int fd, void* data, size_t len, time_t w = -1);
 
 // recv/send
-ssize_t sock_send(int fd, const void *data, size_t len, int flags, time_t w=-1);
-ssize_t sock_recv(int fd, void *data, size_t len, int flags, time_t w=-1);
+ssize_t sock_send(int fd, const void* data, size_t len, int flags, time_t w = -1);
+ssize_t sock_recv(int fd, void* data, size_t len, int flags, time_t w = -1);
 
 // recvfrom/sendto，用于udp
-ssize_t sock_sendto(int fd, const void *data, size_t len, const sock_addr_t &addr, time_t w=-1);
-ssize_t sock_recvfrom(int fd, void *data, size_t len, sock_addr_t &addr, time_t w=-1);
-
-// 通过fd获取本地地址
-int sock_get_name(int fd, sock_addr_t &addr);
-
-// 通过fd获取对端地址
-int sock_get_peer_name(int fd, sock_addr_t &addr);
+ssize_t sock_sendto(int fd, const void* data, size_t len, const sock_addr_t& addr, time_t w = -1);
+ssize_t sock_recvfrom(int fd, void* data, size_t len, sock_addr_t& addr, time_t w = -1);
 
 // 地址重用
 int sock_set_addr_reuse(int fd);
@@ -303,28 +247,51 @@ int sock_set_recv_buf_len(int fd, size_t len);
 // 设置发送缓冲区
 int sock_set_send_buf_len(int fd, size_t len);
 
-// 使用原生类型
-int socketpair(int family, int type, int protocol, int sv[2]);
+int sock_family(int fd);
 
-static inline void sockaddr_set_path(sockaddr_u* addr, const char* path) {
+// 通过fd获取本地地址
+int sock_get_name(int fd, sock_addr_t& addr);
+
+// 通过fd获取对端地址
+int sock_get_peer_name(int fd, sock_addr_t& addr);
+
+socklen_t sock_addr_len(sock_addr_t* addr);
+
+// ip地址转为网络字节序
+int sock_resolver(const char* host, sock_addr_t* addr);
+
+// 获取ipport字符串形式
+const char* sock_addr_str(sock_addr_t* addr, char* buf, int len);
+
+// 获取ip地址
+const char* sock_addr_ip(sock_addr_t* addr, char* ip, int len);
+
+// 获取端口
+uint16_t sock_addr_port(sock_addr_t* addr);
+
+void sock_set_family(sock_addr_t* addr, int family);
+
+// 设置ip
+int sock_set_ip(sock_addr_t* addr, const char* host);
+
+// 设置端口
+void sock_set_port(sock_addr_t* addr, int port);
+
+// 同时设置ip端口
+int sock_set_ipport(sock_addr_t* addr, const char* host, int port);
+
+// 设置unix域的路径
+static inline void sock_set_path(sock_addr_t* addr, const char* path) {
     addr->sa.sa_family = AF_UNIX;
-    strncpy(addr->sun.sun_path, path, sizeof(addr->sun.sun_path));
+    memcpy(addr->sun.sun_path, path, strlen(path) < sizeof(addr->sun.sun_path) ? strlen(path) : sizeof(addr->sun.sun_path));
 }
 
-int sock_resolver(const char* host, sockaddr_u* addr);
-socklen_t sockaddr_len(sockaddr_u* addr);
-const char* sockaddr_str(sockaddr_u* addr, char* buf, int len);
-const char* sockaddr_ip(sockaddr_u* addr, char *ip, int len);
-uint16_t sockaddr_port(sockaddr_u* addr);
-int sockaddr_set_ip(sockaddr_u* addr, const char* host);
-void sockaddr_set_port(sockaddr_u* addr, int port);
-int sockaddr_set_ipport(sockaddr_u* addr, const char* host, int port);
-static inline void sockaddr_print(sockaddr_u* addr) {
+static inline void sock_addr_print(sock_addr_t* addr) {
     char buf[ARU_SOCKADDR_STRLEN] = {0};
-    sockaddr_str(addr, buf, sizeof(buf));
+    sock_addr_str(addr, buf, sizeof(buf));
     puts(buf);
 }
 
-} // !namespace sdk
+}  // namespace sdk
 
-} // !namespace aru
+}  // namespace aru

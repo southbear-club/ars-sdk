@@ -51,7 +51,7 @@ public:
 
     int open(const char* filepath, const char* mode) {
         close();
-        strncpy(this->filepath, filepath, ARU_MAX_PATH);
+        memcpy(this->filepath, filepath, strlen(filepath) < ARU_MAX_PATH ? strlen(filepath) : ARU_MAX_PATH);
         fp = fopen(filepath, mode);
         return fp ? 0 : errno;
     }

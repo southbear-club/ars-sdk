@@ -317,7 +317,7 @@ int nslookup(const char* domain, uint32_t* addrs, int naddr, const char* nameser
 
     dns_rr_t question;
     memset(&question, 0, sizeof(question));
-    strncpy(question.name, domain, sizeof(question.name));
+    snprintf(question.name, sizeof(question.name), "%s", domain);
     question.rtype = ARU_DNS_TYPE_A;
     question.rclass = ARU_DNS_CLASS_IN;
 

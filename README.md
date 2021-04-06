@@ -5,6 +5,7 @@
 ## depends
 
 - `glog`
+- `gflags`
 - `gtest`
 
 ## 计划

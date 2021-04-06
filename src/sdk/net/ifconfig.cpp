@@ -31,6 +31,8 @@
 #include <arpa/inet.h>
 
 #if defined(__linux__)
+#include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
@@ -87,19 +89,19 @@ int ifconfig(std::vector<ifconfig_t>& ifcs) {
         struct sockaddr_in* addr = (struct sockaddr_in*)&ifr.ifr_addr;
         char* ip = inet_ntoa(addr->sin_addr);
         //printf("ip: %s\n", ip);
-        strncpy(tmp.ip, ip, sizeof(tmp.ip));
+        snprintf(tmp.ip, sizeof(tmp.ip), "%s", ip);
         // netmask
         iRet = ioctl(sock, SIOCGIFNETMASK, &ifr);
         addr = (struct sockaddr_in*)&ifr.ifr_netmask;
         char* netmask = inet_ntoa(addr->sin_addr);
         //printf("netmask: %s\n", netmask);
-        strncpy(tmp.mask, netmask, sizeof(tmp.mask));
+        snprintf(tmp.mask, sizeof(tmp.mask), "%s", netmask);
         // broadaddr
         iRet = ioctl(sock, SIOCGIFBRDADDR, &ifr);
         addr = (struct sockaddr_in*)&ifr.ifr_broadaddr;
         char* broadaddr = inet_ntoa(addr->sin_addr);
         //printf("broadaddr: %s\n", broadaddr);
-        strncpy(tmp.broadcast, broadaddr, sizeof(tmp.broadcast));
+        snprintf(tmp.broadcast, sizeof(tmp.broadcast), "%s", broadaddr);
         // hwaddr
         iRet = ioctl(sock, SIOCGIFHWADDR, &ifr);
         snprintf(tmp.mac, sizeof(tmp.mac), "%02x:%02x:%02x:%02x:%02x:%02x",

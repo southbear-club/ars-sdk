@@ -56,11 +56,10 @@ int ftp_connect(ftp_handle_t* hftp, const char* host, int port) {
     if (sockfd < 0) {
         return sockfd;
     }
-    sock_addr_t raddr {
-        host,
-        port,
-        sock_domain_inet,
-    };
+
+    sock_addr_t raddr;
+    sock_set_ipport(&raddr, host, port);
+
     int cret = sock_connect(sockfd, raddr, 5000);
     if (cret < 0) {
         close(sockfd);
@@ -170,11 +169,10 @@ int ftp_download_with_cb(ftp_handle_t* hftp, const char* filepath, ftp_download_
     if (sockfd < 0) {
         return sockfd;
     }
-    sock_addr_t raddr {
-        host,
-        port,
-        sock_domain_inet,
-    };
+
+    sock_addr_t raddr;
+    sock_set_ipport(&raddr, host, port);
+
     int cret = sock_connect(sockfd, raddr, 5000);
     if (cret < 0) {
         close(sockfd);
@@ -237,11 +235,10 @@ int ftp_upload(ftp_handle_t* hftp, const char* local_filepath, const char* remot
     if (sockfd < 0) {
         return sockfd;
     }
-    sock_addr_t raddr {
-        host,
-        port,
-        sock_domain_inet,
-    };
+
+    sock_addr_t raddr;
+    sock_set_ipport(&raddr, host, port);
+
     int cret = sock_connect(sockfd, raddr, 5000);
     if (cret < 0) {
         close(sockfd);
