@@ -48,7 +48,7 @@ public:
     virtual ~ThreadPoolSyncTaskQueue() { stop(); }
 
     // 入队
-    virtual bool push(T&& obj) override {
+    virtual bool push(T&& obj) {
         std::unique_lock<std::mutex> lck(mutex_);
         // 等待队列非满才能入队
         not_full_.wait(lck, [this] { return stop_ || (count() < max_size_); });
@@ -64,7 +64,7 @@ public:
     }
 
     // 出队
-    virtual bool pop(T& t) override {
+    virtual bool pop(T& t) {
         std::unique_lock<std::mutex> lck(mutex_);
         // 等待队列非空才能出队
         not_empty_.wait(lck, [this] { return stop_ || !queue_.empty(); });

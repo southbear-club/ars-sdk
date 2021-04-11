@@ -85,6 +85,14 @@ std::string trimL(const std::string& str, const char* chars = ARU_SPACE_CHARS);
 std::string trimR(const std::string& str, const char* chars = ARU_SPACE_CHARS);
 std::string trim_pairs(const std::string& str, const char* pairs = ARU_PAIR_CHARS);
 std::string replace(const std::string& str, const std::string& find, const std::string& rep);
+// strip("abxxa", "ab")       ->  "xx"     strip both left and right.
+// strip("abxxa", "ab", 'l')  ->  "xxa"    strip left only.
+// strip("abxxa", "ab", 'r')  ->  "abxx"   strip right only.
+std::string strip(const char* s, const char* c=" \t\r\n", char d='b');
+std::string strip(const char* s, char c, char d = 'b');
+std::string strip(const std::string& s, const char* c=" \t\r\n", char d='b');
+std::string strip(const std::string& s, char c, char d='b');
+std::string strip(const std::string& s, const std::string& c, char d='b');
 
 // str=/mnt/share/image/test.jpg
 // basename=test.jpg

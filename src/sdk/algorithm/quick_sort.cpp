@@ -15,20 +15,57 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aligin.hpp
+ * @file quick_sort.cpp
  * @brief 
- * @author wotsen (astralrovers@outlook.com)
+ * @author  ()
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-10
  * 
  * @copyright MIT
  * 
  */
-#pragma once
+#include "sort_common.hpp"
+#include <stdint.h>
 
 namespace aru {
-
+    
 namespace sdk {
+
+static void qsort_recu(byte *l, byte *r, size_t size, fp_cmp cmp)
+{
+    if (l < r) {
+        byte *p = l;
+        byte *q = r;
+
+        do {
+            while ((p < q) && (cmp(p, q, size) <= 0))
+                q -= size;
+
+            if (p != q) {
+                byte_swap(p, q, size);
+                p += size;
+            }
+
+            while ((p < q) && (cmp(p, q, size) <= 0))
+                p += size;
+
+            if (p != q) {
+                byte_swap(q, p, size);
+                q -= size;
+            }
+        } while (p < q);
+
+        qsort_recu(l, p - size, size, cmp);
+        qsort_recu(p + size, r, size, cmp);
+    }
+}
+
+int quick_sort(void *array, size_t num, size_t size, fp_cmp cmp)
+{
+    CHK_PARAMETERS(array, num, size, cmp);
+    qsort_recu((byte *)array, (byte *)array + size * (num - 1), size, cmp);
+    return 0;
+}
 
 } // namespace sdk
 

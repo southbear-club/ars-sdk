@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include <sys/utsname.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #ifdef __linux__
 #include <errno.h>
@@ -113,6 +114,15 @@ uint64_t memsize = 0;
 #else
     return -10;
 #endif
+}
+
+std::string env(const char* name) {
+    char* x = getenv(name);
+    return x ? std::string(x) : std::string();
+}
+
+void daemon() {
+    int r = ::daemon(1, 0); (void) r;
 }
 
 } // namespace sdk

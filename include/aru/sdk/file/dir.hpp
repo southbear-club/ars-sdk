@@ -28,7 +28,7 @@
 
 #include <string.h>
 #include <time.h>
-
+#include <stdint.h>
 #include <list>
 
 namespace aru {
@@ -47,6 +47,9 @@ typedef struct dir_s {
 } dir_t;
 
 int listdir(const char* dir, std::list<dir_t>& dirs);
+
+int dir_size(const char *path, uint64_t *size);
+int num_in_dir(const char *path);
 
 } // namespace sdk
 

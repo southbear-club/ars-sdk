@@ -28,10 +28,72 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <stddef.h>
 #include "platform.hpp"
+
+#ifdef DEBUG
+#define printd(...) printf(__VA_ARGS__)
+#define printe(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define printd(...)
+#define printe(...)
+#endif
+
+#ifndef __cplusplus
+#define ARU_TYPEOF typeof
+#else
+#define ARU_TYPEOF decltype
+#endif
+
+#ifndef offsetof
+#define offsetof(type, member) \
+((size_t)(&((type*)0)->member))
+#endif
+
+#ifndef offsetofend
+#define offsetofend(type, member) \
+(offsetof(type, member) + sizeof(((type*)0)->member))
+#endif
+
+#ifndef container_of
+#define container_of(ptr, type, member) ({			\
+	const __TYPEOF__( ((type *)0)->member ) *__mptr = (ptr);	\
+	(type *)( (char *)__mptr - offsetof(type,member) );})
+#endif
+
+// ENDIAN
+#define ARU_BIG_ENDIAN      4321
+#define ARU_LITTLE_ENDIAN   1234
+#define ARU_NET_ENDIAN      ARU_BIG_ENDIAN
+
+// BYTE_ORDER
+#if defined(ARU_ARCH_X86) || defined(ARU_ARCH_X86_64) || defined(ARU___ARMEL__)
+#define ARU_BYTE_ORDER      ARU_LITTLE_ENDIAN
+#elif defined(ARU___ARMEB__)
+#define ARU_BYTE_ORDER      ARU_BIG_ENDIAN
+#endif
+
+#if (defined(__GNUC__) && __GNUC__ >= 3) || defined(__clang__)
+#ifndef unlikely
+#define  unlikely(x)  __builtin_expect(!!(x), 0)
+#endif
+#ifndef likely
+#define  likely(x)  __builtin_expect(!!(x), 1)
+#endif
+#else
+#ifndef unlikely
+#define  unlikely(x)  (x)
+#endif
+#ifndef likely
+#define  likely(x)  (x)
+#endif
+#endif
 
 #define ARU_ABS(n)  ((n) > 0 ? (n) : -(n))
 #define ARU_NABS(n) ((n) < 0 ? (n) : -(n))
+#define ARU_MIN(a, b)  ((a) > (b) ? (b) : (a))
+#define ARU_MAX(a, b)  ((a) > (b) ? (a) : (b))
 #define ARU_ARRAY_SIZE(a) (sizeof(a) / sizeof(*(a)))
 #define ARU_BITSET(p, n) (*(p) |= (1u << (n)))
 #define ARU_BITCLR(p, n) (*(p) &= ~(1u << (n)))
@@ -68,6 +130,10 @@ ASCII:
 #define ARU_LOWER(c)    ((c) | 0x20)
 #define ARU_UPPER(c)    ((c) & ~0x20)
 
+#define aru_align(d, a) (((d) + (a - 1)) & ~(a - 1))
+#define aru_align_ptr(p, a) \
+    (uint8_t *)(((uintptr_t)(p) + ((uintptr_t)a - 1)) & ~((uintptr_t)a - 1))
+
 // LD, LU, LLD, LLU for explicit conversion of integer
 #define ARU_LD(v)   ((long)(v))
 #define ARU_LU(v)   ((unsigned long)(v))
@@ -92,37 +158,33 @@ ASCII:
 #define ARU_SAFE_DELETE_ARRAY(p) do {if (p) {delete[] (p); (p) = NULL;}} while(0)
 #define ARU_SAFE_RELEASE(p) do {if (p) {(p)->release(); (p) = NULL;}} while(0)
 
-#ifndef offsetof
-#define offsetof(type, member) \
-((size_t)(&((type*)0)->member))
-#endif
+#define JTU_SWAP(a, b)          \
+    do { JTU_TYPEOF(a) __tmp = (a); (a) = (b); (b) = __tmp; } while (0)
 
-#ifndef offsetofend
-#define offsetofend(type, member) \
-(offsetof(type, member) + sizeof(((type*)0)->member))
-#endif
+#define JTU_VERBOSE()                                                   \
+    do {                                                            \
+        printf("%s:%s:%d xxxxxx\n", __FILE__, __func__, __LINE__);  \
+    } while (0)
 
-#ifndef container_of
-#define container_of(ptr, type, member) \
-((type*)((char*)(ptr) - offsetof(type, member)))
-#endif
+#define ARU_DUMP_BUFFER(buf, len)                                            \
+    do {                                                                 \
+        int _i, _j=0;                                                    \
+        char _tmp[128] = {0};                                             \
+        if (buf == NULL || len <= 0) {                                   \
+            break;                                                       \
+        }                                                                \
+        for (_i = 0; _i < len; _i++) {                                   \
+            if (!(_i%16)) {                                              \
+                if (_i != 0) {                                           \
+                    printf("%s", _tmp);                                  \
+                }                                                        \
+                memset(_tmp, 0, sizeof(_tmp));                           \
+                _j = 0;                                                  \
+                _j += snprintf(_tmp+_j, 64, "\n%p: ", buf+_i);           \
+            }                                                            \
+            _j += snprintf(_tmp+_j, 4, "%02hhx ", *((char *)buf + _i));  \
+        }                                                                \
+        printf("%s\n", _tmp);                                            \
+    } while (0)
 
-// ENDIAN
-#define ARU_BIG_ENDIAN      4321
-#define ARU_LITTLE_ENDIAN   1234
-#define ARU_NET_ENDIAN      ARU_BIG_ENDIAN
-
-// BYTE_ORDER
-#if defined(ARU_ARCH_X86) || defined(ARU_ARCH_X86_64) || defined(ARU___ARMEL__)
-#define ARU_BYTE_ORDER      ARU_LITTLE_ENDIAN
-#elif defined(ARU___ARMEB__)
-#define ARU_BYTE_ORDER      ARU_BIG_ENDIAN
-#endif
-
-#ifdef DEBUG
-#define printd(...) printf(__VA_ARGS__)
-#define printe(...) fprintf(stderr, __VA_ARGS__)
-#else
-#define printd(...)
-#define printe(...)
-#endif
+#define ARU_STRLEN(s) (sizeof(s) - 1)

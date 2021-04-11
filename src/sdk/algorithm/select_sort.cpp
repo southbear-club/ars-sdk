@@ -15,20 +15,43 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aligin.hpp
+ * @file select_sort.cpp
  * @brief 
- * @author wotsen (astralrovers@outlook.com)
+ * @author  ()
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-10
  * 
  * @copyright MIT
  * 
  */
-#pragma once
+#include "sort_common.hpp"
 
 namespace aru {
-
+    
 namespace sdk {
+
+int select_sort(void *array, size_t num, size_t size, fp_cmp cmp)
+{
+    CHK_PARAMETERS(array, num, size, cmp);
+
+    byte *s = (byte *)array;
+    byte *e = s + (num - 1) * size;
+
+    for (; s < e; s += size) {
+        byte *first = s;
+        byte *p = first + 1;
+        for (; p <= e; p++) {
+            if (cmp(p, first, size) < 0) {
+                first = p;
+            }
+        }
+        if (first != s) {
+            byte_swap(first, s, size);
+        }
+    }
+
+    return 0;
+}
 
 } // namespace sdk
 

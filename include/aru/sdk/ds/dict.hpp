@@ -15,20 +15,51 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aligin.hpp
+ * @file dict.hpp
  * @brief 
- * @author wotsen (astralrovers@outlook.com)
+ * @author  ()
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-10
  * 
  * @copyright MIT
  * 
  */
 #pragma once
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
 
 namespace aru {
-
+    
 namespace sdk {
+
+typedef struct _keypair_ {
+    char *key;
+    char *val;
+    uint32_t hash;
+} keypair;
+
+typedef struct _dict_ {
+    uint32_t fill;
+    uint32_t used;
+    uint32_t size;
+    keypair *table;
+} dict;
+
+typedef struct _key_list_ {
+    char *key;
+    struct _key_list_ *next;
+} key_list;
+
+
+dict *dict_new(void);
+void dict_free(dict *d);
+int dict_add(dict *d, char *key, char *val);
+int dict_del(dict *d, char * key);
+char *dict_get(dict *d, char *key, char *defval);
+int dict_enumerate(dict *d, int rank, char **key, char **val);
+void dict_dump(dict *d, FILE *out);
+void dict_get_key_list(dict *d, key_list **klist);
 
 } // namespace sdk
 

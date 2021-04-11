@@ -31,101 +31,108 @@
 #include <string>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/uio.h>
 #include "path.hpp"
-#include "../ds/buf.hpp"
 #include "../macros/defs.hpp"
 
 namespace aru {
 
 namespace sdk {
 
-class File {
-public:
-    File() {
-        fp = NULL;
-    }
+namespace fs {
 
-    ~File() {
-        close();
-    }
+typedef enum file_open_mode {
+    F_RDONLY,
+    F_WRONLY,
+    F_RDWR,
+    F_CREATE,
+    F_WRCLEAR,
+    F_APPEND,
+} file_open_mode_t;
 
-    int open(const char* filepath, const char* mode) {
-        close();
-        memcpy(this->filepath, filepath, strlen(filepath) < ARU_MAX_PATH ? strlen(filepath) : ARU_MAX_PATH);
-        fp = fopen(filepath, mode);
-        return fp ? 0 : errno;
-    }
+typedef enum file_type {
+    F_NORMAL,
+    F_DIR,
+    F_LINK,
+    F_SOCKET,
+    F_DEVICE,
 
-    void close() {
-        if (fp) {
-            fclose(fp);
-            fp = NULL;
-        }
-    }
+} file_type_t;
 
-    size_t read(void* ptr, size_t len) {
-        return fread(ptr, 1, len, fp);
-    }
+typedef struct file_desc {
+    union {
+        int fd;
+        FILE *fp;
+    };
+    char *name;
+} file_desc_t;
 
-    size_t write(const void* ptr, size_t len) {
-        return fwrite(ptr, 1, len, fp);
-    }
+typedef struct file_info {
+    uint64_t modify_sec;
+    uint64_t access_sec;
+    enum file_type type;
+    char path[ARU_MAX_PATH];
+    uint64_t size;
+} file_info_t;
 
-    size_t size() {
-        struct stat st;
-        memset(&st, 0, sizeof(st));
-        stat(filepath, &st);
-        return st.st_size;
-    }
+typedef struct file_ops {
+    struct file_desc * (*open)(const char *path, file_open_mode_t mode);
+    ssize_t (*write)(struct file_desc *fd, const void *buf, size_t count);
+    ssize_t (*read)(struct file_desc *fd, void *buf, size_t count);
+    off_t (*seek)(struct file_desc *fd, off_t offset, int whence);
+    int (*sync)(struct file_desc *fd);
+    size_t (*size)(struct file_desc *fd);
+    void (*close)(struct file_desc *fd);
+} file_ops_t;
 
-    size_t readall(Buf& buf) {
-        size_t filesize = size();
-        buf.resize(filesize);
-        return fread(buf.base, 1, filesize, fp);
-    }
+typedef struct file_systat {
+    uint64_t size_total;
+    uint64_t size_avail;
+    uint64_t size_free;
+    char fs_type_name[32];
+} file_systat;
 
-    size_t readall(std::string& str) {
-        size_t filesize = size();
-        str.resize(filesize);
-        return fread((void*)str.data(), 1, filesize, fp);
-    }
+typedef struct file {
+    struct file_desc *fd;
+    const file_ops_t *ops;
+    file_info_t info;
+} file_t;
 
-    bool readline(std::string& str) {
-        str.clear();
-        char ch;
-        while (fread(&ch, 1, 1, fp)) {
-            if (ch == ARU_LF) {
-                // unix: LF
-                return true;
-            }
-            if (ch == ARU_CR) {
-                // dos: CRLF
-                // read LF
-                if (fread(&ch, 1, 1, fp) && ch != ARU_LF) {
-                    // mac: CR
-                    fseek(fp, -1, SEEK_CUR);
-                }
-                return true;
-            }
-            str += ch;
-        }
-        return str.length() != 0;
-    }
+typedef enum file_backend_type {
+    FILE_BACKEND_IO,
+    FILE_BACKEND_FIO,
+} file_backend_type;
 
-    int readrange(std::string& str, size_t from = 0, size_t to = 0) {
-        size_t filesize = size();
-        if (to == 0 || to >= filesize) to = filesize - 1;
-        size_t readbytes = to - from + 1;
-        str.resize(readbytes);
-        fseek(fp, from, SEEK_SET);
-        return fread((void*)str.data(), 1, readbytes, fp);
-    }
+bool fs_exists(const char* path);
+// file size
+int64_t fs_size(const char* path);
+bool fs_create(const char *path);
+// rf = false  ->  rm or rmdir
+// rf = true   ->  rm -rf
+bool fs_remove(const char* path, bool rf=false);
+bool fs_rename(const char* from, const char* to);
+// administrator privileges required on windows
+bool fs_symlink(const char* dst, const char* lnk);
+bool fs_isdir(const char* path);
+// modify time
+int64_t fs_mtime(const char* path);
 
-public:
-    char  filepath[ARU_MAX_PATH];
-    std::string filepath_;
-    FILE* fp;
-};
+void file_backend(file_backend_type type);
+struct file *file_open(const char *path, file_open_mode_t mode);
+void file_close(struct file *file);
+ssize_t file_read(struct file *file, void *data, size_t size);
+ssize_t file_read_path(const char *path, void *data, size_t size);
+ssize_t file_write(struct file *file, const void *data, size_t size);
+ssize_t file_write_path(const char *path, const void *data, size_t size);
+ssize_t file_size(struct file *file);
+int file_get_info(const char *path, struct file_info *info);
+struct iovec *file_dump(const char *path);
+int file_sync(struct file *file);
+off_t file_seek(struct file *file, off_t offset, int whence);
+int file_get_systat(const char *path, struct file_systat *stat);
+
+} // namespace fs
 
 } // namespace sdk
 

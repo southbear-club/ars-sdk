@@ -27,7 +27,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "aru/sdk/lock/rwlock.hpp"
+#include "aru/sdk/lock/lock.hpp"
 
 namespace aru {
 

@@ -15,20 +15,65 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aligin.hpp
+ * @file sem.hpp
  * @brief 
- * @author wotsen (astralrovers@outlook.com)
+ * @author  ()
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-10
  * 
  * @copyright MIT
  * 
  */
 #pragma once
+#include <stddef.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <semaphore.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 namespace aru {
-
+    
 namespace sdk {
+
+namespace ipc {
+
+typedef ::sem_t sem_t;
+
+static inline sem_t *sem_open(const char *name, int oflag, mode_t mode, unsigned int value) {
+    return ::sem_open(name, oflag, mode, value);
+}
+
+static inline int sem_close(sem_t *sem) {
+    return ::sem_close(sem);
+}
+
+static inline int sem_unlink(const char *name) {
+    return ::sem_unlink(name);
+}
+
+static inline int sem_getvalue(sem_t *sem, int *sval) {
+    return ::sem_getvalue(sem, sval);
+}
+
+static inline int sem_pop(sem_t *sem) {
+    return ::sem_wait(sem);
+}
+
+static inline int sem_trypop(sem_t *sem) {
+    return ::sem_trywait(sem);
+}
+
+static inline int sem_pop_wait(sem_t *sem, const struct timespec *abs_tm) {
+    return ::sem_timedwait(sem, abs_tm);
+}
+
+static inline int sem_post(sem_t *sem) {
+    return ::sem_post(sem);
+}
+
+} // namespace ipc
 
 } // namespace sdk
 

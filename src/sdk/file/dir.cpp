@@ -25,6 +25,7 @@
  * 
  */
 #include "aru/sdk/file/dir.hpp"
+#include "aru/sdk/file/file.hpp"
 #include <sys/stat.h>
 #include <dirent.h>
 
@@ -78,6 +79,69 @@ int listdir(const char* dir, std::list<dir_t>& dirs) {
     closedir(dp);
     dirs.sort(less);
     return dirs.size();
+}
+
+static int dfs_dir_size(const char *path, uint64_t *size)
+{
+    DIR *pdir = NULL;
+    struct dirent *ent = NULL;
+    char full_path[PATH_MAX];
+    int ret;
+    pdir = opendir(path);
+    if (!pdir) {
+        // printf("can not open path: %s\n", path);
+        if (errno == EMFILE) {
+            return -EMFILE;
+        } else {
+            return -1;
+        }
+    }
+    while (NULL != (ent = readdir(pdir))) {
+        memset(full_path, 0, sizeof(full_path));
+        sprintf(full_path, "%s/%s", path, ent->d_name);
+        if (ent->d_type == DT_DIR) {
+            if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
+                continue;
+            }
+            ret = dfs_dir_size(full_path, size);
+            if (ret == -EMFILE) {
+                closedir(pdir);
+                return ret;
+            }
+        } else if (ent->d_type == DT_REG) {
+            *size += fs::fs_size(full_path);
+        }
+    }
+    closedir(pdir);
+    return 0;
+}
+
+int dir_size(const char *path, uint64_t *size)
+{
+    *size = 0;
+    return dfs_dir_size(path, size);
+}
+
+int num_in_dir(const char *path)
+{
+    if (!path) {
+        return -1;
+    }
+    DIR *dir = NULL;
+    struct dirent *ent = NULL;
+    int num = 0;
+    dir = opendir(path);
+    if (dir == NULL) {
+        return -1;
+    }
+    while (NULL != (ent = readdir(dir))) {
+        if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
+            continue;
+        }
+        num++;
+    }
+    closedir(dir);
+    return num;
 }
 
 } // namespace sdk

@@ -27,6 +27,7 @@
 #include "aru/sdk/ini/iniparser.hpp"
 #include "aru/sdk/macros/defs.hpp"
 #include "aru/sdk/file/file.hpp"
+#include "aru/sdk/file/file_obj.hpp"
 #include "aru/sdk/err/err.hpp"
 #include "aru/sdk/str/str.hpp"
 #include <list>

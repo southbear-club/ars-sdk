@@ -26,159 +26,255 @@
  */
 #pragma once
 
-#include <pthread.h>
 #include <thread>
 #include <atomic>
 #include <chrono>
-#include <stdint.h>
-// #if defined(__linux__)
-// #include <sys/syscall.h>
-// #elif defined(__APPLE__)
-// #else
-// #error "not support"
-// #endif
+#include <string>
+#include <stdexcept>
+#include <string.h>
+#include "../macros/defs.hpp"
+#include "../lock/lock.hpp"
+#include "thread_util.hpp"
+#include "thread_routine.hpp"
+#include "thread_pool.hpp"
+#include "thread_object.hpp"
+#include "thread_local_storage.hpp"
 
 namespace aru  {
 
 namespace sdk  {
 
-typedef pthread_t thread_t;
+typedef struct Thread_s Thread;
 
-thread_t gettid(void) {
-    return pthread_self();
+struct Thread_s {
+    thread_t tid;
+    thread_attr_t attr;
+    char name[ARU_THREAD_NAME_LEN];
+    enum lock_type type;
+    union {
+        spin_lock_t spin;
+        mutex_lock_t mutex;
+        sem_lock_t sem;
+    } lock;
+    mutex_cond_t cond;
+    bool run;
+    void *(*func)(Thread *, void *);
+    void *arg;
+};
+
+void __thread_init(Thread *t, void *(*func)(Thread *, void *), void *arg, const thread_attr_t *attr, enum lock_type type);
+void __thread_deinit(Thread *t);
+static inline void *__thread_func(void *arg) {
+    Thread *t = (Thread*)arg;
+    if (!t->func) {
+        return nullptr;
+    }
+
+    t->run = true;
+    auto ret = t->func(t, t->arg);
+    t->run = false;
+
+    return ret;
 }
 
-typedef void *(*thread_routine)(void*);
-typedef void* thread_ret_t;
+Thread *thread_create(void *(*func)(Thread *, void *), void *arg, const thread_attr_t *attr, enum lock_type type=THREAD_LOCK_MUTEX);
+static inline Thread *thread_create(void *(*func)(Thread *, void *), void *arg, enum lock_type type=THREAD_LOCK_MUTEX) {
+    return thread_create(func, arg, nullptr, type);
+}
 
-/************************************************
- * Thread
- * Status: STOP,RUNNING,PAUSE
- * Control: start,stop,pause,resume
- * first-level virtual: doTask
- * second-level virtual: run
-************************************************/
-class Thread {
+static inline int thread_set_name(Thread *t, const char *name) {
+    if (!t || !name) {
+        return -1;
+    }
+    strncpy(t->name, name, ARU_MIN(ARU_THREAD_NAME_LEN, strlen(name)));
+    return thread_set_name(t->tid, t->name);
+}
+
+static inline int thread_detach(Thread *t) {
+    if (!t) {
+        return -1;
+    }
+
+    return thread_detach(t->tid);
+}
+
+static inline int thread_join(Thread *t, void **ret=nullptr) {
+    if (!t) {
+        return -1;
+    }
+    return thread_join(t->tid, ret);
+}
+
+int thread_destroy(Thread *t);
+
+static inline int thread_lock(Thread *t) {
+    if (!t) {
+        return -1;
+    }
+
+    switch (t->type) {
+        case THREAD_LOCK_SPIN:
+            return spin_lock(&t->lock.spin);
+            break;
+        case THREAD_LOCK_SEM:
+            return sem_lock_wait(&t->lock.sem, -1);
+            break;
+        case THREAD_LOCK_MUTEX:
+            return mutex_lock(&t->lock.mutex);
+            break;
+        default:
+            break;
+    }
+    return -1;
+}
+static inline int thread_unlock(Thread *t) {
+    if (!t) {
+        return -1;
+    }
+
+    switch (t->type) {
+        case THREAD_LOCK_SPIN:
+            return spin_unlock(&t->lock.spin);
+            break;
+        case THREAD_LOCK_SEM:
+            return sem_lock_signal(&t->lock.sem);
+            break;
+        case THREAD_LOCK_MUTEX:
+            return mutex_unlock(&t->lock.mutex);
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
+static inline int thread_wait(Thread *t, int64_t ms) {
+    if (!t) {
+        return -1;
+    }
+
+    switch (t->type) {
+        case THREAD_LOCK_COND:
+            return mutex_cond_wait(&t->lock.mutex, &t->cond, ms);
+            break;
+        case THREAD_LOCK_SEM:
+            return sem_lock_wait(&t->lock.sem, ms);
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
+static inline int thread_signal(Thread *t, bool all=false) {
+    if (!t) {
+        return -1;
+    }
+
+    switch (t->type) {
+        case THREAD_LOCK_COND:
+            if (all) {
+                return mutex_cond_signal_all(&t->cond);
+            } else {
+                return mutex_cond_signal(&t->cond);
+            }
+            break;
+        case THREAD_LOCK_SEM:
+            return sem_lock_signal(&t->lock.sem);
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
+class AruThread {
 public:
-    enum Status {
-        STOP,
-        RUNNING,
-        PAUSE,
-    };
-
-    enum SleepPolicy {
-        YIELD,
-        SLEEP_FOR,
-        SLEEP_UNTIL,
-        NO_SLEEP,
-    };
-
-    Thread() {
-        status = STOP;
-        status_changed = false;
-        dotask_cnt = 0;
-        sleep_policy = YIELD;
-        sleep_ms = 0;
+    AruThread(void *(*func)(Thread *, void *)) : AruThread(func, nullptr, nullptr) {}
+    AruThread(void *(*func)(Thread *, void *), void *arg) : AruThread(func, arg, nullptr) {}
+    AruThread(void *(*func)(Thread *, void *), enum lock_type type) : AruThread(func, nullptr, nullptr, type) {}
+    AruThread(void *(*func)(Thread *, void *), thread_attr_t *attr) : AruThread(func, nullptr, attr) {}
+    AruThread(void *(*func)(Thread *, void *), void *arg, thread_attr_t *attr, enum lock_type type=THREAD_LOCK_MUTEX) {
+        if (!func) {
+            throw std::invalid_argument("func is null");
+        }
+        __thread_init(&thread_, func, arg, attr, type);
+    }
+    AruThread(const AruThread &) = delete;
+    AruThread &operator=(const AruThread &) = delete;
+    virtual ~AruThread() {
+        __thread_deinit(&thread_);
     }
 
-    virtual ~Thread() {}
-
-    void setStatus(Status stat) {
-        status_changed = true;
-        status = stat;
-    }
-
-    void setSleepPolicy(SleepPolicy policy, uint32_t ms = 0) {
-        sleep_policy = policy;
-        sleep_ms = ms;
-        setStatus(status);
-    }
-
-    virtual int start() {
-        if (status == STOP) {
-            thread = std::thread([this] {
-                if (!doPrepare()) return;
-                setStatus(RUNNING);
-                run();
-                setStatus(STOP);
-                if (!doFinish()) return;
-            });
+    int start(const char *name=nullptr) {
+        auto ret = thread_create(&thread_.tid, __thread_func, &thread_.attr, thread_.arg);
+        if (ret != 0) {
+            thread_.run = false;
+            return -1;
+        }
+        if (name) {
+            setname(name);
         }
         return 0;
     }
 
-    virtual int stop() {
-        if (status != STOP) {
-            setStatus(STOP);
+    thread_t tid(void) {
+        return thread_.tid;
+    }
+
+    int setname(const char *name) {
+        return thread_set_name(&thread_, name);
+    }
+    std::string name(void) {
+        return std::string(thread_.name);
+    }
+
+    int detach(void) {
+        return thread_detach(thread_.tid);
+    }
+    int join(void **ret) {
+        return thread_join(thread_.tid, ret);
+    }
+
+    int yield(void) {
+        return thread_yield();
+    }
+
+    int lock(void) {
+        return thread_lock(&thread_);
+    }
+    int unlock(void) {
+        return thread_unlock(&thread_);
+    }
+
+    int wait(int64_t ms=-1) {
+        return thread_wait(&thread_, ms);
+    }
+    int signal(bool all=false) {
+        return thread_signal(&thread_, all);
+    }
+
+    int alive(void) {
+        return thread_alive(thread_.tid);
+    }
+    int cancel(void) {
+        return thread_cancel(thread_.tid);
+    }
+
+    bool state(void) {
+        return thread_.run;
+    }
+    int attribute(thread_attr_t *attr) {
+        if (!attr) {
+            return -1;
         }
-        if (thread.joinable()) {
-            thread.join();  // wait thread exit
-        }
+
+        memcpy(attr, &thread_.attr, sizeof(*attr));
         return 0;
     }
 
-    virtual int pause() {
-        if (status == RUNNING) {
-            setStatus(PAUSE);
-        }
-        return 0;
-    }
-
-    virtual int resume() {
-        if (status == PAUSE) {
-            setStatus(RUNNING);
-        }
-        return 0;
-    }
-
-    virtual void run() {
-        while (status != STOP) {
-            while (status == PAUSE) {
-                std::this_thread::yield();
-            }
-
-            doTask();
-            ++dotask_cnt;
-
-            Thread::sleep();
-        }
-    }
-
-    virtual bool doPrepare() {return true;}
-    virtual void doTask() {}
-    virtual bool doFinish() {return true;}
-
-    std::thread thread;
-    std::atomic<Status> status;
-    uint32_t dotask_cnt;
-protected:
-    void sleep() {
-        switch (sleep_policy) {
-        case YIELD:
-            std::this_thread::yield();
-            break;
-        case SLEEP_FOR:
-            std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
-            break;
-        case SLEEP_UNTIL: {
-            if (status_changed) {
-                status_changed = false;
-                base_tp = std::chrono::system_clock::now();
-            }
-            base_tp += std::chrono::milliseconds(sleep_ms);
-            std::this_thread::sleep_until(base_tp);
-        }
-            break;
-        default:    // donothing, go all out.
-            break;
-        }
-    }
-
-    SleepPolicy sleep_policy;
-    uint32_t    sleep_ms;
-    // for SLEEP_UNTIL
-    std::atomic<bool> status_changed;
-    std::chrono::system_clock::time_point base_tp;
+private:
+    Thread thread_;
 };
 
 } // namespace sdk

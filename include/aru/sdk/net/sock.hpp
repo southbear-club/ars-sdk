@@ -94,7 +94,7 @@ static inline int sock_tcp_creat(int family = AF_INET) {
  */
 static inline int sock_udp_creat(int family = AF_INET) { return sock_creat(family, SOCK_DGRAM, 0); }
 
-// 使用原生类型
+// 无名套接字对
 int sock_pair(int family, int type, int protocol, int sv[2]);
 
 /**

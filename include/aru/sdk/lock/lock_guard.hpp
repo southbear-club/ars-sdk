@@ -15,20 +15,51 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aligin.hpp
+ * @file lock_guard.hpp
  * @brief 
- * @author wotsen (astralrovers@outlook.com)
+ * @author  ()
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-11
  * 
  * @copyright MIT
  * 
  */
 #pragma once
+#include "rwlock.hpp"
 
 namespace aru {
-
+    
 namespace sdk {
+    
+class RMutexGuard {
+public:
+    explicit RMutexGuard(RwMutex& lock) : _lock(lock) { _lock.rlock(); }
+    explicit RMutexGuard(RwMutex* lock) : _lock(*lock) { _lock.rlock(); }
+
+    ~RMutexGuard() { _lock.unlock(); }
+
+    void lock() { _lock.rlock(); }
+    void unlock() { _lock.unlock(); }
+
+private:
+    RwMutex& _lock;
+    DISALLOW_COPY_AND_ASSIGN(RMutexGuard);
+};
+
+class WMutexGuard {
+public:
+    explicit WMutexGuard(RwMutex& lock) : _lock(lock) { _lock.wlock(); }
+    explicit WMutexGuard(RwMutex* lock) : _lock(*lock) { _lock.wlock(); }
+
+    ~WMutexGuard() { _lock.unlock(); }
+
+    void lock() { _lock.wlock(); }
+    void unlock() { _lock.unlock(); }
+
+private:
+    RwMutex& _lock;
+    DISALLOW_COPY_AND_ASSIGN(WMutexGuard);
+};
 
 } // namespace sdk
 

@@ -15,20 +15,71 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aligin.hpp
+ * @file shm.hpp
  * @brief 
- * @author wotsen (astralrovers@outlook.com)
+ * @author  ()
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-10
  * 
  * @copyright MIT
  * 
  */
 #pragma once
+#include <stddef.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 
 namespace aru {
-
+    
 namespace sdk {
+
+namespace ipc {
+
+typedef int shm_t;
+
+static inline shm_t shm_open(const char *name, int oflag, mode_t mode) {
+    return ::shm_open(name, oflag, mode);
+}
+
+static inline int shm_close(shm_t fd) {
+    return ::close(fd);
+}
+
+static inline int shm_unlink(const char *name) {
+    return ::shm_unlink(name);
+}
+
+// prot:
+// PROT_READ
+// PROT_WRITE
+// PROT_EXEC
+// PROT_NONE
+
+// flags
+// MAP_ANONYMOUS
+// MAP_ANON
+// MAP_FILE
+// MAP_FIXED
+// MAP_HASSEMAPHORE
+// MAP_PRIVATE
+// MAP_SHARED
+static inline void *shm_map(void *start_addr, size_t len, int prot, int flags, shm_t fd, off_t offset) {
+    return ::mmap(start_addr, len, prot, flags, fd, offset);
+}
+
+static inline int shm_unmap(void *addr, size_t len) {
+    return ::munmap(addr, len);
+}
+
+static inline int shm_stat(shm_t fd, struct stat *st) {
+    return ::fstat(fd, st);
+}
+
+} // namespace ipc
 
 } // namespace sdk
 

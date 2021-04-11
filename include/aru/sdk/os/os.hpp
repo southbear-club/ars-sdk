@@ -25,6 +25,9 @@
  * 
  */
 #pragma once
+#include <string>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 namespace aru {
 
@@ -57,6 +60,24 @@ int os_get_ncpu(void);
 
 // 获取内存
 int os_get_meminfo(meminfo_t &mem);
+
+// 环境变量
+std::string env(const char* name);
+
+// run as a daemon
+void daemon(void);
+
+// struct rlimit {
+//     rlim_t rlim_cur; /* Soft limit */
+//     rlim_t rlim_max; /* Hard limit (ceiling for rlim_cur) */
+// };
+static inline int get_rlimit(int resource, struct rlimit *rlim) {
+    return ::getrlimit(resource, rlim);
+}
+
+static inline int set_rlimit(int resource, const struct rlimit *rlim) {
+    return ::setrlimit(resource, rlim);
+}
 
 } // namespace sdk
 

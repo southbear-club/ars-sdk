@@ -15,20 +15,41 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aligin.hpp
+ * @file dl.hpp
  * @brief 
- * @author wotsen (astralrovers@outlook.com)
+ * @author  ()
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-10
  * 
  * @copyright MIT
  * 
  */
 #pragma once
+#include <dlfcn.h>
 
 namespace aru {
-
+    
 namespace sdk {
+
+static inline void *dlopen(const char *path, int mode) {
+    return ::dlopen(path, mode);
+}
+
+static inline int dlclose(void *handle) {
+    return ::dlclose(handle);
+}
+
+static inline void *dlsym(void *handle, const char *symbol) {
+    return ::dlsym(handle, symbol);
+}
+
+static inline const char *dlerror(void) {
+    return ::dlerror();
+}
+
+// static inline bool dlopen_precheck(const char *path) {
+//     return ::dlopen_preflight(path);
+// }
 
 } // namespace sdk
 

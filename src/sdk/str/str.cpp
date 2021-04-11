@@ -25,6 +25,7 @@
  * 
  */
 #include "aru/sdk/str/str.hpp"
+#include "aru/sdk/macros/defs.hpp"
 #include <stddef.h>
 #include <string.h>
 #include <assert.h>
@@ -312,6 +313,123 @@ std::string suffixname(const std::string& str) {
         return "";
     }
     return file.substr(pos2+1, -1);
+}
+
+std::string strip(const char* s, const char* c, char d) {
+    if (unlikely(!*s)) return std::string();
+
+    char bs[256] = { 0 };
+    while (*c) bs[(uint8_t)(*c++)] = 1;
+
+    if (d == 'l' || d == 'L') {
+        while (bs[(uint8_t)(*s)]) ++s;
+        return std::string(s);
+
+    } else if (d == 'r' || d == 'R') {
+        const char* e = s + strlen(s) - 1;
+        while (e >= s && bs[(uint8_t)(*e)]) --e;
+        return std::string(s, e + 1 - s);
+
+    } else {
+        while (bs[(uint8_t)(*s)]) ++s;
+        const char* e = s + strlen(s) - 1;
+        while (e >= s && bs[(uint8_t)(*e)]) --e;
+        return std::string(s, e + 1 - s);
+    }
+}
+
+std::string strip(const char* s, char c, char d) {
+    if (unlikely(!*s)) return std::string();
+
+    if (d == 'l' || d == 'L') {
+        while (*s == c) ++s;
+        return std::string(s);
+
+    } else if (d == 'r' || d == 'R') {
+        const char* e = s + strlen(s) - 1;
+        while (e >= s && *e == c) --e;
+        return std::string(s, e + 1 - s);
+
+    } else {
+        while (*s == c) ++s;
+        const char* e = s + strlen(s) - 1;
+        while (e >= s && *e == c) --e;
+        return std::string(s, e + 1 - s);
+    }
+}
+
+std::string strip(const std::string& s, const char* c, char d) {
+    if (unlikely(s.empty())) return std::string();
+
+    char bs[256] = { 0 };
+    while (*c) bs[(uint8_t)(*c++)] = 1;
+
+    if (d == 'l' || d == 'L') {
+        size_t b = 0;
+        while (b < s.size() && bs[(uint8_t)(s[b])]) ++b;
+        return b == 0 ? s : s.substr(b);
+
+    } else if (d == 'r' || d == 'R') {
+        size_t e = s.size();
+        while (e > 0 && bs[(uint8_t)(s[e - 1])]) --e;
+        return e == s.size() ? s : s.substr(0, e);
+
+    } else {
+        size_t b = 0, e = s.size();
+        while (b < s.size() && bs[(uint8_t)(s[b])]) ++b;
+        if (b == s.size()) return std::string();
+        while (e > 0 && bs[(uint8_t)(s[e - 1])]) --e;
+        return (e - b == s.size()) ? s : s.substr(b, e - b);
+    }
+}
+
+std::string strip(const std::string& s, char c, char d) {
+    if (unlikely(s.empty())) return std::string();
+
+    if (d == 'l' || d == 'L') {
+        size_t b = 0;
+        while (b < s.size() && s[b] == c) ++b;
+        return b == 0 ? s : s.substr(b);
+
+    } else if (d == 'r' || d == 'R') {
+        size_t e = s.size();
+        while (e > 0 && s[e - 1] == c) --e;
+        return e == s.size() ? s : s.substr(0, e);
+
+    } else {
+        size_t b = 0, e = s.size();
+        while (b < s.size() && s[b] == c) ++b;
+        if (b == s.size()) return std::string();
+        while (e > 0 && s[e - 1] == c) --e;
+        return (e - b == s.size()) ? s : s.substr(b, e - b);
+    }
+}
+
+std::string strip(const std::string& s, const std::string& c, char d) {
+    if (unlikely(s.empty())) return std::string();
+
+    char bs[256] = { 0 };
+    for (size_t i = 0; i < c.size(); ++i) {
+        bs[(uint8_t)(c[i])] = 1;
+    }
+
+    if (d == 'l' || d == 'L') {
+        size_t b = 0;
+        while (b < s.size() && bs[(uint8_t)(s[b])]) ++b;
+        return b == 0 ? s : s.substr(b);
+
+    } else if (d == 'r' || d == 'R') {
+        size_t e = s.size();
+        while (e > 0 && bs[(uint8_t)(s[e - 1])]) --e;
+        return e == s.size() ? s : s.substr(0, e);
+
+    } else {
+        size_t b = 0, e = s.size();
+        while (b < s.size() && bs[(uint8_t)(s[b])]) ++b;
+        if (b == s.size()) return std::string();
+        while (e > 0 && bs[(uint8_t)(s[e - 1])]) --e;
+        return (e - b == s.size()) ? s : s.substr(b, e - b);
+    }
 }
 
 } // namespace sdk

@@ -15,20 +15,27 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file aligin.hpp
+ * @file sort.hpp
  * @brief 
- * @author wotsen (astralrovers@outlook.com)
+ * @author  ()
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-10
  * 
  * @copyright MIT
  * 
  */
-#pragma once
+#include <stddef.h>
 
 namespace aru {
-
+    
 namespace sdk {
+
+typedef int (*fp_cmp)(const void *a, const void *b, size_t size);
+
+void heap_sort(void *base, size_t num, size_t size, fp_cmp cmp);
+int bubble_sort(void *array, size_t num, size_t size, fp_cmp cmp);
+int quick_sort(void *array, size_t num, size_t size, fp_cmp cmp);
+int select_sort(void *array, size_t num, size_t size, fp_cmp cmp);
 
 } // namespace sdk
 

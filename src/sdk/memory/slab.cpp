@@ -32,7 +32,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "aru/sdk/ds/aligin.hpp"
+#include "aru/sdk/macros/defs.hpp"
 
 #define SLAB_LOG(severity) ARU_IN_LOG(severity)
 

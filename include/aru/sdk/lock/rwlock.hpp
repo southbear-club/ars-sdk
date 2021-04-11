@@ -36,116 +36,90 @@ namespace aru {
 
 namespace sdk {
 
-/**
- * @brief 锁
- *
- */
-class ILock {
-public:
-    virtual ~ILock() {}
+#define ARU_RWLOCK_INIT PTHREAD_RWLOCK_INITIALIZER
 
-    // 上锁
-    virtual bool lock(void) = 0;
-    // 解锁
-    virtual bool unlock(void) = 0;
-    // 尝试锁
-    virtual bool try_lock(time_t w = -1) = 0;
-    // TODO:wait
-    // TODO:notyfiy
-};
+typedef pthread_rwlock_t rw_lock_t;
+typedef pthread_rwlockattr_t rw_lock_attr_t;
 
-class CppMtxLock : public ILock {
-public:
-    virtual ~CppMtxLock() {}
+static inline int rwlock_init_ex(rw_lock_t *lock, rw_lock_attr_t *attr) {
+    return ::pthread_rwlock_init(lock, attr);
+}
 
-    virtual bool lock(void) override {
-        mtx_.lock();
-        return true;
-    }
+static inline int rwlock_init(rw_lock_t *lock) {
+    return ::pthread_rwlock_init(lock, nullptr);
+}
 
-    virtual bool unlock(void) override {
-        mtx_.unlock();
-        return true;
-    }
+static inline int rwlock_rdlock(rw_lock_t *lock) {
+    return ::pthread_rwlock_rdlock(lock);
+}
 
-    virtual bool try_lock(time_t w = -1) override {
-        if (w) {}
-        return mtx_.try_lock();
-    }
+static inline int rwlock_tryrdlock(rw_lock_t *lock) {
+    return ::pthread_rwlock_tryrdlock(lock);
+}
 
-public:
-    std::mutex mtx_;
-};
+static inline int rwlock_rdlock_wait(rw_lock_t *lock, const struct timespec *abs_tm) {
+#ifdef __APPLE__
+        if (abs_tm.tv_sec) {}
+        return pthread_rwlock_tryrdlock(lock) == 0;
+#else
+        return pthread_rwlock_timedrdlock(lock, abs_tm) == 0;
+#endif
+}
+
+static inline int rwlock_wrlock(rw_lock_t *lock) {
+    return ::pthread_rwlock_wrlock(lock);
+}
+
+static inline int rwlock_trywrlock(rw_lock_t *lock) {
+    return ::pthread_rwlock_trywrlock(lock);
+}
+
+static inline int rwlock_wrlock_wait(rw_lock_t *lock, const struct timespec *abs_tm) {
+#ifdef __APPLE__
+        if (abs_tm.tv_sec) {}
+        return pthread_rwlock_trywrlock(lock) == 0;
+#else
+        return pthread_rwlock_timedwrlock(lock, abs_tm) == 0;
+#endif
+}
+
+static inline int rwlock_unlock(rw_lock_t *lock) {
+    return ::pthread_rwlock_unlock(lock);
+}
+
+static inline void rwlock_deinit(rw_lock_t *lock) {
+    ::pthread_rwlock_destroy(lock);
+}
 
 class RwMutex {
 public:
-    RwMutex() { pthread_rwlock_init(&_mutex, nullptr); }
+    RwMutex() { rwlock_init(&_mutex); }
 
-    ~RwMutex() { pthread_rwlock_destroy(&_mutex); }
+    ~RwMutex() { rwlock_deinit(&_mutex); }
 
-    void rlock() { pthread_rwlock_rdlock(&_mutex); }
+    void rlock() { rwlock_rdlock(&_mutex); }
 
-    void wlock() { pthread_rwlock_wrlock(&_mutex); }
+    void wlock() { rwlock_wrlock(&_mutex); }
 
-    bool try_rlock() { return pthread_rwlock_tryrdlock(&_mutex) == 0; }
+    bool try_rlock() { return rwlock_tryrdlock(&_mutex) == 0; }
 
-    bool try_wlock() { return pthread_rwlock_trywrlock(&_mutex) == 0; }
+    bool try_wlock() { return rwlock_trywrlock(&_mutex) == 0; }
 
     bool try_rlock_timeout(struct timespec& t) {
-#ifdef __APPLE__
-        if (t.tv_sec) {}
-        return pthread_rwlock_tryrdlock(&_mutex) == 0;
-#else
-        return pthread_rwlock_timedrdlock(&_mutex, &t) == 0;
-#endif
+        return rwlock_rdlock_wait(&_mutex, &t) == 0;
     }
 
     bool try_wlock_timeout(struct timespec& t) {
-#ifdef __APPLE__
-        if (t.tv_sec) {}
-        return pthread_rwlock_trywrlock(&_mutex) == 0;
-#else
-        return pthread_rwlock_timedwrlock(&_mutex, &t) == 0;
-#endif
+        return rwlock_wrlock_wait(&_mutex, &t) == 0;
     }
 
-    void unlock() { pthread_rwlock_unlock(&_mutex); }
+    void unlock() { rwlock_unlock(&_mutex); }
 
-    pthread_rwlock_t* mutex() { return &_mutex; }
+    rw_lock_t* mutex() { return &_mutex; }
 
 private:
-    pthread_rwlock_t _mutex;
+    rw_lock_t _mutex;
     DISALLOW_COPY_AND_ASSIGN(RwMutex);
-};
-
-class RMutexGuard {
-public:
-    explicit RMutexGuard(RwMutex& lock) : _lock(lock) { _lock.rlock(); }
-    explicit RMutexGuard(RwMutex* lock) : _lock(*lock) { _lock.rlock(); }
-
-    ~RMutexGuard() { _lock.unlock(); }
-
-    void lock() { _lock.rlock(); }
-    void unlock() { _lock.unlock(); }
-
-private:
-    RwMutex& _lock;
-    DISALLOW_COPY_AND_ASSIGN(RMutexGuard);
-};
-
-class WMutexGuard {
-public:
-    explicit WMutexGuard(RwMutex& lock) : _lock(lock) { _lock.wlock(); }
-    explicit WMutexGuard(RwMutex* lock) : _lock(*lock) { _lock.wlock(); }
-
-    ~WMutexGuard() { _lock.unlock(); }
-
-    void lock() { _lock.wlock(); }
-    void unlock() { _lock.unlock(); }
-
-private:
-    RwMutex& _lock;
-    DISALLOW_COPY_AND_ASSIGN(WMutexGuard);
 };
 
 }  // namespace sdk
