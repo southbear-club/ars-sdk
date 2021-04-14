@@ -95,7 +95,7 @@ static inline void qtype##_cleanup(qtype* p) {\
 }\
 \
 static inline void qtype##_resize(qtype* p, int maxsize) {\
-    if (maxsize == 0) maxsize = QUEUE_INIT_SIZE;\
+    if (maxsize == 0) maxsize = ARU_QUEUE_INIT_SIZE;\
     p->ptr = (type*)aru::sdk::aru_realloc(p->ptr, sizeof(type) * maxsize, sizeof(type) * p->maxsize);\
     p->maxsize = maxsize;\
 }\

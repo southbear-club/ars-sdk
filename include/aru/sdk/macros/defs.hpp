@@ -188,3 +188,7 @@ ASCII:
     } while (0)
 
 #define ARU_STRLEN(s) (sizeof(s) - 1)
+
+#ifndef INFINITE
+#define INFINITE    (uint32_t)-1
+#endif

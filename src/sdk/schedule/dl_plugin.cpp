@@ -116,15 +116,6 @@ failed:
 }
 
 void dl_plugin_unload(dl_plugin_manager_t *pm, const char *name) {
-    // dl_plugin_t *p, *tmp;
-    // list_for_each_entry_safe(p, tmp, &pm->plugins, entry) {
-    //     dlclose(p->handle);
-    //     list_del(&p->entry);
-    //     aru_free(p->name);
-    //     aru_free(p->path);
-    //     aru_free(p);
-    // }
-
     list_node *pos = nullptr;
     list_node *n = nullptr;
     list_for_each_safe(pos, n, &pm->plugins) {
