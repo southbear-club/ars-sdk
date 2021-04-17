@@ -234,23 +234,23 @@ public:
         st.pool_size = pool_->end - pool_->start;
         st.used_pct = st.used_size * 100 / st.pool_size;
 
-        // LOG(INFO) << "pool_size : " << st.pool_size << " bytes\n";
-        // SLAB_LOG(INFO) << "used_size : " << st.used_size << " bytes\n";
-        // SLAB_LOG(INFO) << "used_pct : " << st.used_pct << " bytes\n";
+        SLAB_LOG(INFO) << "pool_size : " << st.pool_size << " bytes\n";
+        SLAB_LOG(INFO) << "used_size : " << st.used_size << " bytes\n";
+        SLAB_LOG(INFO) << "used_pct : " << st.used_pct << " bytes\n";
 
-        // SLAB_LOG(INFO) << "total page count : " << st.pages << "\n";
-        // SLAB_LOG(INFO) << "free page count : " << st.free_page << "\n";
+        SLAB_LOG(INFO) << "total page count : " << st.pages << "\n";
+        SLAB_LOG(INFO) << "free page count : " << st.free_page << "\n";
 
-        // SLAB_LOG(INFO) << "small slab use page : " << st.p_small
-        //           << ", \tbytes : " << st.b_small << "\n";
-        // SLAB_LOG(INFO) << "exact slab use page : " << st.p_exact
-        //           << ", \tbytes : " << st.b_exact << "\n";
-        // SLAB_LOG(INFO) << "big slab use page : " << st.p_big
-        //           << ", \tbytes : " << st.b_big << "\n";
-        // SLAB_LOG(INFO) << "page slab use page : " << st.p_page
-        //           << ", \tbytes : " << st.b_page << "\n";
+        SLAB_LOG(INFO) << "small slab use page : " << st.p_small
+                  << ", \tbytes : " << st.b_small << "\n";
+        SLAB_LOG(INFO) << "exact slab use page : " << st.p_exact
+                  << ", \tbytes : " << st.b_exact << "\n";
+        SLAB_LOG(INFO) << "big slab use page : " << st.p_big
+                  << ", \tbytes : " << st.b_big << "\n";
+        SLAB_LOG(INFO) << "page slab use page : " << st.p_page
+                  << ", \tbytes : " << st.b_page << "\n";
 
-        // SLAB_LOG(INFO) << "max free pages : " << st.max_free_pages << "\n";
+        SLAB_LOG(INFO) << "max free pages : " << st.max_free_pages << "\n";
     }
 
 private:
@@ -487,7 +487,7 @@ private:
         slab_page_t *slots, *page;
 
         if ((uint8_t *)p < pool_->start || (uint8_t *)p > pool_->end) {
-            // SLAB_LOG(ERROR) << "outside of pool\n";
+            SLAB_LOG(ERROR) << "outside of pool\n";
             goto fail;
         }
 
@@ -634,12 +634,12 @@ private:
                 }
 
                 if (slab == NCX_SLAB_PAGE_FREE) {
-                    // SLAB_LOG(WARNING) << "page is already free\n";
+                    SLAB_LOG(WARNING) << "page is already free\n";
                     goto fail;
                 }
 
                 if (slab == NCX_SLAB_PAGE_BUSY) {
-                    // SLAB_LOG(WARNING) << "pointer to wrong page\n";
+                    SLAB_LOG(WARNING) << "pointer to wrong page\n";
                     goto fail;
                 }
 
@@ -661,13 +661,13 @@ private:
 
     wrong_chunk:
 
-        // SLAB_LOG(ERROR) << "pointer to wrong chunk\n";
+        SLAB_LOG(ERROR) << "pointer to wrong chunk\n";
 
         goto fail;
 
     chunk_already_free:
 
-        // SLAB_LOG(ERROR) << "chunk is already free\n";
+        SLAB_LOG(ERROR) << "chunk is already free\n";
 
     fail:
 
@@ -767,7 +767,7 @@ private:
             }
         }
 
-        // SLAB_LOG(ERROR) << "failed no memory\n";
+        SLAB_LOG(ERROR) << "failed no memory\n";
 
         return NULL;
     }

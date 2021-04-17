@@ -1,6 +1,7 @@
 # version
 RELEASE_VERSION = 1.0.0
 PLAT_NAME = $(shell uname -m)
+OS_NAME = $(shell uname)
 
 ifneq ($(VERSION),)
 	RELEASE_VERSION = $(VERSION)
@@ -34,15 +35,20 @@ INC := -I/usr/include -I/usr/local/include -I$(ROOT_DIR)/include -I$(ROOT_DIR)/s
 
 LIBS_PATH := -L$(ROOT_DIR)/lib -L/usr/local/lib -L/usr/lib
 
+ifeq ($(OS_NAME), Darwin)
+INC += -I/usr/local/opt/openssl@1.1/include
+LIBS_PATH += -L/usr/local/opt/openssl@1.1/lib
+endif
+
 #-levent 
 # ST_LIBS = -lgflags -lprotobuf -lleveldb -lsnappy \
 # 		  -lprotoc -lglog -lbrpc \
 # 		  -lmongocxx-static -lbsoncxx-static -lmongoc-static-1.0 -lbson-static-1.0 \
 # 		  -lssl -lcrypto -lz
 
-ST_LIBS_UT = -lssl -lcrypto -lgtest -lglog -lgflags
+ST_LIBS_UT = 
 
-SO_LIBS = -lpthread -lc #-ldl -lrt -lresolv
+SO_LIBS = -lgtest -lglog -lgflags -lssl -lcrypto -lpthread -lc #-ldl -lrt -lresolv
 
 DMARCROS := -DLANGUAGE_ZH  -DWITH_OPENSSL -DSOFT_VERSION=\"$(RELEASE_VERSION)\" \
 			-DARU_COMPILE_TIME=\""$(COMPILE_TIME)"\" -DBUILD_VERSION="\"$(BUILD_VERSION)"\"
@@ -61,7 +67,7 @@ endif
 DMARCROS += -D__const__= -pipe -W -Wall -Wno-unused-parameter \
 			-fPIC -fno-omit-frame-pointer -Wno-implicit-fallthrough \
 			-fstack-protector-all -Wno-deprecated-declarations \
-			-Wno-class-memaccess
+			-Wno-class-memaccess -Wno-unknown-warning-option
 
 # -ggdb
 CCFLAG += -c $(INC) -Wall -std=c++17 $(DMARCROS)

@@ -56,8 +56,8 @@ ssl_ctx_t ssl_ctx_instance() {
 
 #ifdef WITH_OPENSSL
 
-#include "openssl/ssl.h"
-#include "openssl/err.h"
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
 ssl_ctx_t ssl_ctx_init(ssl_ctx_init_param_t* param) {
     static int s_initialized = 0;
