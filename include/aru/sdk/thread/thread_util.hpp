@@ -74,22 +74,27 @@ static inline int thread_key_set_specific(thread_key_t key, const void *value) {
 
 // ------------------thread key end---------------------
 
+#if !defined(__APPLE__) && defined(__linux__)
 static inline int thread_get_cpuclockid(thread_t tid, clockid_t *id) {
     return ::pthread_getcpuclockid(tid, id);
 }
+#endif
 
 static inline int thread_attr_init(thread_attr_t *attr) {
     return ::pthread_attr_init(attr);
 }
 
+#if !defined(__APPLE__) && defined(__linux__)
 static inline int thread_get_attr(thread_t tid, thread_attr_t *attr) {
     return ::pthread_getattr_np(tid, attr);
 }
+#endif
 
 static inline int thread_attr_destroy(thread_attr_t *attr) {
     return ::pthread_attr_destroy(attr);
 }
 
+#if !defined(__APPLE__) && defined(__linux__)
 static inline int thread_attr_get_def(thread_attr_t *attr) {
     return ::pthread_getattr_default_np(attr);
 }
@@ -105,6 +110,8 @@ static inline int thread_attr_set_affinity(thread_attr_t *attr, size_t cpuset_si
 static inline int thread_attr_get_affinity(thread_attr_t *attr, size_t cpuset_size, cpu_set_t *cpuset) {
     return ::pthread_attr_getaffinity_np(attr, cpuset_size, cpuset);
 }
+
+#endif
 
 // PTHREAD_CREATE_DETACHED
 // PTHREAD_CREATE_JOINABLE
@@ -188,7 +195,12 @@ static inline int thread_get_concurrency(void) {
 }
 
 static inline int thread_set_name(thread_t tid, const char *name) {
+#ifdef __APPLE__
+    if (tid) {}
+    return ::pthread_setname_np(name);
+#else
     return ::pthread_setname_np(tid, name);
+#endif
 }
 
 static inline int thread_get_name(thread_t tid, char *name, size_t len) {
@@ -243,9 +255,11 @@ static inline int thread_sigmask(int how, const sigset_t *set, sigset_t *oldset)
     return ::pthread_sigmask(how, set, oldset);
 }
 
+#if !defined(__APPLE__) && defined(__linux__)
 static inline int thread_sigqueue(thread_t tid, int sig, const union sigval value) {
     return ::pthread_sigqueue(tid, sig, value);
 }
+#endif
 
 static inline int thread_detach(thread_t tid) {
     return ::pthread_detach(tid);

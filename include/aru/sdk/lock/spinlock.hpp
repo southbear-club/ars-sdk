@@ -31,33 +31,28 @@ namespace aru {
     
 namespace sdk {
 
-// #define ARU_SPIN_LOCK_INIT 0
-
+#ifdef __APPLE__
+#define ARU_SPIN_LOCK_INIT 0
+typedef int spin_lock_t;
+#else
 typedef pthread_spinlock_t spin_lock_t;
+#endif
 
+#if !defined(__APPLLE__) && defined(__linux__)
 static inline int spin_lock_init_ex(spin_lock_t *lock, int pshared) {
     return ::pthread_spin_init(lock, pshared);
 }
+#endif
 
-static inline int spin_lock_init(spin_lock_t *lock) {
-    return ::pthread_spin_init(lock, PTHREAD_PROCESS_PRIVATE);
-}
+int spin_lock_init(spin_lock_t *lock);
 
-static inline int spin_lock_destroy(spin_lock_t *lock) {
-    return ::pthread_spin_destroy(lock);
-}
+int spin_lock_destroy(spin_lock_t *lock);
 
-static inline int spin_lock(spin_lock_t *lock) {
-    return ::pthread_spin_lock(lock);
-}
+int spin_lock(spin_lock_t *lock);
 
-static inline int spin_unlock(spin_lock_t *lock) {
-    return ::pthread_spin_unlock(lock);
-}
+int spin_unlock(spin_lock_t *lock);
 
-static inline int spin_trylock(spin_lock_t *lock) {
-    return ::pthread_spin_trylock(lock);
-}
+int spin_trylock(spin_lock_t *lock);
 
 } // namespace sdk
 

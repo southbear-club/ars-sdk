@@ -67,14 +67,14 @@
 #endif
 
 // UNUSED
-#if defined(__cplusplus)
-	#define ARU_UNUSED(x)
-#else
+// #if defined(__cplusplus)
+// 	#define ARU_UNUSED(x)
+// #else
 	#if defined(_MSC_VER)
 		#define ARU_UNUSED(x) x
 	#elif defined(__GNUC__)
-		#define ARU_UNUSED(x) x __attribute__((unused))
+		#define ARU_UNUSED(x) __attribute__((unused)) x 
 	#else
 		#define ARU_UNUSED(x) x
 	#endif
-#endif
+// #endif

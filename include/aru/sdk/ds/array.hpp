@@ -118,13 +118,13 @@ static inline void atype##_pop_back(atype* p) {\
 \
 static inline void atype##_add(atype* p, type* elem, int pos) {\
     if (pos < 0) {\
-        pos += p->size;\
+        pos += static_cast<int>(p->size);\
     }\
-    assert(pos >= 0 && pos <= p->size);\
+    assert(pos >= 0 && pos <= static_cast<int>(p->size));\
     if (p->size == p->maxsize) {\
         atype##_double_resize(p);\
     }\
-    if (pos < p->size) {\
+    if (pos < static_cast<int>(p->size)) {\
         memmove(p->ptr + pos+1, p->ptr + pos, sizeof(type) * (p->size - pos));\
     }\
     p->ptr[pos] = *elem;\
@@ -133,32 +133,32 @@ static inline void atype##_add(atype* p, type* elem, int pos) {\
 \
 static inline void atype##_del(atype* p, int pos) {\
     if (pos < 0) {\
-        pos += p->size;\
+        pos += static_cast<int>(p->size);\
     }\
-    assert(pos >= 0 && pos < p->size);\
+    assert(pos >= 0 && pos < static_cast<int>(p->size));\
     p->size--;\
-    if (pos < p->size) {\
+    if (pos < static_cast<int>(p->size)) {\
         memmove(p->ptr + pos, p->ptr + pos+1, sizeof(type) * (p->size - pos));\
     }\
 }\
 \
 static inline void atype##_del_nomove(atype* p, int pos) {\
     if (pos < 0) {\
-        pos += p->size;\
+        pos += static_cast<int>(p->size);\
     }\
-    assert(pos >= 0 && pos < p->size);\
+    assert(pos >= 0 && pos < static_cast<int>(p->size));\
     p->size--;\
-    if (pos < p->size) {\
+    if (pos < static_cast<int>(p->size)) {\
         p->ptr[pos] = p->ptr[p->size];\
     }\
 }\
 \
 static inline void atype##_swap(atype* p, int pos1, int pos2) {\
     if (pos1 < 0) {\
-        pos1 += p->size;\
+        pos1 += static_cast<int>(p->size);\
     }\
     if (pos2 < 0) {\
-        pos2 += p->size;\
+        pos2 += static_cast<int>(p->size);\
     }\
     type tmp = p->ptr[pos1];\
     p->ptr[pos1] = p->ptr[pos2];\

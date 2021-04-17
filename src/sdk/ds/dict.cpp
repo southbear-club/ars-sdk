@@ -321,10 +321,10 @@ dict *dict_new(void) {
 
 /** Public: deallocate a dict */
 void dict_free(dict *d) {
-    int i;
+    uint32_t i;
     if (!d) return;
 
-    for (i = 0; i < (int)d->size; i++) {
+    for (i = 0; i < d->size; i++) {
         if (d->table[i].key && d->table[i].key != DUMMY_PTR) {
             aru_free(d->table[i].key);
 #if 0
@@ -385,10 +385,10 @@ int dict_enumerate(dict *d, int rank, char **key, char **val) {
         return -1;
     }
 
-    while ((d->table[rank].key == NULL || d->table[rank].key == DUMMY_PTR) && (rank < (int)d->size))
+    while ((d->table[rank].key == NULL || d->table[rank].key == DUMMY_PTR) && (rank < static_cast<int>(d->size)))
         rank++;
 
-    if (rank >= (int)d->size) {
+    if (rank >= static_cast<int>(d->size)) {
         *key = NULL;
         *val = NULL;
         rank = -1;

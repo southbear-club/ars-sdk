@@ -30,6 +30,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <time.h>
+#include <errno.h>
 #include <string>
 
 namespace aru {
@@ -59,6 +60,10 @@ typedef struct {
     sock_addr_t remote;  ///< 远端地址
 } sock_conn_t;
 
+static inline int socket_errno() {
+    return errno;
+}
+
 /**
  * @brief 创建套接字
  *
@@ -85,6 +90,11 @@ static inline int sock_creat(int family, int type) { return sock_creat(family, t
  */
 static inline int sock_tcp_creat(int family = AF_INET) {
     return sock_creat(family, SOCK_STREAM, 0);
+}
+
+static inline int socket_errno_negative() {
+    int err = socket_errno();
+    return err > 0 ? -err : -1;
 }
 
 /**
@@ -290,6 +300,47 @@ static inline void sock_addr_print(sock_addr_t* addr) {
     char buf[ARU_SOCKADDR_STRLEN] = {0};
     sock_addr_str(addr, buf, sizeof(buf));
     puts(buf);
+}
+
+static inline int sock_fast_bind(int port, const char *ip, int type) {
+    sock_addr_t addr;
+    memset(&addr, 0, sizeof(addr));
+
+    int ret = sock_set_ipport(&addr, ip, port);
+    if (ret != 0) {
+        return ret;
+    }
+
+    int fd = sock_creat(addr.sa.sa_family, type, 0);
+    if (fd < 0) {
+        return fd;
+    }
+
+    if (sock_set_addr_reuse(fd) < 0) {
+        sock_close(fd);
+        return socket_errno_negative();
+    }
+
+    if (sock_bind(fd, ip, port) < 0) {
+        sock_close(fd);
+        return socket_errno_negative();
+    }
+
+    return fd;
+}
+
+static inline int sock_fast_listen(int port, const char *ip, int type=SOCK_STREAM) {
+    int fd = sock_fast_bind(port, ip, type);
+    if (fd < 0) {
+        return fd;
+    }
+
+    if (sock_listen(fd, 128) < 0) {
+        sock_close(fd);
+        return socket_errno_negative();
+    }
+
+    return fd;
 }
 
 }  // namespace sdk

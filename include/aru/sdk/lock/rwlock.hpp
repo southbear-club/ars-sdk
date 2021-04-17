@@ -59,7 +59,7 @@ static inline int rwlock_tryrdlock(rw_lock_t *lock) {
 
 static inline int rwlock_rdlock_wait(rw_lock_t *lock, const struct timespec *abs_tm) {
 #ifdef __APPLE__
-        if (abs_tm.tv_sec) {}
+        if (abs_tm->tv_sec) {}
         return pthread_rwlock_tryrdlock(lock) == 0;
 #else
         return pthread_rwlock_timedrdlock(lock, abs_tm) == 0;
@@ -76,7 +76,7 @@ static inline int rwlock_trywrlock(rw_lock_t *lock) {
 
 static inline int rwlock_wrlock_wait(rw_lock_t *lock, const struct timespec *abs_tm) {
 #ifdef __APPLE__
-        if (abs_tm.tv_sec) {}
+        if (abs_tm->tv_sec) {}
         return pthread_rwlock_trywrlock(lock) == 0;
 #else
         return pthread_rwlock_timedwrlock(lock, abs_tm) == 0;

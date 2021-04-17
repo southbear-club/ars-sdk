@@ -2,6 +2,10 @@
 
 #include "loop.hpp"
 
+namespace aru {
+
+namespace sdk {
+    
 #if !defined(EVENT_SELECT) &&   \
     !defined(EVENT_POLL) &&     \
     !defined(EVENT_EPOLL) &&    \
@@ -30,3 +34,6 @@ int iowatcher_cleanup(hloop_t* loop);
 int iowatcher_add_event(hloop_t* loop, int fd, int events);
 int iowatcher_del_event(hloop_t* loop, int fd, int events);
 int iowatcher_poll_events(hloop_t* loop, int timeout);
+
+} // end sdk
+} // end aru
