@@ -40,11 +40,11 @@ LIBS_PATH := -L$(ROOT_DIR)/lib -L/usr/local/lib -L/usr/lib
 # 		  -lmongocxx-static -lbsoncxx-static -lmongoc-static-1.0 -lbson-static-1.0 \
 # 		  -lssl -lcrypto -lz
 
-ST_LIBS_UT = -lgtest -lglog -lgflags
+ST_LIBS_UT = -lssl -lcrypto -lgtest -lglog -lgflags
 
 SO_LIBS = -lpthread -lc #-ldl -lrt -lresolv
 
-DMARCROS := -DLANGUAGE_ZH -DSOFT_VERSION=\"$(RELEASE_VERSION)\" \
+DMARCROS := -DLANGUAGE_ZH  -DWITH_OPENSSL -DSOFT_VERSION=\"$(RELEASE_VERSION)\" \
 			-DARU_COMPILE_TIME=\""$(COMPILE_TIME)"\" -DBUILD_VERSION="\"$(BUILD_VERSION)"\"
 
 # 调试模式

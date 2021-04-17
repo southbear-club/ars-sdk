@@ -11,7 +11,7 @@ ARU_LIB = -L$(ARU_LIB_DIR)
 endif
 
 INC = $(ARU_INC) -I/usr/local/include
-LIB = $(ARU_LIB) -L/usr/lib -L/usr/local/lib -laru -lglog -lpthread -lc
+LIB = $(ARU_LIB) -L/usr/lib -L/usr/local/lib -laru -lssl -lcrypto -lglog -lpthread -lc
 CFLAGS = -g -W -Wall -o2
 
 all:
