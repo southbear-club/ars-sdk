@@ -37,7 +37,7 @@
 
 // #include <vector>
 // typedef std::vector<type> atype;
-#define ARRAY_DECL(type, atype) \
+#define ARU_ARRAY_DECL(type, atype) \
 struct atype {      \
     type*   ptr;    \
     size_t  size;   \

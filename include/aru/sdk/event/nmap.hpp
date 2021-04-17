@@ -6,6 +6,8 @@ namespace aru {
 
 namespace sdk {
 
+namespace event {
+
 // addr => 0:down 1:up
 typedef std::map<uint32_t, int> Nmap;
 
@@ -15,8 +17,11 @@ typedef std::map<uint32_t, int> Nmap;
 
 // @return up_cnt
 int nmap_discover(Nmap* nmap);
-int segment_discover(const char* segment16, Nmap* nmap);
-int host_discover(const char* segment24, Nmap* nmap);
+int nmap_segment_discover(const char* segment16, Nmap* nmap);
+int nmap_host_discover(const char* segment24, Nmap* nmap);
 
-}
-}
+}  // namespace event
+
+}  // namespace sdk
+
+}  // namespace aru

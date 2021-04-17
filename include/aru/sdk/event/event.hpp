@@ -1,206 +1,210 @@
 #pragma once
 
-#include "loop.hpp"
-#include "../ds/buf.hpp"
 #include "../ds/array.hpp"
-#include "../ds/queue.hpp"
-#include "../ds/list.hpp"
+#include "../ds/buf.hpp"
 #include "../ds/heap.hpp"
+#include "../ds/list.hpp"
+#include "../ds/queue.hpp"
 #include "../lock/lock.hpp"
 #include "../memory/mem.hpp"
+#include "loop.hpp"
 
 namespace aru {
 
 namespace sdk {
-    
-#define HLOOP_READ_BUFSIZE  8192
 
-ARRAY_DECL(hio_t*, io_array);
-ARU_QUEUE_DECL(hevent_t, event_queue);
+namespace event {
 
-struct hloop_s {
-    uint32_t    flags;
-    hloop_status_e status;
-    uint64_t    start_ms;       // ms
-    uint64_t    start_hrtime;   // us
-    uint64_t    end_hrtime;
-    uint64_t    cur_hrtime;
-    uint64_t    loop_cnt;
-    long        pid;
-    long        tid;
-    void*       userdata;
-//private:
+#define ARU_LOOP_READ_BUFSIZE 8192
+
+ARU_ARRAY_DECL(io_t*, io_array);
+ARU_QUEUE_DECL(event_t, event_queue);
+
+struct loop_s {
+    uint32_t flags;
+    loop_status_e status;
+    uint64_t start_ms;      // ms
+    uint64_t start_hrtime;  // us
+    uint64_t end_hrtime;
+    uint64_t cur_hrtime;
+    uint64_t loop_cnt;
+    long pid;
+    long tid;
+    void* userdata;
+    // private:
     // events
-    uint32_t                    nactives;
-    uint32_t                    npendings;
+    uint32_t nactives;
+    uint32_t npendings;
     // pendings: with priority as array.index
-    hevent_t*                   pendings[HEVENT_PRIORITY_SIZE];
+    event_t* pendings[ARU_EVENT_PRIORITY_SIZE];
     // idles
-    struct list_head            idles;
-    uint32_t                    nidles;
+    struct list_head idles;
+    uint32_t nidles;
     // timers
-    struct heap                 timers;
-    uint32_t                    ntimers;
+    struct heap timers;
+    uint32_t ntimers;
     // ios: with fd as array.index
-    struct io_array             ios;
-    uint32_t                    nios;
+    struct io_array ios;
+    uint32_t nios;
     // one loop per thread, so one readbuf per loop is OK.
-    buf_t                      readbuf;
-    void*                       iowatcher;
+    buf_t readbuf;
+    void* iowatcher;
     // custom_events
-    int                         sockpair[2];
-    event_queue                 custom_events;
-    mutex_lock_t                    custom_events_mutex;
+    int sockpair[2];
+    event_queue custom_events;
+    mutex_lock_t custom_events_mutex;
 };
 
-uint64_t hloop_next_event_id();
+uint64_t loop_next_event_id();
 
-struct hidle_s {
-    HEVENT_FIELDS
-    uint32_t    repeat;
-//private:
+struct idle_s {
+    ARU_EVENT_FIELDS
+    uint32_t repeat;
+    // private:
     struct list_node node;
 };
 
-#define HTIMER_FIELDS                   \
-    HEVENT_FIELDS                       \
-    uint32_t    repeat;                 \
-    uint64_t    next_timeout;           \
+#define ARU_TIMER_FIELDS   \
+    ARU_EVENT_FIELDS       \
+    uint32_t repeat;       \
+    uint64_t next_timeout; \
     struct heap_node node;
 
-struct htimer_s {
-    HTIMER_FIELDS
+struct timer_s {
+    ARU_TIMER_FIELDS
 };
 
-struct htimeout_s {
-    HTIMER_FIELDS
-    uint32_t    timeout;                \
+struct timeout_s {
+    ARU_TIMER_FIELDS
+    uint32_t timeout;
 };
 
-struct hperiod_s {
-    HTIMER_FIELDS
-    int8_t      minute;
-    int8_t      hour;
-    int8_t      day;
-    int8_t      week;
-    int8_t      month;
+struct period_s {
+    ARU_TIMER_FIELDS
+    int8_t minute;
+    int8_t hour;
+    int8_t day;
+    int8_t week;
+    int8_t month;
 };
 
 ARU_QUEUE_DECL(offset_buf_t, write_queue);
 
-struct hio_s {
-    HEVENT_FIELDS
+struct io_s {
+    ARU_EVENT_FIELDS
     // flags
-    unsigned    ready       :1;
-    unsigned    closed      :1;
-    unsigned    accept      :1;
-    unsigned    connect     :1;
-    unsigned    connectex   :1; // for ConnectEx/DisconnectEx
-    unsigned    recv        :1;
-    unsigned    send        :1;
-    unsigned    recvfrom    :1;
-    unsigned    sendto      :1;
-    unsigned    close       :1;
-// public:
-    uint32_t    id; // fd cannot be used as unique identifier, so we provide an id
-    int         fd;
-    hio_type_e  io_type;
-    int         error;
-    int         events;
-    int         revents;
-    struct sockaddr*    localaddr;
-    struct sockaddr*    peeraddr;
-    buf_t              readbuf;        // for hread
-    struct write_queue  write_queue;    // for hwrite
-    mutex_lock_t  write_mutex;    // lock write and write_queue
+    unsigned ready : 1;
+    unsigned closed : 1;
+    unsigned accept : 1;
+    unsigned connect : 1;
+    unsigned connectex : 1;  // for ConnectEx/DisconnectEx
+    unsigned recv : 1;
+    unsigned send : 1;
+    unsigned recvfrom : 1;
+    unsigned sendto : 1;
+    unsigned close : 1;
+    // public:
+    uint32_t id;  // fd cannot be used as unique identifier, so we provide an id
+    int fd;
+    io_type_e io_type;
+    int error;
+    int events;
+    int revents;
+    struct sockaddr* localaddr;
+    struct sockaddr* peeraddr;
+    buf_t readbuf;                   // for ev_read
+    struct write_queue write_queue;  // for ev_write
+    mutex_lock_t write_mutex;        // lock write and write_queue
     // callbacks
-    hread_cb    read_cb;
-    hwrite_cb   write_cb;
-    hclose_cb   close_cb;
-    haccept_cb  accept_cb;
-    hconnect_cb connect_cb;
+    read_cb read_cb;
+    write_cb write_cb;
+    close_cb close_cb;
+    accept_cb accept_cb;
+    connect_cb connect_cb;
     // timers
-    int         connect_timeout;    // ms
-    htimer_t*   connect_timer;
-    int         close_timeout;      // ms
-    htimer_t*   close_timer;
-    int         keepalive_timeout;  // ms
-    htimer_t*   keepalive_timer;
-    int         heartbeat_interval; // ms
+    int connect_timeout;  // ms
+    timer_t* connect_timer;
+    int close_timeout;  // ms
+    timer_t* close_timer;
+    int keepalive_timeout;  // ms
+    timer_t* keepalive_timer;
+    int heartbeat_interval;  // ms
     hio_send_heartbeat_fn heartbeat_fn;
-    htimer_t*   heartbeat_timer;
+    timer_t* heartbeat_timer;
     // upstream
-    struct hio_s*   upstream_io;
-// private:
-    int         event_index[2]; // for poll,kqueue
-    void*       hovlp;          // for iocp/overlapio
-    void*       ssl;            // for SSL
-    void*       ctx;
+    struct io_s* upstream_io;
+    // private:
+    int event_index[2];  // for poll,kqueue
+    void* hovlp;         // for iocp/overlapio
+    void* ssl;           // for SSL
+    void* ctx;
 };
 /*
  * hio lifeline:
  * fd =>
- * hio_get => HV_ALLOC_SIZEOF(io) => hio_init =>
- * hio_ready => hio_add => hio_del => hio_done =>
- * hio_close => hclose_cb =>
- * hio_free => HV_FREE(io)
+ * io_get => HV_ALLOC_SIZEOF(io) => io_init =>
+ * io_ready => io_add => hio_del => io_done =>
+ * io_close => close_cb =>
+ * io_free => HV_FREE(io)
  */
-void hio_init(hio_t* io);
-void hio_ready(hio_t* io);
-void hio_done(hio_t* io);
-void hio_free(hio_t* io);
-uint32_t hio_next_id();
+void io_init(io_t* io);
+void io_ready(io_t* io);
+void io_done(io_t* io);
+void io_free(io_t* io);
+uint32_t io_next_id();
 
-#define EVENT_ENTRY(p)          container_of(p, hevent_t, pending_node)
-#define IDLE_ENTRY(p)           container_of(p, hidle_t,  node)
-#define TIMER_ENTRY(p)          container_of(p, htimer_t, node)
+#define ARU_EVENT_ENTRY(p) container_of(p, event_t, pending_node)
+#define ARU_IDLE_ENTRY(p) container_of(p, idle_t, node)
+#define ARU_TIMER_ENTRY(p) container_of(p, timer_t, node)
 
-#define EVENT_ACTIVE(ev) \
-    if (!ev->active) {\
-        ev->active = 1;\
-        ev->loop->nactives++;\
-    }\
+#define ARU_EVENT_ACTIVE(ev)  \
+    if (!ev->active) {        \
+        ev->active = 1;       \
+        ev->loop->nactives++; \
+    }
 
-#define EVENT_INACTIVE(ev) \
-    if (ev->active) {\
-        ev->active = 0;\
-        ev->loop->nactives--;\
-    }\
+#define ARU_EVENT_INACTIVE(ev) \
+    if (ev->active) {          \
+        ev->active = 0;        \
+        ev->loop->nactives--;  \
+    }
 
-#define EVENT_PENDING(ev) \
-    do {\
-        if (!ev->pending) {\
-            ev->pending = 1;\
-            ev->loop->npendings++;\
-            hevent_t** phead = &ev->loop->pendings[HEVENT_PRIORITY_INDEX(ev->priority)];\
-            ev->pending_next = *phead;\
-            *phead = (hevent_t*)ev;\
-        }\
-    } while(0)
+#define ARU_EVENT_PENDING(ev)                                                              \
+    do {                                                                                   \
+        if (!ev->pending) {                                                                \
+            ev->pending = 1;                                                               \
+            ev->loop->npendings++;                                                         \
+            event_t** phead = &ev->loop->pendings[ARU_EVENT_PRIORITY_INDEX(ev->priority)]; \
+            ev->pending_next = *phead;                                                     \
+            *phead = (event_t*)ev;                                                         \
+        }                                                                                  \
+    } while (0)
 
-#define EVENT_ADD(loop, ev, cb) \
-    do {\
-        ev->loop = loop;\
-        ev->event_id = hloop_next_event_id();\
-        ev->cb = (hevent_cb)cb;\
-        EVENT_ACTIVE(ev);\
-    } while(0)
+#define ARU_EVENT_ADD(loop, ev, cb)          \
+    do {                                     \
+        ev->loop = loop;                     \
+        ev->event_id = loop_next_event_id(); \
+        ev->cb = (event_cb)cb;               \
+        ARU_EVENT_ACTIVE(ev);                \
+    } while (0)
 
-#define EVENT_DEL(ev) \
-    do {\
-        EVENT_INACTIVE(ev);\
-        if (!ev->pending) {\
-            ARU_FREE(ev);\
-        }\
-    } while(0)
+#define ARU_EVENT_DEL(ev)       \
+    do {                        \
+        ARU_EVENT_INACTIVE(ev); \
+        if (!ev->pending) {     \
+            ARU_FREE(ev);       \
+        }                       \
+    } while (0)
 
-#define EVENT_RESET(ev) \
-    do {\
-        ev->destroy = 0;\
-        EVENT_ACTIVE(ev);\
-        ev->pending = 0;\
-    } while(0)
+#define ARU_EVENT_RESET(ev)   \
+    do {                      \
+        ev->destroy = 0;      \
+        ARU_EVENT_ACTIVE(ev); \
+        ev->pending = 0;      \
+    } while (0)
 
-} // namespace aru
+}  // namespace event
 
-} // namespace aru
+}  // namespace sdk
+
+}  // namespace aru

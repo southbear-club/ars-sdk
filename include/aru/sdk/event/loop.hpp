@@ -1,163 +1,160 @@
 #pragma once
 
 #include <stdint.h>
-#include <stdint.h>
 #include <sys/socket.h>
 #include "../macros/defs.hpp"
 
 namespace aru {
 
 namespace sdk {
-    
-typedef struct hloop_s      hloop_t;
-typedef struct hevent_s     hevent_t;
 
-// NOTE: The following structures are subclasses of hevent_t,
-// inheriting hevent_t data members and function members.
-typedef struct hidle_s      hidle_t;
-typedef struct htimer_s     htimer_t;
-typedef struct htimeout_s   htimeout_t;
-typedef struct hperiod_s    hperiod_t;
-typedef struct hio_s        hio_t;
+namespace event {
 
-typedef void (*hevent_cb)   (hevent_t* ev);
-typedef void (*hidle_cb)    (hidle_t* idle);
-typedef void (*htimer_cb)   (htimer_t* timer);
-typedef void (*hio_cb)      (hio_t* io);
+typedef struct loop_s loop_t;
+typedef struct event_s event_t;
 
-typedef void (*haccept_cb)  (hio_t* io);
-typedef void (*hconnect_cb) (hio_t* io);
-typedef void (*hread_cb)    (hio_t* io, void* buf, int readbytes);
-typedef void (*hwrite_cb)   (hio_t* io, const void* buf, int writebytes);
-typedef void (*hclose_cb)   (hio_t* io);
+// NOTE: The following structures are subclasses of event_t,
+// inheriting event_t data members and function members.
+typedef struct idle_s idle_t;
+typedef struct timer_s timer_t;
+typedef struct timeout_s timeout_t;
+typedef struct period_s period_t;
+typedef struct io_s io_t;
 
-typedef enum {
-    HLOOP_STATUS_STOP,
-    HLOOP_STATUS_RUNNING,
-    HLOOP_STATUS_PAUSE
-} hloop_status_e;
+typedef void (*event_cb)(event_t* ev);
+typedef void (*idle_cb)(idle_t* idle);
+typedef void (*timer_cb)(timer_t* timer);
+typedef void (*io_cb)(io_t* io);
+
+typedef void (*accept_cb)(io_t* io);
+typedef void (*connect_cb)(io_t* io);
+typedef void (*read_cb)(io_t* io, void* buf, int readbytes);
+typedef void (*write_cb)(io_t* io, const void* buf, int writebytes);
+typedef void (*close_cb)(io_t* io);
+
+typedef enum { LOOP_STATUS_STOP, LOOP_STATUS_RUNNING, LOOP_STATUS_PAUSE } loop_status_e;
 
 typedef enum {
-    HEVENT_TYPE_NONE    = 0,
-    HEVENT_TYPE_IO      = 0x00000001,
-    HEVENT_TYPE_TIMEOUT = 0x00000010,
-    HEVENT_TYPE_PERIOD  = 0x00000020,
-    HEVENT_TYPE_TIMER   = HEVENT_TYPE_TIMEOUT|HEVENT_TYPE_PERIOD,
-    HEVENT_TYPE_IDLE    = 0x00000100,
-    HEVENT_TYPE_CUSTOM  = 0x00000400, // 1024
-} hevent_type_e;
+    EVENT_TYPE_NONE = 0,
+    EVENT_TYPE_IO = 0x00000001,
+    EVENT_TYPE_TIMEOUT = 0x00000010,
+    EVENT_TYPE_PERIOD = 0x00000020,
+    EVENT_TYPE_TIMER = EVENT_TYPE_TIMEOUT | EVENT_TYPE_PERIOD,
+    EVENT_TYPE_IDLE = 0x00000100,
+    EVENT_TYPE_CUSTOM = 0x00000400,  // 1024
+} event_type_e;
 
-#define HEVENT_LOWEST_PRIORITY    (-5)
-#define HEVENT_LOW_PRIORITY       (-3)
-#define HEVENT_NORMAL_PRIORITY      0
-#define HEVENT_HIGH_PRIORITY        3
-#define HEVENT_HIGHEST_PRIORITY     5
-#define HEVENT_PRIORITY_SIZE  (HEVENT_HIGHEST_PRIORITY-HEVENT_LOWEST_PRIORITY+1)
-#define HEVENT_PRIORITY_INDEX(priority) (priority-HEVENT_LOWEST_PRIORITY)
+#define ARU_EVENT_LOWEST_PRIORITY (-5)
+#define ARU_EVENT_LOW_PRIORITY (-3)
+#define ARU_EVENT_NORMAL_PRIORITY 0
+#define ARU_EVENT_HIGH_PRIORITY 3
+#define ARU_EVENT_HIGHEST_PRIORITY 5
+#define ARU_EVENT_PRIORITY_SIZE (ARU_EVENT_HIGHEST_PRIORITY - ARU_EVENT_LOWEST_PRIORITY + 1)
+#define ARU_EVENT_PRIORITY_INDEX(priority) (priority - ARU_EVENT_LOWEST_PRIORITY)
 
-#define HEVENT_FLAGS        \
-    unsigned    destroy :1; \
-    unsigned    active  :1; \
-    unsigned    pending :1;
+#define ARU_EVENT_FLAGS   \
+    unsigned destroy : 1; \
+    unsigned active : 1;  \
+    unsigned pending : 1;
 
-#define HEVENT_FIELDS                   \
-    hloop_t*            loop;           \
-    hevent_type_e       event_type;     \
-    uint64_t            event_id;       \
-    hevent_cb           cb;             \
-    void*               userdata;       \
-    void*               privdata;       \
-    int                 priority;       \
-    struct hevent_s*    pending_next;   \
-    HEVENT_FLAGS
+#define ARU_EVENT_FIELDS          \
+    loop_t* loop;                 \
+    event_type_e event_type;      \
+    uint64_t event_id;            \
+    event_cb cb;                  \
+    void* userdata;               \
+    void* privdata;               \
+    int priority;                 \
+    struct event_s* pending_next; \
+    ARU_EVENT_FLAGS
 
-struct hevent_s {
-    HEVENT_FIELDS
+struct event_s {
+    ARU_EVENT_FIELDS
 };
 
-#define hevent_set_priority(ev, prio)   ((hevent_t*)(ev))->priority = prio
-#define hevent_set_userdata(ev, udata)  ((hevent_t*)(ev))->userdata = (void*)udata
+#define aru_event_set_priority(ev, prio) ((event_t*)(ev))->priority = prio
+#define aru_event_set_userdata(ev, udata) ((event_t*)(ev))->userdata = (void*)udata
 
-#define hevent_loop(ev)         (((hevent_t*)(ev))->loop)
-#define hevent_type(ev)         (((hevent_t*)(ev))->event_type)
-#define hevent_id(ev)           (((hevent_t*)(ev))->event_id)
-#define hevent_priority(ev)     (((hevent_t*)(ev))->priority)
-#define hevent_userdata(ev)     (((hevent_t*)(ev))->userdata)
+#define aru_event_loop(ev) (((event_t*)(ev))->loop)
+#define aru_event_type(ev) (((event_t*)(ev))->event_type)
+#define aru_event_id(ev) (((event_t*)(ev))->event_id)
+#define aru_event_priority(ev) (((event_t*)(ev))->priority)
+#define aru_event_userdata(ev) (((event_t*)(ev))->userdata)
 
 typedef enum {
-    HIO_TYPE_UNKNOWN = 0,
-    HIO_TYPE_STDIN   = 0x00000001,
-    HIO_TYPE_STDOUT  = 0x00000002,
-    HIO_TYPE_STDERR  = 0x00000004,
-    HIO_TYPE_STDIO   = 0x0000000F,
+    IO_TYPE_UNKNOWN = 0,
+    IO_TYPE_STDIN = 0x00000001,
+    IO_TYPE_STDOUT = 0x00000002,
+    IO_TYPE_STDERR = 0x00000004,
+    IO_TYPE_STDIO = 0x0000000F,
 
-    HIO_TYPE_FILE    = 0x00000010,
+    IO_TYPE_FILE = 0x00000010,
 
-    HIO_TYPE_IP      = 0x00000100,
-    HIO_TYPE_UDP     = 0x00001000,
-    HIO_TYPE_TCP     = 0x00010000,
-    HIO_TYPE_SSL     = 0x00020000,
-    HIO_TYPE_SOCKET  = 0x00FFFF00,
-} hio_type_e;
+    IO_TYPE_IP = 0x00000100,
+    IO_TYPE_UDP = 0x00001000,
+    IO_TYPE_TCP = 0x00010000,
+    IO_TYPE_SSL = 0x00020000,
+    IO_TYPE_SOCKET = 0x00FFFF00,
+} io_type_e;
 
-#define HIO_DEFAULT_CONNECT_TIMEOUT     5000    // ms
-#define HIO_DEFAULT_CLOSE_TIMEOUT       60000   // ms
-#define HIO_DEFAULT_KEEPALIVE_TIMEOUT   75000   // ms
-#define HIO_DEFAULT_HEARTBEAT_INTERVAL  30000   // ms
+#define ARU_IO_DEFAULT_CONNECT_TIMEOUT 5000      // ms
+#define ARU_IO_DEFAULT_CLOSE_TIMEOUT 60000       // ms
+#define ARU_IO_DEFAULT_KEEPALIVE_TIMEOUT 75000   // ms
+#define ARU_IO_DEFAULT_HEARTBEAT_INTERVAL 30000  // ms
 
 // loop
-#define HLOOP_FLAG_RUN_ONCE                     0x00000001
-#define HLOOP_FLAG_AUTO_FREE                    0x00000002
-#define HLOOP_FLAG_QUIT_WHEN_NO_ACTIVE_EVENTS   0x00000004
-hloop_t* hloop_new(int flags = HLOOP_FLAG_AUTO_FREE);
+#define ARU_LOOP_FLAG_RUN_ONCE 0x00000001
+#define ARU_LOOP_FLAG_AUTO_FREE 0x00000002
+#define ARU_LOOP_FLAG_QUIT_WHEN_NO_ACTIVE_EVENTS 0x00000004
+loop_t* loop_new(int flags = ARU_LOOP_FLAG_AUTO_FREE);
 
-// WARN: Forbid to call hloop_free if HLOOP_FLAG_AUTO_FREE set.
-void hloop_free(hloop_t** pp);
+// WARN: Forbid to call loop_free if ARU_LOOP_FLAG_AUTO_FREE set.
+void loop_free(loop_t** pp);
 
-// NOTE: when no active events, loop will quit if HLOOP_FLAG_QUIT_WHEN_NO_ACTIVE_EVENTS set.
-int hloop_run(hloop_t* loop);
-// NOTE: hloop_stop called in loop-thread just set flag to quit in next loop,
+// NOTE: when no active events, loop will quit if ARU_LOOP_FLAG_QUIT_WHEN_NO_ACTIVE_EVENTS set.
+int loop_run(loop_t* loop);
+// NOTE: loop_stop called in loop-thread just set flag to quit in next loop,
 // if called in other thread, it will wakeup loop-thread from blocking poll system call,
 // then you should join loop thread to safely exit loop thread.
-int hloop_stop(hloop_t* loop);
-int hloop_pause(hloop_t* loop);
-int hloop_resume(hloop_t* loop);
-int hloop_wakeup(hloop_t* loop);
-hloop_status_e hloop_status(hloop_t* loop);
+int loop_stop(loop_t* loop);
+int loop_pause(loop_t* loop);
+int loop_resume(loop_t* loop);
+int loop_wakeup(loop_t* loop);
+loop_status_e loop_status(loop_t* loop);
 
-void     hloop_update_time(hloop_t* loop);
-uint64_t hloop_now(hloop_t* loop);          // s
-uint64_t hloop_now_ms(hloop_t* loop);       // ms
-uint64_t hloop_now_hrtime(hloop_t* loop);   // us
-#define hloop_now_us hloop_now_hrtime
-// @return pid of hloop_run
-long hloop_pid(hloop_t* loop);
-// @return tid of hloop_run
-long hloop_tid(hloop_t* loop);
+void loop_update_time(loop_t* loop);
+uint64_t loop_now(loop_t* loop);         // s
+uint64_t loop_now_ms(loop_t* loop);      // ms
+uint64_t loop_now_hrtime(loop_t* loop);  // us
+#define aru_loop_now_us loop_now_hrtime
+// @return pid of loop_run
+long loop_pid(loop_t* loop);
+// @return tid of loop_run
+long loop_tid(loop_t* loop);
 
 // userdata
-void  hloop_set_userdata(hloop_t* loop, void* userdata);
-void* hloop_userdata(hloop_t* loop);
+void loop_set_userdata(loop_t* loop, void* userdata);
+void* loop_userdata(loop_t* loop);
 
 // custom_event
 /*
- * hevent_t ev;
- * memset(&ev, 0, sizeof(hevent_t));
- * ev.event_type = (hevent_type_e)(HEVENT_TYPE_CUSTOM + 1);
+ * event_t ev;
+ * memset(&ev, 0, sizeof(event_t));
+ * ev.event_type = (event_type_e)(EVENT_TYPE_CUSTOM + 1);
  * ev.cb = custom_event_cb;
  * ev.userdata = userdata;
- * hloop_post_event(loop, &ev);
+ * loop_post_event(loop, &ev);
  */
-// NOTE: hloop_post_event is thread-safe, used to post event from other thread to loop thread.
-void hloop_post_event(hloop_t* loop, hevent_t* ev);
+// NOTE: loop_post_event is thread-safe, used to post event from other thread to loop thread.
+void loop_post_event(loop_t* loop, event_t* ev);
 
 // idle
-hidle_t* hidle_add(hloop_t* loop, hidle_cb cb, uint32_t repeat = INFINITE);
-void     hidle_del(hidle_t* idle);
+idle_t* idle_add(loop_t* loop, idle_cb cb, uint32_t repeat = INFINITE);
+void idle_del(idle_t* idle);
 
 // timer
 // @param timeout: unit(ms)
-htimer_t* htimer_add(hloop_t* loop, htimer_cb cb, uint32_t timeout, uint32_t repeat = INFINITE);
+timer_t* timer_add(loop_t* loop, timer_cb cb, uint32_t timeout, uint32_t repeat = INFINITE);
 /*
  * minute   hour    day     week    month       cb
  * 0~59     0~23    1~31    0~6     1~12
@@ -167,20 +164,20 @@ htimer_t* htimer_add(hloop_t* loop, htimer_cb cb, uint32_t timeout, uint32_t rep
  *  30      1       -1       5      -1          cron.weekly
  *  30      1        1      -1      10          cron.yearly
  */
-htimer_t* htimer_add_period(hloop_t* loop, htimer_cb cb,
-                        int8_t minute = 0,  int8_t hour  = -1, int8_t day = -1,
-                        int8_t week   = -1, int8_t month = -1, uint32_t repeat = INFINITE);
+timer_t* timer_add_period(loop_t* loop, timer_cb cb, int8_t minute = 0, int8_t hour = -1,
+                          int8_t day = -1, int8_t week = -1, int8_t month = -1,
+                          uint32_t repeat = INFINITE);
 
-void htimer_del(htimer_t* timer);
-void htimer_reset(htimer_t* timer);
+void timer_del(timer_t* timer);
+void timer_reset(timer_t* timer);
 
 // io
 //-----------------------low-level apis---------------------------------------
-#define HV_READ  0x0001
-#define HV_WRITE 0x0004
-#define HV_RDWR  (HV_READ|HV_WRITE)
+#define ARU_IO_READ 0x0001
+#define ARU_IO_WRITE 0x0004
+#define ARU_IO_RDWR (ARU_IO_READ | ARU_IO_WRITE)
 /*
-const char* hio_engine() {
+const char* io_engine() {
 #ifdef EVENT_SELECT
     return  "select";
 #elif defined(EVENT_POLL)
@@ -198,146 +195,150 @@ const char* hio_engine() {
 #endif
 }
 */
-const char* hio_engine();
+const char* io_engine();
 
-hio_t* hio_get(hloop_t* loop, int fd);
-int    hio_add(hio_t* io, hio_cb cb, int events = HV_READ);
-int    hio_del(hio_t* io, int events = HV_RDWR);
+io_t* io_get(loop_t* loop, int fd);
+int io_add(io_t* io, io_cb cb, int events = ARU_IO_READ);
+int hio_del(io_t* io, int events = ARU_IO_RDWR);
 
-// hio_t fields
+// io_t fields
 // NOTE: fd cannot be used as unique identifier, so we provide an id.
-uint32_t hio_id (hio_t* io);
-int hio_fd      (hio_t* io);
-int hio_error   (hio_t* io);
-int hio_events  (hio_t* io);
-int hio_revents (hio_t* io);
-hio_type_e       hio_type     (hio_t* io);
-struct sockaddr* hio_localaddr(hio_t* io);
-struct sockaddr* hio_peeraddr (hio_t* io);
-void hio_set_context(hio_t* io, void* ctx);
-void* hio_context(hio_t* io);
-bool hio_is_opened(hio_t* io);
-bool hio_is_closed(hio_t* io);
+uint32_t io_id(io_t* io);
+int io_fd(io_t* io);
+int io_error(io_t* io);
+int io_events(io_t* io);
+int io_revents(io_t* io);
+io_type_e io_type(io_t* io);
+struct sockaddr* io_localaddr(io_t* io);
+struct sockaddr* io_peeraddr(io_t* io);
+void io_set_context(io_t* io, void* ctx);
+void* io_context(io_t* io);
+bool io_is_opened(io_t* io);
+bool io_is_closed(io_t* io);
 
 // set callbacks
-void hio_setcb_accept   (hio_t* io, haccept_cb  accept_cb);
-void hio_setcb_connect  (hio_t* io, hconnect_cb connect_cb);
-void hio_setcb_read     (hio_t* io, hread_cb    read_cb);
-void hio_setcb_write    (hio_t* io, hwrite_cb   write_cb);
-void hio_setcb_close    (hio_t* io, hclose_cb   close_cb);
+void io_setcb_accept(io_t* io, accept_cb accept_cb);
+void io_setcb_connect(io_t* io, connect_cb connect_cb);
+void io_setcb_read(io_t* io, read_cb read_cb);
+void io_setcb_write(io_t* io, write_cb write_cb);
+void io_setcb_close(io_t* io, close_cb close_cb);
 
 // some useful settings
 // Enable SSL/TLS is so easy :)
-int  hio_enable_ssl(hio_t* io);
+int io_enable_ssl(io_t* io);
 // TODO: One loop per thread, one readbuf per loop.
 // But you can pass in your own readbuf instead of the default readbuf to avoid memcopy.
-void hio_set_readbuf(hio_t* io, void* buf, size_t len);
-// connect timeout => hclose_cb
-void hio_set_connect_timeout(hio_t* io, int timeout_ms = HIO_DEFAULT_CONNECT_TIMEOUT);
-// close timeout => hclose_cb
-void hio_set_close_timeout(hio_t* io, int timeout_ms = HIO_DEFAULT_CLOSE_TIMEOUT);
-// keepalive timeout => hclose_cb
-void hio_set_keepalive_timeout(hio_t* io, int timeout_ms = HIO_DEFAULT_KEEPALIVE_TIMEOUT);
+void io_set_readbuf(io_t* io, void* buf, size_t len);
+// connect timeout => close_cb
+void io_set_connect_timeout(io_t* io, int timeout_ms = ARU_IO_DEFAULT_CONNECT_TIMEOUT);
+// close timeout => close_cb
+void io_set_close_timeout(io_t* io, int timeout_ms = ARU_IO_DEFAULT_CLOSE_TIMEOUT);
+// keepalive timeout => close_cb
+void io_set_keepalive_timeout(io_t* io, int timeout_ms = ARU_IO_DEFAULT_KEEPALIVE_TIMEOUT);
 /*
-void send_heartbeat(hio_t* io) {
+void send_heartbeat(io_t* io) {
     static char buf[] = "PING\r\n";
-    hio_write(io, buf, 6);
+    io_write(io, buf, 6);
 }
-hio_set_heartbeat(io, 3000, send_heartbeat);
+io_set_heartbeat(io, 3000, send_heartbeat);
 */
-typedef void (*hio_send_heartbeat_fn)(hio_t* io);
+typedef void (*hio_send_heartbeat_fn)(io_t* io);
 // heartbeat interval => hio_send_heartbeat_fn
-void hio_set_heartbeat(hio_t* io, int interval_ms, hio_send_heartbeat_fn fn);
+void io_set_heartbeat(io_t* io, int interval_ms, hio_send_heartbeat_fn fn);
 
 // Nonblocking, poll IO events in the loop to call corresponding callback.
-// hio_add(io, HV_READ) => accept => haccept_cb
-int hio_accept (hio_t* io);
-// connect => hio_add(io, HV_WRITE) => hconnect_cb
-int hio_connect(hio_t* io);
-// hio_add(io, HV_READ) => read => hread_cb
-int hio_read   (hio_t* io);
-#define hio_read_start(io) hio_read(io)
-#define hio_read_stop(io)  hio_del(io, HV_READ)
-// NOTE: hio_write is thread-safe, locked by recursive_mutex, allow to be called by other threads.
-// hio_try_write => hio_add(io, HV_WRITE) => write => hwrite_cb
-int hio_write  (hio_t* io, const void* buf, size_t len);
-// NOTE: hio_close is thread-safe, if called by other thread, hloop_post_event(hio_close_event).
-// hio_del(io, HV_RDWR) => close => hclose_cb
-int hio_close  (hio_t* io);
+// io_add(io, ARU_IO_READ) => accept => accept_cb
+int io_accept(io_t* io);
+// connect => io_add(io, ARU_IO_WRITE) => connect_cb
+int io_connect(io_t* io);
+// io_add(io, ARU_IO_READ) => read => read_cb
+int io_read(io_t* io);
+#define aru_io_read_start(io) io_read(io)
+#define aru_io_read_stop(io) hio_del(io, ARU_IO_READ)
+// NOTE: io_write is thread-safe, locked by recursive_mutex, allow to be called by other threads.
+// hio_try_write => io_add(io, ARU_IO_WRITE) => write => write_cb
+int io_write(io_t* io, const void* buf, size_t len);
+// NOTE: io_close is thread-safe, if called by other thread, loop_post_event(hio_close_event).
+// hio_del(io, ARU_IO_RDWR) => close => close_cb
+int io_close(io_t* io);
 
 //------------------high-level apis-------------------------------------------
-// hio_get -> hio_set_readbuf -> hio_setcb_read -> hio_read
-hio_t* hread    (hloop_t* loop, int fd, void* buf, size_t len, hread_cb read_cb);
-// hio_get -> hio_setcb_write -> hio_write
-hio_t* hwrite   (hloop_t* loop, int fd, const void* buf, size_t len, hwrite_cb write_cb = NULL);
-// hio_get -> hio_close
-void   hclose   (hloop_t* loop, int fd);
+// io_get -> io_set_readbuf -> io_setcb_read -> io_read
+io_t* ev_read(loop_t* loop, int fd, void* buf, size_t len, read_cb read_cb);
+// io_get -> io_setcb_write -> io_write
+io_t* ev_write(loop_t* loop, int fd, const void* buf, size_t len, write_cb write_cb = NULL);
+// io_get -> io_close
+void ev_close(loop_t* loop, int fd);
 
 // tcp
-// hio_get -> hio_setcb_accept -> hio_accept
-hio_t* haccept  (hloop_t* loop, int listenfd, haccept_cb accept_cb);
-// hio_get -> hio_setcb_connect -> hio_connect
-hio_t* hconnect (hloop_t* loop, int connfd,   hconnect_cb connect_cb);
-// hio_get -> hio_set_readbuf -> hio_setcb_read -> hio_read
-hio_t* hrecv    (hloop_t* loop, int connfd, void* buf, size_t len, hread_cb read_cb);
-// hio_get -> hio_setcb_write -> hio_write
-hio_t* hsend    (hloop_t* loop, int connfd, const void* buf, size_t len, hwrite_cb write_cb = NULL);
+// io_get -> io_setcb_accept -> io_accept
+io_t* ev_accept(loop_t* loop, int listenfd, accept_cb accept_cb);
+// io_get -> io_setcb_connect -> io_connect
+io_t* ev_connect(loop_t* loop, int connfd, connect_cb connect_cb);
+// io_get -> io_set_readbuf -> io_setcb_read -> io_read
+io_t* ev_recv(loop_t* loop, int connfd, void* buf, size_t len, read_cb read_cb);
+// io_get -> io_setcb_write -> io_write
+io_t* ev_send(loop_t* loop, int connfd, const void* buf, size_t len, write_cb write_cb = NULL);
 
 // udp
-void hio_set_type(hio_t* io, hio_type_e type);
-void hio_set_localaddr(hio_t* io, struct sockaddr* addr, int addrlen);
-void hio_set_peeraddr (hio_t* io, struct sockaddr* addr, int addrlen);
-// NOTE: must call hio_set_peeraddr before hrecvfrom/hsendto
-// hio_get -> hio_set_readbuf -> hio_setcb_read -> hio_read
-hio_t* hrecvfrom (hloop_t* loop, int sockfd, void* buf, size_t len, hread_cb read_cb);
-// hio_get -> hio_setcb_write -> hio_write
-hio_t* hsendto   (hloop_t* loop, int sockfd, const void* buf, size_t len, hwrite_cb write_cb = NULL);
+void io_set_type(io_t* io, io_type_e type);
+void io_set_localaddr(io_t* io, struct sockaddr* addr, int addrlen);
+void io_set_peeraddr(io_t* io, struct sockaddr* addr, int addrlen);
+// NOTE: must call io_set_peeraddr before ev_recvfrom/ev_sendto
+// io_get -> io_set_readbuf -> io_setcb_read -> io_read
+io_t* ev_recvfrom(loop_t* loop, int sockfd, void* buf, size_t len, read_cb read_cb);
+// io_get -> io_setcb_write -> io_write
+io_t* ev_sendto(loop_t* loop, int sockfd, const void* buf, size_t len, write_cb write_cb = NULL);
 
 //-----------------top-level apis---------------------------------------------
-// Resolver -> socket -> hio_get
-hio_t* hio_create(hloop_t* loop, const char* host, int port, int type = SOCK_STREAM);
-// @tcp_server: socket -> bind -> listen -> haccept
+// Resolver -> socket -> io_get
+io_t* ev_create(loop_t* loop, const char* host, int port, int type = SOCK_STREAM);
+// @tcp_server: socket -> bind -> listen -> ev_accept
 // @see examples/tcp_echo_server.c
-hio_t* hloop_create_tcp_server (hloop_t* loop, const char* host, int port, haccept_cb accept_cb);
-// @tcp_client: hio_create(loop, host, port, SOCK_STREAM) -> hconnect
+io_t* loop_create_tcp_server(loop_t* loop, const char* host, int port, accept_cb accept_cb);
+// @tcp_client: ev_create(loop, host, port, SOCK_STREAM) -> ev_connect
 // @see examples/nc.c
-hio_t* hloop_create_tcp_client (hloop_t* loop, const char* host, int port, hconnect_cb connect_cb);
+io_t* loop_create_tcp_client(loop_t* loop, const char* host, int port, connect_cb connect_cb);
 
-// @udp_server: socket -> bind -> hio_get
+// @udp_server: socket -> bind -> io_get
 // @see examples/udp_echo_server.c
-hio_t* hloop_create_udp_server (hloop_t* loop, const char* host, int port);
-// @udp_client: hio_create(loop, host, port, SOCK_DGRAM)
+io_t* loop_create_udp_server(loop_t* loop, const char* host, int port);
+// @udp_client: ev_create(loop, host, port, SOCK_DGRAM)
 // @see examples/nc.c
-hio_t* hloop_create_udp_client (hloop_t* loop, const char* host, int port);
+io_t* loop_create_udp_client(loop_t* loop, const char* host, int port);
 
 //-----------------upstream---------------------------------------------
-// hio_read(io)
-// hio_read(io->upstream_io)
-void   hio_read_upstream(hio_t* io);
-// hio_write(io->upstream_io, buf, bytes)
-void   hio_write_upstream(hio_t* io, void* buf, int bytes);
-// hio_close(io->upstream_io)
-void   hio_close_upstream(hio_t* io);
+// io_read(io)
+// io_read(io->upstream_io)
+void io_read_upstream(io_t* io);
+// io_write(io->upstream_io, buf, bytes)
+void io_write_upstream(io_t* io, void* buf, int bytes);
+// io_close(io->upstream_io)
+void io_close_upstream(io_t* io);
 
 // io1->upstream_io = io2;
 // io2->upstream_io = io1;
-// hio_setcb_read(io1, hio_write_upstream);
-// hio_setcb_read(io2, hio_write_upstream);
-void   hio_setup_upstream(hio_t* io1, hio_t* io2);
+// io_setcb_read(io1, io_write_upstream);
+// io_setcb_read(io2, io_write_upstream);
+void io_setup_upstream(io_t* io1, io_t* io2);
 
 // @return io->upstream_io
-hio_t* hio_get_upstream(hio_t* io);
+io_t* io_get_upstream(io_t* io);
 
-// @tcp_upstream: hio_create -> hio_setup_upstream -> hio_setcb_close(hio_close_upstream) -> hconnect -> on_connect -> hio_read_upstream
+// @tcp_upstream: ev_create -> io_setup_upstream -> io_setcb_close(io_close_upstream) -> ev_connect
+// -> on_connect -> io_read_upstream
 // @return upstream_io
 // @see examples/tcp_proxy_server
-hio_t* hio_setup_tcp_upstream(hio_t* io, const char* host, int port, int ssl  = 0);
-#define hio_setup_ssl_upstream(io, host, port) hio_setup_tcp_upstream(io, host, port, 1)
+io_t* io_setup_tcp_upstream(io_t* io, const char* host, int port, int ssl = 0);
+#define aru_io_setup_ssl_upstream(io, host, port) io_setup_tcp_upstream(io, host, port, 1)
 
-// @udp_upstream: hio_create -> hio_setup_upstream -> hio_read_upstream
+// @udp_upstream: ev_create -> io_setup_upstream -> io_read_upstream
 // @return upstream_io
 // @see examples/udp_proxy_server
-hio_t* hio_setup_udp_upstream(hio_t* io, const char* host, int port);
+io_t* io_setup_udp_upstream(io_t* io, const char* host, int port);
 
-}
-}
+}  // namespace event
+
+}  // namespace sdk
+
+}  // namespace aru

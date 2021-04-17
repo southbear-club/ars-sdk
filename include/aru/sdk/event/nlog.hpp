@@ -5,11 +5,16 @@
 namespace aru {
 
 namespace sdk {
-    
-#define DEFAULT_LOG_PORT    10514
+
+namespace event {
+
+#define ARU_NLOG_DEFAULT_LOG_PORT 10514
 
 void network_logger(int loglevel, const char* buf, int len);
-hio_t* nlog_listen(hloop_t* loop, int port);
+io_t* nlog_listen(loop_t* loop, int port);
 
-}
-}
+}  // namespace event
+
+}  // namespace sdk
+
+}  // namespace aru
