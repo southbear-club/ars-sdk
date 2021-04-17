@@ -130,7 +130,9 @@ static int hloop_process_pendings(hloop_t* loop) {
 // hloop_process_ios -> hloop_process_timers -> hloop_process_idles -> hloop_process_pendings
 static int hloop_process_events(hloop_t* loop) {
     // ios -> timers -> idles
-    int nios, ntimers, nidles;
+    int ARU_UNUSED(nios);
+    int ntimers;
+    int nidles;
     nios = ntimers = nidles = 0;
 
     // calc blocktime
@@ -626,7 +628,7 @@ static void hio_socket_init(hio_t* io) {
         ARU_ALLOC(io->peeraddr, sizeof(sock_addr_t));
     }
     socklen_t addrlen = sizeof(sock_addr_t);
-    int ret = getsockname(io->fd, io->localaddr, &addrlen);
+    int ARU_UNUSED(ret) = getsockname(io->fd, io->localaddr, &addrlen);
     printd("getsockname fd=%d ret=%d errno=%d\n", io->fd, ret, errno);
     // NOTE:
     // tcp_server peeraddr set by accept

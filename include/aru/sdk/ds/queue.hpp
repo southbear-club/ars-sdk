@@ -124,4 +124,4 @@ static inline void qtype##_pop_front(qtype* p) {\
 static inline void qtype##_pop_back(qtype* p) {\
     assert(p->size > 0);\
     p->size--;\
-}\
+}

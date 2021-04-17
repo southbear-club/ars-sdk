@@ -163,4 +163,4 @@ static inline void atype##_swap(atype* p, int pos1, int pos2) {\
     type tmp = p->ptr[pos1];\
     p->ptr[pos1] = p->ptr[pos2];\
     p->ptr[pos2] = tmp;\
-}\
+}

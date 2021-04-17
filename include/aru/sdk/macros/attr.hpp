@@ -53,7 +53,7 @@
 // #pragma ARU_TODO(something)
 #define __ARU_STR2__(x) #x
 #define __ARU_STR1__(x) __ARU_STR2__(x)
-#define __ARU_LOC__ __FILE__ "("__ARU_STR1__(__LINE__)"): "
+#define __ARU_LOC__ __FILE__ "(" __ARU_STR1__(__LINE__) "): "
 
 #if _MSC_VER
 	#define ARU_TODO(msg) message(__ARU_LOC__ "TODO: " #msg)

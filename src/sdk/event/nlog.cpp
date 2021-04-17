@@ -20,7 +20,7 @@ typedef struct nlog_client {
     struct list_node    node;
 } nlog_client;
 
-static network_logger_t s_logger = {nullptr, nullptr};
+static network_logger_t s_logger;
 static mutex_lock_t         s_mutex;
 
 static void on_close(hio_t* io) {
