@@ -85,7 +85,7 @@ static int dfs_dir_size(const char *path, uint64_t *size)
 {
     DIR *pdir = NULL;
     struct dirent *ent = NULL;
-    char full_path[PATH_MAX];
+    char full_path[ARU_MAX_PATH];
     int ret;
     pdir = opendir(path);
     if (!pdir) {

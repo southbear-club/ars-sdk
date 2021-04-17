@@ -29,8 +29,12 @@
 #include <assert.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#ifdef __APPLE__
+#include <sys/statvfs.h>
+#else
 #include <sys/statfs.h>
 #include <sys/vfs.h>
+#endif
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <sys/param.h>
@@ -297,7 +301,7 @@ struct iovec *file_dump(const char *path)
 }
 
 int file_get_systat(const char *path, struct file_systat *fi) {
-    int i;
+    uint32_t i;
     struct statfs stfs;
     if (!path || !fi) {
         // printf("path can't be null\n");
@@ -310,7 +314,7 @@ int file_get_systat(const char *path, struct file_systat *fi) {
     fi->size_total = stfs.f_bsize * stfs.f_blocks;
     fi->size_avail = stfs.f_bsize * stfs.f_bavail;
     fi->size_free  = stfs.f_bsize * stfs.f_bfree;
-    for (i = 0; i < (int)ARU_ARRAY_SIZE(fs_type_info); i++) {
+    for (i = 0; i < (uint32_t)ARU_ARRAY_SIZE(fs_type_info); i++) {
         if (stfs.f_type == fs_type_info[i].value) {
             stfs.f_type = i;
             strncpy(fi->fs_type_name, fs_type_info[i].name,
@@ -349,8 +353,13 @@ int file_get_info(const char *path, struct file_info *info)
         break;
     }
     info->size = st.st_size;
+#ifdef __APPLE__
+    info->access_sec = st.st_atimespec.tv_sec;
+    info->modify_sec = st.st_atimespec.tv_sec;//using change, not modify
+#else
     info->access_sec = st.st_atim.tv_sec;
     info->modify_sec = st.st_ctim.tv_sec;//using change, not modify
+#endif
     return 0;
 }
 

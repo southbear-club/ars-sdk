@@ -34,7 +34,12 @@ static inline int mutex_trylock(mutex_lock_t *lock) {
 }
 
 static inline int mutex_lock_wait(mutex_lock_t *lock, const struct timespec *abs_tm) {
+#ifdef __APPLE__
+    if (abs_tm) {}
+    return ::pthread_mutex_trylock(lock);
+#else
     return ::pthread_mutex_timedlock(lock, abs_tm);
+#endif
 }
 
 static inline int mutex_unlock(mutex_lock_t *lock) {

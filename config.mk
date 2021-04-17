@@ -59,7 +59,7 @@ MODE = debug
 endif
 
 DMARCROS += -D__const__= -pipe -W -Wall -Wno-unused-parameter \
-			-fPIC -fno-omit-frame-pointer -Wno-implicit-fallthrough -fstack-protector-all
+			-fPIC -fno-omit-frame-pointer -Wno-implicit-fallthrough -fstack-protector-all -Wno-deprecated-declarations
 
 # -ggdb
 CCFLAG += -c $(INC) -Wall -std=c++17 $(DMARCROS)

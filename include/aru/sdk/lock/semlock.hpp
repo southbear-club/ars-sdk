@@ -21,7 +21,6 @@ static inline int sem_lock_init(sem_lock_t *lock) {
 
 static inline int sem_lock_wait(sem_lock_t *lock, int64_t ms) {
     int ret = 0;
-    struct timespec ts;
     if (!lock) {
         return -1;
     }
@@ -30,6 +29,8 @@ static inline int sem_lock_wait(sem_lock_t *lock, int64_t ms) {
     } else if (ms == 0) {
         return ::sem_trywait(lock);
     } else {
+#ifndef __APPLE__
+        struct timespec ts;
         clock_gettime(CLOCK_REALTIME, &ts);
         uint64_t ns = ts.tv_sec * 1000 * 1000 * 1000 + ts.tv_nsec;
         ns += ms * 1000 * 1000;
@@ -47,6 +48,9 @@ static inline int sem_lock_wait(sem_lock_t *lock, int64_t ms) {
                 break;
             }
         }
+#else
+        return ::sem_trywait(lock);
+#endif
     }
     return ret;
 }

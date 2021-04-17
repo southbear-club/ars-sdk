@@ -91,7 +91,7 @@ int submask_prefixtomask(int prefixlen, char* ip_str) {
         ip_num += (1 << j);
     }
     // printf("ip_num: %08x\n", ip_num);
-    sprintf(ip_str, "%hhu.%hhu.%hhu.%hhu", (ip_num >> 24) & 0xff, (ip_num >> 16) & 0xff,
+    sprintf(ip_str, "%u.%u.%u.%u", (ip_num >> 24) & 0xff, (ip_num >> 16) & 0xff,
             (ip_num >> 8) & 0xff, ip_num & 0xff);
 
     return 0;

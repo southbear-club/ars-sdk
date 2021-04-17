@@ -2,6 +2,10 @@
 
 #include <map>
 
+namespace aru {
+
+namespace sdk {
+
 // addr => 0:down 1:up
 typedef std::map<uint32_t, int> Nmap;
 
@@ -13,3 +17,6 @@ typedef std::map<uint32_t, int> Nmap;
 int nmap_discover(Nmap* nmap);
 int segment_discover(const char* segment16, Nmap* nmap);
 int host_discover(const char* segment24, Nmap* nmap);
+
+}
+}

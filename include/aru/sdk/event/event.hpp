@@ -7,10 +7,13 @@
 #include "../ds/heap.hpp"
 #include "../ds/buf.hpp"
 #include "../lock/lock.hpp"
+#include "../memory/mem.hpp"
 
+namespace aru {
+
+namespace sdk {
+    
 #define HLOOP_READ_BUFSIZE  8192
-
-using namespace aru::sdk;
 
 ARRAY_DECL(hio_t*, io_array);
 ARU_QUEUE_DECL(hevent_t, event_queue);
@@ -47,7 +50,7 @@ struct hloop_s {
     // custom_events
     int                         sockpair[2];
     event_queue                 custom_events;
-    hmutex_t                    custom_events_mutex;
+    mutex_lock_t                    custom_events_mutex;
 };
 
 uint64_t hloop_next_event_id();
@@ -109,7 +112,7 @@ struct hio_s {
     struct sockaddr*    peeraddr;
     buf_t              readbuf;        // for hread
     struct write_queue  write_queue;    // for hwrite
-    hrecursive_mutex_t  write_mutex;    // lock write and write_queue
+    mutex_lock_t  write_mutex;    // lock write and write_queue
     // callbacks
     hread_cb    read_cb;
     hwrite_cb   write_cb;
@@ -187,7 +190,7 @@ uint32_t hio_next_id();
     do {\
         EVENT_INACTIVE(ev);\
         if (!ev->pending) {\
-            HV_FREE(ev);\
+            ARU_FREE(ev);\
         }\
     } while(0)
 
@@ -196,4 +199,8 @@ uint32_t hio_next_id();
         ev->destroy = 0;\
         EVENT_ACTIVE(ev);\
         ev->pending = 0;\
-    } while(0)ggV
+    } while(0)
+
+} // namespace aru
+
+} // namespace aru

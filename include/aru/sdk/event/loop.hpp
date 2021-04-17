@@ -5,6 +5,10 @@
 #include <sys/socket.h>
 #include "../macros/defs.hpp"
 
+namespace aru {
+
+namespace sdk {
+    
 typedef struct hloop_s      hloop_t;
 typedef struct hevent_s     hevent_t;
 
@@ -334,3 +338,6 @@ hio_t* hio_setup_tcp_upstream(hio_t* io, const char* host, int port, int ssl  = 
 // @return upstream_io
 // @see examples/udp_proxy_server
 hio_t* hio_setup_udp_upstream(hio_t* io, const char* host, int port);
+
+}
+}
