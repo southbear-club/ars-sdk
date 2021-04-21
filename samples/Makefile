@@ -30,7 +30,8 @@ CFLAGS = -DWITH_OPENSSL -std=c++17 -g -W -Wall -o2 \
 
 DEMOS = demo_os \
 		demo_tcp demo_udp \
-		demo_evpp
+		demo_evpp \
+		demo_crypto_uuid
 
 all: $(DEMOS)
 
@@ -59,3 +60,8 @@ demo_evpp:
 	@$(CXX) evpp/demo_tcp_server.cpp $(INC) $(LIB) $(CFLAGS) -o $(OUTPUT_DIR)/evpp/demo_tcp_server
 	@$(CXX) evpp/demo_udp_client.cpp $(INC) $(LIB) $(CFLAGS) -o $(OUTPUT_DIR)/evpp/demo_udp_client
 	@$(CXX) evpp/demo_udp_server.cpp $(INC) $(LIB) $(CFLAGS) -o $(OUTPUT_DIR)/evpp/demo_udp_server
+
+demo_crypto_uuid:
+	@mkdir -p $(OUTPUT_DIR)
+	@echo "$(CXX) $@"
+	@$(CXX) $@.cpp $(INC) $(LIB) $(CFLAGS) -o $(OUTPUT_DIR)/$@

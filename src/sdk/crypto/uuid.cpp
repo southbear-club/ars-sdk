@@ -1,3 +1,14 @@
+
+/**
+ * @addtogroup sdk_crypto 加密相关
+ * @{
+ */
+
+/**
+ * @addtogroup sdk_crypto_uuid uuid
+ * @{
+ */
+
 /**
  * Copyright © 2021 <wotsen>.
  * 
@@ -16,7 +27,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file uuid.cpp
- * @brief 
+ * @brief uuid生成
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-05
@@ -124,3 +135,11 @@ void uuid_generate_simple(char s[37])
 } // namespace sdk
 
 } // namespace aru
+
+/**
+ * @}
+ */
+
+/**
+ * @}
+ */

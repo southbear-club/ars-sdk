@@ -15,42 +15,28 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file uuid.hpp
- * @brief 
+ * @file files.hpp
+ * @brief 示例代码集
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-05
+ * @date 2021-04-21
  * 
  * @copyright MIT
  * 
  */
-#pragma once
-#include <stdio.h>
 
-namespace aru {
-    
-namespace sdk {
+/**
+ * @example demo_crypto_uuid.cpp
+ * 
+ */
 
-void uuid_generate_simple(char s[37]);
-
-static inline void uuid_generate(char s[37])
-{
-#ifndef __APPLE__
-	FILE* fp;
-	fp = fopen("/proc/sys/kernel/random/uuid", "r");
-	if (fp)
-	{
-		s[36] = '0';
-		fread(s, 1, 36, fp);
-		fclose(fp);
-	}
-	else
-#endif
-	{
-		uuid_generate_simple(s);
-	}
-}
-    
-} // namespace sdk
-
-} // namespace aru
+/**
+ * @addtogroup sdk_crypto 加密相关
+ * @{
+ * @section 加密相关示例
+ * <table>
+ * <tr><th>说明 <th>文件 </tr>
+ * <tr><th>uuid生成 <th> @link demo_crypto_uuid.cpp </tr>
+ * </table>
+ * @}
+ */

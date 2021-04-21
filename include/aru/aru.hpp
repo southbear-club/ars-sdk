@@ -16,13 +16,46 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file aru.hpp
- * @brief 
+ * @brief aru，一个c++基础库
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-03
  * 
  * @copyright MIT
  * 
+ */
+
+/**
+ * @mainpage aru基础库
+ * <table>
+ * <tr><th>Project <td>aru
+ * <tr><th>Author  <td>wotsen
+ * <tr><th>Email   <td>astralrovers@outlook.com
+ * </table>
+ * @section 介绍
+ * 一个C++基础库，包含时间、文件、网络、线程、协程、加密、宏、锁等基础功能，帮助更方便地构建应用程序。
+ * 
+ * @section 支持的模块
+ * -# 时间
+ * -# 文件
+ * 
+ * @section 简单使用
+ * 编译如下：
+ * @code
+ * g++ demo.cpp -o demo -laru -lssl -lcrypto -lglog -lpthread -lc
+ * @endcode
+ * 
+ * @section 更新记录
+ * <table>
+ * <tr><th>Date       <th>Version   <th>Author <th>Email <th>Description </tr>
+ * <tr><td>2021/04/21 <td>1.0.0     <td>wotsen <td>astralrovers@outlook.com <td>初始版本 </tr>
+ * <tr><td>2021/04/21 <td>1.0.1     <td>wotsen <td>astralrovers@outlook.com <td>
+ * -# 添加evpp;
+ * -# 添加co协程;
+ * -# 添加示例代码；\n
+ *      并修改示例代码编译方式
+ * </tr>
+ * </table>
  */
 #pragma once
 #include <stdint.h>
