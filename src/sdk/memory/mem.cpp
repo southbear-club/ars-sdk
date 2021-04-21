@@ -35,6 +35,7 @@ namespace aru {
 namespace sdk {
 
 static void *(*__malloc)(size_t) = ::malloc;
+static int (*__memalign)(void **, size_t, size_t) = ::posix_memalign;
 static void *(*__realloc)(void *, size_t) = ::realloc;
 static void *(*__calloc)(size_t, size_t) = ::calloc;
 static void (*__free)(void*) = ::free;
@@ -58,6 +59,9 @@ void aru_memory_init(const memory_conf_t &conf) {
     if (conf.malloc) {
         __malloc = conf.malloc;
     }
+    if (conf.memalign) {
+        __memalign = conf.memalign;
+    }
     if (conf.realloc) {
         __realloc = conf.realloc;
     }
@@ -77,6 +81,16 @@ void *aru_malloc(size_t size) {
         return nullptr;
     }
     return ptr;
+}
+
+int aru_memalign(void **ptr, size_t alignment, size_t size) {
+    s_alloc_cnt++;
+    int ret = __memalign(ptr, alignment, size);
+    if (ret != 0) {
+        fprintf(stderr, "memalign failed!\n");
+    }
+
+    return ret;
 }
 
 void *aru_realloc(void *oldptr, size_t newsize, size_t oldsize) {

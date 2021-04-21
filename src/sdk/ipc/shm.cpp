@@ -15,62 +15,63 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file mem.hpp
+ * @file shm.cpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-18
  * 
  * @copyright MIT
  * 
  */
-#pragma once
-#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include "aru/sdk/ipc/ipc.hpp"
 
 namespace aru {
-
+    
 namespace sdk {
 
-typedef struct {
-    void *(*malloc)(size_t);
-    int (*memalign)(void **, size_t, size_t);
-    void *(*realloc)(void *, size_t);
-    void *(*calloc)(size_t, size_t);
-    void (*free)(void*);
-} memory_conf_t;
+struct shm_ctx {
 
-void aru_memory_init(const memory_conf_t &conf);
+};
 
-void *aru_malloc(size_t size);
-int aru_memalign(void **ptr, size_t alignment, size_t size);
-void *aru_realloc(void *oldptr, size_t newsize, size_t oldsize);
-void *aru_calloc(size_t nmemb, size_t size);
-void *aru_zalloc(size_t size);
-void aru_free(void *ptr);
 
-long alloc_cnt(void);
-long free_cnt(void);
-void memroy_check(void);
-
-static inline void memcheck_register(void) {
-    atexit(memroy_check);
+static void *shm_init(ipc_t *ipc, uint16_t port, enum ipc_role role)
+{
+    return NULL;
 }
 
-#define ARU_ALLOC(ptr, size) \
-    do {\
-        *(void**)&(ptr) = aru::sdk::aru_zalloc(size);\
-    } while (0)
 
-#define ARU_ALLOC_SIZEOF(ptr) ARU_ALLOC(ptr, sizeof(*(ptr)))
+static void shm_deinit(ipc_t *ipc)
+{
 
-#define ARU_FREE(ptr) \
-    do {\
-        if (ptr) {\
-            aru::sdk::aru_free(ptr);\
-            ptr = NULL;\
-        }\
-    } while (0)
+}
+
+
+static int shm_write(ipc_t *ipc, const void *buf, size_t len)
+{
+    return 0;
+}
+
+static int shm_read(ipc_t *ipc, void *buf, size_t len)
+{
+    return 0;
+}
+
+
+struct ipc_ops shm_ops = {
+    .init             = shm_init,
+    .deinit           = shm_deinit,
+    .accept           = NULL,
+    .connect          = NULL,
+    .register_recv_cb = NULL,
+    .send             = shm_write,
+    .recv             = shm_read,
+};
 
 } // namespace sdk
 

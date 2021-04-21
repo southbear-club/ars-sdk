@@ -21,7 +21,7 @@ static inline int mutex_init_ex(mutex_lock_t *lock, mutex_attr_t *attr) {
     return ::pthread_mutex_init(lock, attr);
 }
 
-static inline int mutex_init(mutex_lock_t *lock) {
+static inline int mutex_lock_init(mutex_lock_t *lock) {
     return mutex_init_ex(lock, nullptr);
 }
 

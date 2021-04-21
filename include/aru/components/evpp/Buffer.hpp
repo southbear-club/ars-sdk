@@ -15,63 +15,25 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file mem.hpp
+ * @file Buffer.hpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-04
+ * @date 2021-04-18
  * 
  * @copyright MIT
  * 
  */
 #pragma once
-#include <stddef.h>
-#include <stdlib.h>
+#include "aru/sdk/ds/buf.hpp"
 
 namespace aru {
+    
+namespace evpp {
 
-namespace sdk {
+typedef sdk::Buf Buffer;
+typedef std::shared_ptr<Buffer>     BufferPtr;
 
-typedef struct {
-    void *(*malloc)(size_t);
-    int (*memalign)(void **, size_t, size_t);
-    void *(*realloc)(void *, size_t);
-    void *(*calloc)(size_t, size_t);
-    void (*free)(void*);
-} memory_conf_t;
-
-void aru_memory_init(const memory_conf_t &conf);
-
-void *aru_malloc(size_t size);
-int aru_memalign(void **ptr, size_t alignment, size_t size);
-void *aru_realloc(void *oldptr, size_t newsize, size_t oldsize);
-void *aru_calloc(size_t nmemb, size_t size);
-void *aru_zalloc(size_t size);
-void aru_free(void *ptr);
-
-long alloc_cnt(void);
-long free_cnt(void);
-void memroy_check(void);
-
-static inline void memcheck_register(void) {
-    atexit(memroy_check);
-}
-
-#define ARU_ALLOC(ptr, size) \
-    do {\
-        *(void**)&(ptr) = aru::sdk::aru_zalloc(size);\
-    } while (0)
-
-#define ARU_ALLOC_SIZEOF(ptr) ARU_ALLOC(ptr, sizeof(*(ptr)))
-
-#define ARU_FREE(ptr) \
-    do {\
-        if (ptr) {\
-            aru::sdk::aru_free(ptr);\
-            ptr = NULL;\
-        }\
-    } while (0)
-
-} // namespace sdk
+} // namespace evpp
 
 } // namespace aru

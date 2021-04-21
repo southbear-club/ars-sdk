@@ -273,7 +273,7 @@ static void hloop_init(loop_t* loop) {
     iowatcher_init(loop);
 
     // custom_events
-    mutex_init(&loop->custom_events_mutex);
+    mutex_lock_init(&loop->custom_events_mutex);
     event_queue_init(&loop->custom_events, CUSTOM_EVENT_QUEUE_INIT_SIZE);
     loop->sockpair[0] = loop->sockpair[1] = -1;
     if (socketpair(AF_INET, SOCK_STREAM, 0, loop->sockpair) != 0) {
@@ -662,7 +662,7 @@ void io_init(io_t* io) {
     // write_queue init when ev_write try_write failed
     // write_queue_init(&io->write_queue, 4);
 
-    mutex_init(&io->write_mutex);
+    mutex_lock_init(&io->write_mutex);
 }
 
 void io_ready(io_t* io) {

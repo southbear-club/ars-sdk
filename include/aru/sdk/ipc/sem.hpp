@@ -66,7 +66,12 @@ static inline int sem_trypop(sem_t *sem) {
 }
 
 static inline int sem_pop_wait(sem_t *sem, const struct timespec *abs_tm) {
+#ifdef __APPLE__
+    if (abs_tm) {}
+    return ::sem_wait(sem);
+#else
     return ::sem_timedwait(sem, abs_tm);
+#endif
 }
 
 static inline int sem_post(sem_t *sem) {

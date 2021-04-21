@@ -38,9 +38,9 @@ namespace aru {
 namespace sdk {
 
 #define ARU_SOCKADDR_STRLEN sizeof(((struct sockaddr_un*)(NULL))->sun_path)
-#define ARU_SOCKADDR_LEN(addr) aru::sdk::sock_addr_len((sock_addr_t*)addr)
-#define ARU_SOCKADDR_STR(addr, buf) aru::sdk::sock_addr_str((sock_addr_t*)addr, buf, sizeof(buf))
-#define ARU_SOCKADDR_PRINT(addr) aru::sdk::sock_addr_print((sock_addr_t*)addr)
+#define ARU_SOCKADDR_LEN(addr) aru::sdk::sock_addr_len((aru::sdk::sock_addr_t*)addr)
+#define ARU_SOCKADDR_STR(addr, buf) aru::sdk::sock_addr_str((aru::sdk::sock_addr_t*)addr, buf, sizeof(buf))
+#define ARU_SOCKADDR_PRINT(addr) aru::sdk::sock_addr_print((aru::sdk::sock_addr_t*)addr)
 
 #define ARU_INVALID_SOCKET -1
 

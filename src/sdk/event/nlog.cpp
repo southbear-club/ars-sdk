@@ -87,7 +87,7 @@ io_t* nlog_listen(loop_t* loop, int port) {
     s_logger.loop = loop;
     s_logger.listenio = loop_create_tcp_server(loop, "0.0.0.0", port, on_accept);
     list_init(&s_logger.clients);
-    mutex_init(&s_mutex);
+    mutex_lock_init(&s_mutex);
     return s_logger.listenio;
 }
 

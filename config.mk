@@ -50,7 +50,7 @@ ST_LIBS_UT =
 
 SO_LIBS = -lgtest -lglog -lgflags -lssl -lcrypto -lpthread -lc #-ldl -lrt -lresolv
 
-DMARCROS := -DLANGUAGE_ZH  -DWITH_OPENSSL -DSOFT_VERSION=\"$(RELEASE_VERSION)\" \
+DMARCROS := -DLANGUAGE_ZH -DWITH_OPENSSL -DSOFT_VERSION=\"$(RELEASE_VERSION)\" \
 			-DARU_COMPILE_TIME=\""$(COMPILE_TIME)"\" -DBUILD_VERSION="\"$(BUILD_VERSION)"\"
 
 # 调试模式

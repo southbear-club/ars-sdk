@@ -57,13 +57,13 @@ void __thread_init(Thread *t, void *(*func)(Thread *, void *), void *arg, const 
             }
             break;
         case THREAD_LOCK_MUTEX:
-            if (0 != mutex_init(&t->lock.mutex)) {
+            if (0 != mutex_lock_init(&t->lock.mutex)) {
                 thread_attr_destroy(&t->attr);
                 throw std::runtime_error("mutex lock init error");
             }
             break;
         case THREAD_LOCK_COND:
-            if (0 != mutex_init(&t->lock.mutex)) {
+            if (0 != mutex_lock_init(&t->lock.mutex)) {
                 thread_attr_destroy(&t->attr);
                 throw std::runtime_error("mutex lock init error");
             }

@@ -125,12 +125,12 @@ public:
     }
 
     int start() {
-        if (status == STOP) {
-            status = RUNNING;
+        if (status == ThreadPool::Status::STOP) {
+            status = ThreadPool::Status::RUNNING;
             for (int i = 0; i < pool_size; ++i) {
                 workers.emplace_back(std::thread([this]{
-                    while (status != STOP) {
-                        while (status == PAUSE) {
+                    while (status != ThreadPool::Status::STOP) {
+                        while (status == ThreadPool::Status::PAUSE) {
                             std::this_thread::yield();
                         }
 
@@ -138,10 +138,10 @@ public:
                         {
                             std::unique_lock<std::mutex> locker(_mutex);
                             _cond.wait(locker, [this]{
-                                return status == STOP || !tasks.empty();
+                                return status == ThreadPool::Status::STOP || !tasks.empty();
                             });
 
-                            if (status == STOP) return;
+                            if (status == ThreadPool::Status::STOP) return;
 
                             if (!tasks.empty()) {
                                 --idle_num;
@@ -160,8 +160,8 @@ public:
     }
 
     int stop() {
-        if (status != STOP) {
-            status = STOP;
+        if (status != ThreadPool::Status::STOP) {
+            status = ThreadPool::Status::STOP;
             _cond.notify_all();
             for (auto& worker : workers) {
                 worker.join();
@@ -171,22 +171,22 @@ public:
     }
 
     int pause() {
-        if (status == RUNNING) {
-            status = PAUSE;
+        if (status == ThreadPool::Status::RUNNING) {
+            status = ThreadPool::Status::PAUSE;
         }
         return 0;
     }
 
     int resume() {
-        if (status == PAUSE) {
-            status = RUNNING;
+        if (status == ThreadPool::Status::PAUSE) {
+            status = ThreadPool::Status::RUNNING;
         }
         return 0;
     }
 
     int wait() {
         while (1) {
-            if (status == STOP || (tasks.empty() && idle_num == pool_size)) {
+            if (status == ThreadPool::Status::STOP || (tasks.empty() && idle_num == pool_size)) {
                 break;
             }
             std::this_thread::yield();
@@ -223,7 +223,7 @@ public:
     };
     int                 pool_size;
     std::atomic<int>    idle_num;
-    std::atomic<Status> status;
+    std::atomic<ThreadPool::Status> status;
     std::vector<std::thread>    workers;
     std::queue<Task>            tasks;
 

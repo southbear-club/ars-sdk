@@ -25,6 +25,7 @@
  * 
  */
 #pragma once
+#ifndef __APPLE__
 #include <stddef.h>
 #include <time.h>
 #include <fcntl.h>
@@ -92,3 +93,4 @@ static inline int mq_notify(mq_t h, const struct sigevent *sevp) {
 } // namespace sdk
 
 } // namespace aru
+#endif
