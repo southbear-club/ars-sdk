@@ -61,7 +61,7 @@ inline std::string join(const S&... s) {
 // Split path by the final slash, separating it into a dir and file name.
 // If there is no slash in path, return an empty dir and file set to path.
 // The returned values have the property that path = dir+file.
-static inline std::pair<std::string, std::string> split(const std::string& s) {
+static inline std::pair<std::string, std::string> path_split(const std::string& s) {
     size_t p = s.rfind('/');
     if (p == s.npos) return std::make_pair(std::string(), s);
     return std::make_pair(s.substr(0, p + 1), s.substr(p + 1));
@@ -69,25 +69,19 @@ static inline std::pair<std::string, std::string> split(const std::string& s) {
 
 // Return the dir part of the path. The result is cleaned.
 // If the path is empty, return ".".
-inline std::string dir(const std::string& s) {
-    return clean(split(s).first);
+static inline std::string dir(const std::string& s) {
+    return clean(path_split(s).first);
 }
 
-// Return the last element of path.
-// Trailing slashes are removed before extracting the last element.
-// If the path is empty, return ".".
-// If the path consists entirely of slashes, return "/".
-std::string base(const std::string& s);
-
-// Return file name extension used by path.
-// path::ext("a.b/x.log")  ->  ".log"
-std::string ext(const std::string& s);
-
-const char* path_basename(const char* filepath);
-const char* path_suffixname(const char* filename);
-
-char* strrchr_dot(const char* str);
-char* strrchr_dir(const char* filepath);
+// str=/mnt/share/image/test.jpg
+// basename=test.jpg
+// dirname=/mnt/share/image
+// filename=test
+// suffixname=jpg
+std::string basename(const std::string& str);
+std::string dirname(const std::string& str);
+std::string filename(const std::string& str);
+std::string suffixname(const std::string& str);
 
 int mkdir_p(const char* dir);
 int rmdir_p(const char* dir);

@@ -16,8 +16,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file atomic.hpp
- * @brief 
- * @author  ()
+ * @brief 原子操作
+ * @author 
  * @version 1.0.0
  * @date 2021-04-10
  * 

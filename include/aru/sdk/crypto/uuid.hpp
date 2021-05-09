@@ -31,8 +31,18 @@ namespace aru {
     
 namespace sdk {
 
+/**
+ * @brief 简单生成uuid
+ * 
+ * @param s 
+ */
 void uuid_generate_simple(char s[37]);
 
+/**
+ * @brief 生成uuid,如果是linux系统，则读取文件
+ * 
+ * @param s 
+ */
 static inline void uuid_generate(char s[37])
 {
 #ifndef __APPLE__

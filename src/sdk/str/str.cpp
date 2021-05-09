@@ -127,22 +127,58 @@ static inline int vscprintf(const char* fmt, va_list ap) {
     return vsnprintf(NULL, 0, fmt, ap);
 }
 
-std::string asprintf(const char* fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    int len = vscprintf(fmt, ap);
-    va_end(ap);
+// std::string asprintf(const char* fmt, ...) {
+//     va_list ap;
+//     va_start(ap, fmt);
+//     int len = vscprintf(fmt, ap);
+//     va_end(ap);
 
-    std::string str;
-    str.reserve(len+1);
-    // must resize to set str.size
-    str.resize(len);
-    // must recall va_start on unix
-    va_start(ap, fmt);
-    vsnprintf((char*)str.data(), len+1, fmt, ap);
-    va_end(ap);
+//     std::string str;
+//     str.reserve(len+1);
+//     // must resize to set str.size
+//     str.resize(len);
+//     // must recall va_start on unix
+//     va_start(ap, fmt);
+//     vsnprintf((char*)str.data(), len+1, fmt, ap);
+//     va_end(ap);
 
-    return str;
+//     return str;
+// }
+
+std::string format(const char *fmt, ...) {
+    char buffer[500];
+    std::unique_ptr<char[]> release1;
+    char *base;
+    for (int iter = 0; iter < 2; iter++) {
+        int bufsize;
+        if (iter == 0) {
+            bufsize = sizeof(buffer);
+            base = buffer;
+        } else {
+            bufsize = 30000;
+            base = new char[bufsize];
+            release1.reset(base);
+        }
+        char *p = base;
+        char *limit = base + bufsize;
+        if (p < limit) {
+            va_list ap;
+            va_start(ap, fmt);
+            p += vsnprintf(p, limit - p, fmt, ap);
+            va_end(ap);
+        }
+        // Truncate to available space if necessary
+        if (p >= limit) {
+            if (iter == 0) {
+                continue;  // Try again with larger buffer
+            } else {
+                p = limit - 1;
+                *p = '\0';
+            }
+        }
+        break;
+    }
+    return base;
 }
 
 // x,y,z
@@ -251,68 +287,6 @@ std::string replace(const std::string& str, const std::string& find, const std::
         pos += b;
     }
     return res;
-}
-
-std::string basename(const std::string& str) {
-    std::string::size_type pos1 = str.find_last_not_of("/\\");
-    if (pos1 == std::string::npos) {
-        return "/";
-    }
-    std::string::size_type pos2 = str.find_last_of("/\\", pos1);
-    if (pos2 == std::string::npos) {
-        pos2 = 0;
-    } else {
-        pos2++;
-    }
-
-    return str.substr(pos2, pos1-pos2+1);
-}
-
-std::string dirname(const std::string& str) {
-    std::string::size_type pos1 = str.find_last_not_of("/\\");
-    if (pos1 == std::string::npos) {
-        return "/";
-    }
-    std::string::size_type pos2 = str.find_last_of("/\\", pos1);
-    if (pos2 == std::string::npos) {
-        return ".";
-    } else if (pos2 == 0) {
-        pos2 = 1;
-    }
-
-    return str.substr(0, pos2);
-}
-
-std::string filename(const std::string& str) {
-    std::string::size_type pos1 = str.find_last_of("/\\");
-    if (pos1 == std::string::npos) {
-        pos1 = 0;
-    } else {
-        pos1++;
-    }
-    std::string file = str.substr(pos1, -1);
-
-    std::string::size_type pos2 = file.find_last_of(".");
-    if (pos2 == std::string::npos) {
-        return file;
-    }
-    return file.substr(0, pos2);
-}
-
-std::string suffixname(const std::string& str) {
-    std::string::size_type pos1 = str.find_last_of("/\\");
-    if (pos1 == std::string::npos) {
-        pos1 = 0;
-    } else {
-        pos1++;
-    }
-    std::string file = str.substr(pos1, -1);
-
-    std::string::size_type pos2 = file.find_last_of(".");
-    if (pos2 == std::string::npos) {
-        return "";
-    }
-    return file.substr(pos2+1, -1);
 }
 
 std::string strip(const char* s, const char* c, char d) {

@@ -16,7 +16,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file thread.hpp
- * @brief 
+ * @brief 线程对象
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-05
@@ -37,7 +37,6 @@
 #include "thread_util.hpp"
 #include "thread_routine.hpp"
 #include "thread_pool.hpp"
-#include "thread_object.hpp"
 #include "thread_local_storage.hpp"
 
 namespace aru  {
@@ -46,24 +45,50 @@ namespace sdk  {
 
 typedef struct Thread_s Thread;
 
+/**
+ * @brief 线程基本结构体
+ * 
+ */
 struct Thread_s {
-    thread_t tid;
-    thread_attr_t attr;
-    char name[ARU_THREAD_NAME_LEN];
-    enum lock_type type;
+    thread_t tid;                   ///< 线程id
+    thread_attr_t attr;             ///< 线程属性
+    char name[ARU_THREAD_NAME_LEN]; ///< 名称
+    enum lock_type type;            ///< 锁类型
     union {
-        spin_lock_t spin;
-        mutex_lock_t mutex;
-        sem_lock_t sem;
+        spin_lock_t spin;           ///< 自旋锁
+        mutex_lock_t mutex;         ///< 互斥锁
+        sem_lock_t sem;             ///< 信号量
     } lock;
-    mutex_cond_t cond;
-    bool run;
-    void *(*func)(Thread *, void *);
-    void *arg;
+    mutex_cond_t cond;              ///< 条件变量
+    bool run;                       ///< 运行状态
+    void *(*func)(Thread *, void *);///< 执行函数
+    void *arg;                      ///< 参数
 };
 
+/**
+ * @brief 内部初始化线程接口
+ * 
+ * @param t 线程信息
+ * @param func 线程函数
+ * @param arg 参数
+ * @param attr 属性
+ * @param type 锁类型
+ */
 void __thread_init(Thread *t, void *(*func)(Thread *, void *), void *arg, const thread_attr_t *attr, enum lock_type type);
+
+/**
+ * @brief 线程释放
+ * 
+ * @param t 
+ */
 void __thread_deinit(Thread *t);
+
+/**
+ * @brief 线程内部执行函数
+ * 
+ * @param arg 参数
+ * @return void* 返回值
+ */
 static inline void *__thread_func(void *arg) {
     Thread *t = (Thread*)arg;
     if (!t->func) {
@@ -77,7 +102,17 @@ static inline void *__thread_func(void *arg) {
     return ret;
 }
 
+/**
+ * @brief 线程创建
+ * 
+ * @param func 
+ * @param arg 
+ * @param attr 
+ * @param type 
+ * @return Thread* 
+ */
 Thread *thread_create(void *(*func)(Thread *, void *), void *arg, const thread_attr_t *attr, enum lock_type type=THREAD_LOCK_MUTEX);
+
 static inline Thread *thread_create(void *(*func)(Thread *, void *), void *arg, enum lock_type type=THREAD_LOCK_MUTEX) {
     return thread_create(func, arg, nullptr, type);
 }
@@ -188,6 +223,10 @@ static inline int thread_signal(Thread *t, bool all=false) {
     return 0;
 }
 
+/**
+ * @brief 线程对象
+ * 
+ */
 class AruThread {
 public:
     AruThread(void *(*func)(Thread *, void *)) : AruThread(func, nullptr, nullptr) {}

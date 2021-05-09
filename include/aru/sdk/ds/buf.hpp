@@ -34,6 +34,8 @@ namespace aru {
 
 namespace sdk {
 
+/// 自动扩容buf
+
 typedef struct buf_s {
     char*  base;
     size_t len;

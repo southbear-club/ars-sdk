@@ -48,9 +48,9 @@ endif
 
 ST_LIBS_UT = 
 
-SO_LIBS = -lgtest -lglog -lgflags -lssl -lcrypto -lpthread -lc #-ldl -lrt -lresolv
+SO_LIBS = -lgtest -lglog -lgflags -lz -lssl -lcrypto -lpthread -lc #-ldl -lrt -lresolv
 
-DMARCROS := -DLANGUAGE_ZH -DWITH_OPENSSL -DSOFT_VERSION=\"$(RELEASE_VERSION)\" \
+DMARCROS := -DLANGUAGE_ZH -DWITH_OPENSSL -DWITH_ZLIB -DSOFT_VERSION=\"$(RELEASE_VERSION)\" \
 			-DARU_COMPILE_TIME=\""$(COMPILE_TIME)"\" -DBUILD_VERSION="\"$(BUILD_VERSION)"\"
 
 # 调试模式
@@ -67,7 +67,8 @@ endif
 DMARCROS += -D__const__= -pipe -W -Wall -Wno-unused-parameter \
 			-fPIC -fno-omit-frame-pointer -Wno-implicit-fallthrough \
 			-fstack-protector-all -Wno-deprecated-declarations \
-			-Wno-class-memaccess -Wno-unknown-warning-option
+			-Wno-class-memaccess -Wno-unknown-warning-option \
+			-Wno-tautological-constant-out-of-range-compare
 
 # -ggdb
 CCFLAG += -c $(INC) -Wall -std=c++17 $(DMARCROS)

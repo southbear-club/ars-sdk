@@ -33,6 +33,8 @@ namespace aru {
     
 namespace sdk {
 
+/// 环形缓冲区
+
 typedef struct ringbuffer {
     void *buffer;
     int length;

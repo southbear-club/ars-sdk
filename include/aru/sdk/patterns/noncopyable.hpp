@@ -15,11 +15,11 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file thread_object.hpp
+ * @file noncopyable.hpp
  * @brief 
- * @author  ()
+ * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
- * @date 2021-04-07
+ * @date 2021-05-05
  * 
  * @copyright MIT
  * 
@@ -27,8 +27,17 @@
 #pragma once
 
 namespace aru {
-    
+
 namespace sdk {
+
+class noncopyable {
+protected:
+    noncopyable(void) = default;
+    virtual ~noncopyable(void) = default;
+public:
+    noncopyable(const noncopyable&) = delete;
+    noncopyable& operator=(const noncopyable&) = delete;
+};
 
 } // namespace sdk
 

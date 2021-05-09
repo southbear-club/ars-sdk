@@ -44,6 +44,10 @@ namespace sdk {
 
 #define ARU_INVALID_SOCKET -1
 
+/**
+ * @brief 网络地址
+ * 
+ */
 typedef union {
     struct sockaddr sa;
     struct sockaddr_in sin;

@@ -32,6 +32,8 @@ namespace aru {
     
 namespace sdk {
 
+/// 位图操作
+
 void bitmap_zero(uint8_t* bitmap, size_t nbits);
 void bitmap_fill(uint8_t* bitmap, size_t nbits);
 void bitmap_copy(uint8_t *bitmap, const uint8_t *src, size_t nbits);

@@ -41,16 +41,6 @@ namespace sdk {
 
 static char local_path[ARU_MAX_PATH];
 
-const char* path_basename(const char* filepath) {
-    const char* pos = strrchr_dir(filepath);
-    return pos ? pos + 1 : filepath;
-}
-
-const char* path_suffixname(const char* filename) {
-    const char* pos = strrchr_dot(filename);
-    return pos ? pos + 1 : "";
-}
-
 int mkdir_p(const char* dir) {
     if (access(dir, 0) == 0) {
         return EEXIST;
@@ -93,17 +83,6 @@ int rmdir_p(const char* dir) {
         }
     }
     return 0;
-}
-
-char* strrchr_dot(const char* str) { return (char*)::strrchr(str, '.'); }
-
-char* strrchr_dir(const char* filepath) {
-    char* p = (char*)filepath;
-    while (*p) ++p;
-    while (--p >= filepath) {
-        if (*p == '/') return p;
-    }
-    return NULL;
 }
 
 char* get_executable_path(char* buf, int size) {
@@ -189,27 +168,6 @@ std::string clean(const std::string& s) {
     return r.substr(0, p);
 }
 
-std::string base(const std::string& s) {
-    if (s.empty()) return std::string(1, '.');
-
-    size_t p = s.size();
-    for (; p > 0; p--) {
-        if (s[p - 1] != '/') break;
-    }
-    if (p == 0) return std::string(1, '/');
-
-    std::string x = (p == s.size() ? s : s.substr(0, p));
-    size_t c = x.rfind('/');
-    return c != x.npos ? x.substr(c + 1) : x;
-}
-
-std::string ext(const std::string& s) {
-    for (size_t i = s.size() - 1; i != (size_t)-1 && s[i] != '/'; --i) {
-        if (s[i] == '.') return s.substr(i);
-    }
-    return std::string();
-}
-
 char *path_pwd(void)
 {
     char *tmp = getcwd(local_path, sizeof(local_path));
@@ -217,6 +175,68 @@ char *path_pwd(void)
         // printf("getcwd failed: %s\n", strerror(errno));
     }
     return local_path;
+}
+
+std::string basename(const std::string& str) {
+    std::string::size_type pos1 = str.find_last_not_of("/\\");
+    if (pos1 == std::string::npos) {
+        return "/";
+    }
+    std::string::size_type pos2 = str.find_last_of("/\\", pos1);
+    if (pos2 == std::string::npos) {
+        pos2 = 0;
+    } else {
+        pos2++;
+    }
+
+    return str.substr(pos2, pos1-pos2+1);
+}
+
+std::string dirname(const std::string& str) {
+    std::string::size_type pos1 = str.find_last_not_of("/\\");
+    if (pos1 == std::string::npos) {
+        return "/";
+    }
+    std::string::size_type pos2 = str.find_last_of("/\\", pos1);
+    if (pos2 == std::string::npos) {
+        return ".";
+    } else if (pos2 == 0) {
+        pos2 = 1;
+    }
+
+    return str.substr(0, pos2);
+}
+
+std::string filename(const std::string& str) {
+    std::string::size_type pos1 = str.find_last_of("/\\");
+    if (pos1 == std::string::npos) {
+        pos1 = 0;
+    } else {
+        pos1++;
+    }
+    std::string file = str.substr(pos1, -1);
+
+    std::string::size_type pos2 = file.find_last_of(".");
+    if (pos2 == std::string::npos) {
+        return file;
+    }
+    return file.substr(0, pos2);
+}
+
+std::string suffixname(const std::string& str) {
+    std::string::size_type pos1 = str.find_last_of("/\\");
+    if (pos1 == std::string::npos) {
+        pos1 = 0;
+    } else {
+        pos1++;
+    }
+    std::string file = str.substr(pos1, -1);
+
+    std::string::size_type pos2 = file.find_last_of(".");
+    if (pos2 == std::string::npos) {
+        return "";
+    }
+    return file.substr(pos2+1, -1);
 }
 
 }  // namespace sdk

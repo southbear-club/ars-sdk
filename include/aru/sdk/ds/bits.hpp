@@ -32,8 +32,7 @@ namespace aru {
 
 namespace sdk {
 
-struct bits_t
-{
+struct bits_t {
 	uint8_t* data;
 	size_t size;
 	size_t bits; // offset bit

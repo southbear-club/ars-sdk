@@ -35,6 +35,7 @@ namespace aru {
 
 namespace sdk {
 
+/// 目录对象
 typedef struct dir_s {
     char    name[256];
     char    type; // f:file d:dir l:link b:block c:char s:socket p:pipe
@@ -46,9 +47,13 @@ typedef struct dir_s {
     time_t  ctime;
 } dir_t;
 
+/// 列出目录下的文件
 int listdir(const char* dir, std::list<dir_t>& dirs);
 
+/// 目录大小
 int dir_size(const char *path, uint64_t *size);
+
+/// 目录下的文件数
 int num_in_dir(const char *path);
 
 } // namespace sdk

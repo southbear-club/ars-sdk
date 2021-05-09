@@ -1,0 +1,27 @@
+# 扩展和需要替换的实现
+
+- `C-Thread-Pool`,C语言线程池
+- `pugixml`,xml解析
+- `fast_io`
+- `ecal`,`nng`,订阅发布
+- `HP-socket,handy,game_service_system,parallel-hashmap`,基础库，网络模型
+- `gtest,Catch2,doctest`,单元测试
+- `clipp,argparse,gflags`,命令行？
+- `apr,poco,mars`,基础库
+- `rpc`:`tars,erpc,libjson-rpc-cpp,rpclib,ice,capnproto`
+- `framework`:`Ulib,actor-framework,openFrameworks,treefrog-framework,workflow`
+- `net,event`:`wangle,seastar,uvw,moduo,sylar,evpp`
+- `db`:`MMKV,B-Plus-Tree,Explore,duck_db,BPlusTree,plustree-kv,rocksdb,rethinkdb,leveldb`
+- `configure`:`libucl`
+- `zlib`
+- `log`:`spdlog,glog,fluent-bit,logru,easyloggingpp,lnav,goaccess`
+- `co`:`libco,libgo`
+- `p2p`
+- `rtp,rtsp,rtmp`
+- `reflict`
+- `http server,client,proxy,websocket`:`oatpp,crow,cpprestsdk,tinywebserver,webserver,drogon,proxygen,aria2`
+- `gui`
+- `script`
+- `ipc`:`shademar,iceoryx,cpp-ipc,atomic_queue`
+- `queue`:`concurrentqueue`
+- `design`:``

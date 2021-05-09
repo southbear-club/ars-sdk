@@ -36,7 +36,7 @@
  * @section 加密相关示例
  * <table>
  * <tr><th>说明 <th>文件 </tr>
- * <tr><th>uuid生成 <th> @link demo_crypto_uuid.cpp </tr>
+ * <tr><th>uuid生成 <th> @link demo_crypto_uuid.cpp @endlink </tr>
  * </table>
  * @}
  */

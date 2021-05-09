@@ -33,16 +33,33 @@ namespace aru {
     
 namespace sdk {
 
+/**
+ * @brief 计算crc16
+ * 
+ * @param s 数据
+ * @param n 长度
+ * @param crc 前次的crc值，主要用于校验大文件时需要分段
+ * @return uint16_t 
+ */
 uint16_t crc16(const void* s, size_t n, uint16_t crc);
 
-inline uint16_t crc16(const void* s, size_t n) {
+/// 少量数据的校验
+static inline uint16_t crc16(const void* s, size_t n) {
     return crc16(s, n, 0);
 }
 
-inline uint16_t crc16(const char* s) {
+/// 字符串校验
+static inline uint16_t crc16(const char* s) {
     return crc16(s, strlen(s));
 }
 
+/**
+ * @brief 类似字符串string的校验
+ * 
+ * @tparam S 数据类型
+ * @param s 数据
+ * @return uint16_t 结果
+ */
 template<typename S>
 inline uint16_t crc16(const S& s) {
     return crc16(s.data(), s.size());

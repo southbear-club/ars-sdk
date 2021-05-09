@@ -35,6 +35,11 @@ namespace aru {
 
 namespace sdk {
 
+/// 留白字符
+#define ARU_SPACE_CHARS     " \t\r\n"
+/// 成对字符
+#define ARU_PAIR_CHARS      "{}[]()<>\"\"\'\'``"
+
 typedef std::vector<std::string> StringList;
 typedef std::map<std::string, std::string> KeyValue;
 
@@ -62,29 +67,45 @@ static inline T from_string(const std::string& str) {
     return t;
 }
 
-#define ARU_SPACE_CHARS     " \t\r\n"
-#define ARU_PAIR_CHARS      "{}[]()<>\"\"\'\'``"
-
+/// 转大写
 char *strupper(char *str);
+/// 转小写
 char *strlower(char *str);
+/// 逆序
 char *strreverse(char *str);
 
+/// 检查字符串前缀
 bool strstartswith(const char* str, const char* start);
+/// 检查后缀
 bool strendswith(const char* str, const char* end);
+/// 检查是否包含
 bool strcontains(const char* str, const char* sub);
 
+/// 字符串转bool值
+/// 1,y,Y,on,true,enable,yes
 bool getboolean(const char* str);
 
-std::string asprintf(const char* fmt, ...);
-// x,y,z
+/// 字符串格式化
+// std::string asprintf(const char* fmt, ...);
+std::string format(const char *fmt, ...);
+
+// 以指定字符分割字符串. x,y,z
 StringList split(const std::string& str, char delim = ',');
+
 // user=amdin&pswd=123456
 KeyValue splitKV(const std::string& str, char kv_kv = '&', char k_v = '=');
+/// 去除头尾的空白字符串
 std::string trim(const std::string& str, const char* chars = ARU_SPACE_CHARS);
+/// 去除左边的空白字符串
 std::string trimL(const std::string& str, const char* chars = ARU_SPACE_CHARS);
+/// 除去右边的空白字符串
 std::string trimR(const std::string& str, const char* chars = ARU_SPACE_CHARS);
+/// 去除成对字符
 std::string trim_pairs(const std::string& str, const char* pairs = ARU_PAIR_CHARS);
+/// 字符串替换
 std::string replace(const std::string& str, const std::string& find, const std::string& rep);
+
+/// b=both,l=left,r=right
 // strip("abxxa", "ab")       ->  "xx"     strip both left and right.
 // strip("abxxa", "ab", 'l')  ->  "xxa"    strip left only.
 // strip("abxxa", "ab", 'r')  ->  "abxx"   strip right only.
@@ -93,16 +114,6 @@ std::string strip(const char* s, char c, char d = 'b');
 std::string strip(const std::string& s, const char* c=" \t\r\n", char d='b');
 std::string strip(const std::string& s, char c, char d='b');
 std::string strip(const std::string& s, const std::string& c, char d='b');
-
-// str=/mnt/share/image/test.jpg
-// basename=test.jpg
-// dirname=/mnt/share/image
-// filename=test
-// suffixname=jpg
-std::string basename(const std::string& str);
-std::string dirname(const std::string& str);
-std::string filename(const std::string& str);
-std::string suffixname(const std::string& str);
 
 } // namespace sdk
 

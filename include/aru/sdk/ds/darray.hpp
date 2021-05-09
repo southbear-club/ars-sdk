@@ -35,6 +35,8 @@ namespace aru {
     
 namespace sdk {
 
+/// 动态数组
+
 struct darray {
     void *array;
     size_t num;

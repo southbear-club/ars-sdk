@@ -273,7 +273,7 @@ void sch_stop(CoSchedule *sch) {
     }
 }
 
-void add_co(size_t stack, proxy_co_fn fn) {
+void __add_co(size_t stack, proxy_co_fn fn) {
     sch_ref()->add(stack, fn);
 }
 

@@ -38,6 +38,7 @@ namespace aru {
 
 namespace sdk {
 
+/// 文件对象
 class File {
 public:
     File() {

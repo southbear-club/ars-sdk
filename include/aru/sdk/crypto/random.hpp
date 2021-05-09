@@ -26,11 +26,17 @@
  */
 #pragma once
 #include <stdint.h>
+#include <random>   // std::default_random_engine, std::uniform_int_distribution
+#include <utility>  // std::forward
 
 namespace aru {
 
 namespace sdk {
 
+/**
+ * @brief leveldb中的随机数实现
+ * 
+ */
 class Random {
 public:
     Random() : Random(1u) {}
@@ -53,6 +59,44 @@ public:
 
 private:
     uint32_t _seed;
+};
+
+////////////////////////////////////////////////////////////////
+/// Simple way of generating random numbers
+////////////////////////////////////////////////////////////////
+
+/// 使用标准库来实现简单的随机数
+template <class Engine       = std::default_random_engine, 
+          class Distribution = std::uniform_int_distribution<>>
+class DefRandom : public Distribution
+{
+    using base_t = Distribution;
+
+public:
+    using engine_type       = Engine;
+    using distribution_type = Distribution;
+    using result_type       = typename distribution_type::result_type;
+    using param_type        = typename distribution_type::param_type;
+
+private:
+    engine_type engine_;
+
+public:
+    template <typename... T>
+    DefRandom(T&&... args)
+        : base_t (std::forward<T>(args)...)
+        , engine_(std::random_device{}())
+    {}
+
+    result_type operator()(void)
+    {
+        return base_t::operator()(engine_);
+    }
+
+    result_type operator()(const param_type& parm)
+    {
+        return base_t::operator()(engine_, parm);
+    }
 };
 
 }  // namespace sdk

@@ -33,6 +33,8 @@ namespace aru {
     
 namespace sdk {
 
+/// 字典
+
 typedef struct _keypair_ {
     char *key;
     char *val;

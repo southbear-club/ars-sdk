@@ -34,6 +34,8 @@ namespace aru {
 
 namespace sdk {
 
+/// 对象池
+
 #define ARU_DEFAULT_OBJECT_POOL_INIT_NUM    0
 #define ARU_DEFAULT_OBJECT_POOL_MAX_NUM     4
 #define ARU_DEFAULT_OBJECT_POOL_TIMEOUT     3000 // ms

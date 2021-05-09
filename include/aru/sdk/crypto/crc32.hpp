@@ -30,10 +30,21 @@ namespace aru {
 
 namespace sdk {
 
+/**
+ * @brief 计算crc32
+ * 
+ * @param crc 上次校验码
+ * @param buffer 数据
+ * @param size 数据长度
+ * @return unsigned int 结果
+ */
 unsigned int crc32(unsigned int crc, const unsigned char *buffer, unsigned int size);
 
+/// 使用msb计算crc
 void crc32_msb_init(void);
 unsigned int crc32_msb(unsigned int crc, const unsigned char *buffer, unsigned int size);
+
+/// 使用lsb计算crc
 void crc32_lsb_init(void);
 unsigned int crc32_lsb(unsigned int crc, const unsigned char *buffer, unsigned int size);
 

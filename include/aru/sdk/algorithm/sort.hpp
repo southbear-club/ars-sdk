@@ -32,6 +32,14 @@ namespace sdk {
 
 typedef int (*fp_cmp)(const void *a, const void *b, size_t size);
 
+/**
+ * @brief 堆排序
+ * 
+ * @param base 数据
+ * @param num 数据个数
+ * @param size 每个数据的长度
+ * @param cmp 比较函数
+ */
 void heap_sort(void *base, size_t num, size_t size, fp_cmp cmp);
 int bubble_sort(void *array, size_t num, size_t size, fp_cmp cmp);
 int quick_sort(void *array, size_t num, size_t size, fp_cmp cmp);

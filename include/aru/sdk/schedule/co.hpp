@@ -62,20 +62,20 @@ void sch_run(CoSchedule *sch=nullptr);
 void sch_stop(CoSchedule *sch);
 void yield(void);
 
-void add_co(size_t stack, proxy_co_fn fn);
+void __add_co(size_t stack, proxy_co_fn fn);
 
 template <typename F, typename... Args>
 void new_co(F &&f, Args &&... args) {
 	auto call = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
 
-    add_co(0, [call]() { call(); });
+    __add_co(0, [call]() { call(); });
 }
 
 template <typename F, typename... Args>
 void new_co(size_t stack, F &&f, Args &&... args) {
 	auto call = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
 
-    add_co(stack, [call]() { (*call)(); });
+    __add_co(stack, [call]() { (*call)(); });
 }
 
 } // namespace sdk
