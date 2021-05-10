@@ -3,7 +3,7 @@
 #define ARS_LOG_MODULE_NAME "DEMO"
 #endif
 
-#include "ars/log/log.hpp"
+#include "ars/sdk/log/log.hpp"
 
 class DemoLog {
 public:

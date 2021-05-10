@@ -1,5 +1,5 @@
 # 目标
-TARGET := ars
+TARGET := arsdk
 # 单元测试目标
 UNIT_TEST_TARGET := $(TARGET)_ut
 ROOT_DIR := $(shell pwd)
@@ -38,7 +38,7 @@ all: pack demo ut
 
 # 生成配置头文件
 .PHONY: config
-config:
+config: $(ROOT_DIR)/src/configure.h.in
 	@mkdir -p build
 	@mkdir -p include
 	@mkdir -p lib
@@ -94,11 +94,7 @@ pack: $(TARGET) api
 	@cp -f build/lib$(TARGET).so $(DIST_DIR)/lib/
 
 	@echo "\033[32mcopy headers\033[0m"
-	@cp src/ars.hpp $(DIST_DIR)/include/ars/
-	@mkdir -p $(DIST_DIR)/include/ars/log/
-	@cp src/log/log.hpp $(DIST_DIR)/include/ars/log/
-	@mkdir -p $(DIST_DIR)/include/ars/sdk/crypto/
-	@cp src/sdk/crypto/md5.hpp $(DIST_DIR)/include/ars/sdk/crypto/
+	@cp include/ars/sdk $(DIST_DIR)/include/ars/ -rf
 
 	@echo "\033[32mtar -zcf ars-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz include lib demo docs README.md\033[0m"
 	@cd $(DIST_DIR) && tar -zcf ars-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz include lib demo docs README.md

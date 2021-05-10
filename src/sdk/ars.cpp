@@ -15,7 +15,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * @file in_log.cpp
+ * @file ars.cpp
  * @brief 
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
@@ -24,42 +24,66 @@
  * @copyright MIT
  * 
  */
-#include "in_log.hpp"
-#include "ars/ars.hpp"
+#include "ars/sdk/ars.hpp"
+#include "configure.h"
 
 namespace ars {
-
-namespace log {
-
-// 内部日志
-static LogFilter log_filter;
-
-LogFilter *get_log_filter(void) { return &log_filter; }
-
-}  // namespace log
-
-}  // namespace ars
-
-namespace ars {
-
-namespace lib {
-
-// 一键设置日志等级
-void set_log_level(ars::log::LogLevel level) {
-#define XX(m, name) name,
-    const char *logs[] = {ARS_MODULE_TABLE(XX)};
-#undef XX
-
-    for (auto item : logs) {
-        ars::log::log_filter.set_module_level(item, level);
-    }
+    
+int version(void) {
+    return (ARS_VERSION_MAJOR << 16) | (ARS_VERSION_MINOR << 8) | ARS_VERSION_ALTER;
 }
 
-// 设置单个模块日志等级
-void set_log_level(const std::string &module_name, ars::log::LogLevel level) {
-    ars::log::log_filter.set_module_level(module_name, level);
+const char *version_string(void) {
+    return ARS_VERSION;
 }
 
-}  // namespace lib
+uint64_t version_build(void) {
+    return ARS_VERSION_BUILD;
+}
 
-}  // namespace ars
+bool debug_version(void) {
+    return ARS_DEBUG;
+}
+
+const char *build_time(void) {
+    return ARS_BUILD_TIME;
+}
+
+const char *version_mode(void) {
+    return ARS_MODE;
+}
+
+const char *compile_arch(void) {
+    return ARS_ARCH;
+}
+
+const char *compile_plat(void) {
+    return ARS_PLAT;
+}
+
+const char *compile_processor(void) {
+    return ARS_PROCESSOR;
+}
+
+const char *compile_plat_version(void) {
+    return ARS_PLAT_VERSION;
+}
+
+const char *compile_os(void) {
+    return ARS_OS;
+}
+
+const char *compiler_tool(void) {
+    return ARS_COMPILER;
+}
+
+const char *compile_author(void) {
+    return ARS_RELEASE_USER;
+}
+
+const char *lib_author(void) {
+    return ARS_AUTHOR;
+}
+
+} // namespace ars
+

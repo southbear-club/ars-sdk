@@ -27,7 +27,7 @@
 #define ARS_LOG_MODULE_NAME "sdk-memory-slab"
 
 #include "ars/sdk/memory/slab.hpp"
-#include "log/in_log.hpp"
+#include "sdk/log/in_log.hpp"
 
 #include <string.h>
 #include <unistd.h>

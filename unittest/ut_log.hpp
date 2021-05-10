@@ -26,7 +26,7 @@
  */
 #pragma once
 
-#include "ars/log/log.hpp"
+#include "ars/sdk/log/log.hpp"
 
 ars::log::LogFilter *get_log_filter(void);
 
