@@ -32,6 +32,9 @@ namespace aru {
 
 namespace sdk {
 
+/**
+ * @brief 内存分配接口
+ */
 typedef struct {
     void *(*malloc)(size_t);
     int (*memalign)(void **, size_t, size_t);
@@ -40,9 +43,26 @@ typedef struct {
     void (*free)(void*);
 } memory_conf_t;
 
+/**
+ * @brief 内存函数初始化
+ * @param conf 配置
+ */
 void aru_memory_init(const memory_conf_t &conf);
 
+/**
+ * @brief 内存分配
+ * @param size 内存大小
+ * @return 内存地址
+ */
 void *aru_malloc(size_t size);
+
+/**
+ * @brief
+ * @param ptr
+ * @param alignment
+ * @param size
+ * @return
+ */
 int aru_memalign(void **ptr, size_t alignment, size_t size);
 void *aru_realloc(void *oldptr, size_t newsize, size_t oldsize);
 void *aru_calloc(size_t nmemb, size_t size);

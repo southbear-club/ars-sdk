@@ -105,18 +105,27 @@ static inline void *__thread_func(void *arg) {
 /**
  * @brief 线程创建
  * 
- * @param func 
- * @param arg 
- * @param attr 
- * @param type 
- * @return Thread* 
+ * @param func 启动函数
+ * @param arg thread-arguments
+ * @param attr thread-attr
+ * @param type thread-lock-type
+ * @return Thread* thread-handle, null-error
  */
 Thread *thread_create(void *(*func)(Thread *, void *), void *arg, const thread_attr_t *attr, enum lock_type type=THREAD_LOCK_MUTEX);
 
+/**
+ * @brief create-thead with no attr
+ * 
+ * @param func starup function
+ * @param arg function argument
+ * @param type thread lock type, default is THREAD_LOCK_MUTEX
+ * @return Thread* thread handle，null is error
+ */
 static inline Thread *thread_create(void *(*func)(Thread *, void *), void *arg, enum lock_type type=THREAD_LOCK_MUTEX) {
     return thread_create(func, arg, nullptr, type);
 }
 
+/// 设置线程名称，对于mac系统无效
 static inline int thread_set_name(Thread *t, const char *name) {
     if (!t || !name) {
         return -1;
@@ -125,6 +134,7 @@ static inline int thread_set_name(Thread *t, const char *name) {
     return thread_set_name(t->tid, t->name);
 }
 
+/// 设置线程分离
 static inline int thread_detach(Thread *t) {
     if (!t) {
         return -1;
@@ -133,6 +143,13 @@ static inline int thread_detach(Thread *t) {
     return thread_detach(t->tid);
 }
 
+/**
+ * @brief thread join
+ * 
+ * @param t thread handle
+ * @param ret thread function retval
+ * @return int 0-success, other error
+ */
 static inline int thread_join(Thread *t, void **ret=nullptr) {
     if (!t) {
         return -1;
@@ -140,8 +157,20 @@ static inline int thread_join(Thread *t, void **ret=nullptr) {
     return thread_join(t->tid, ret);
 }
 
+/**
+ * @brief destroy thread
+ * 
+ * @param t thread-handle
+ * @return int 0-success, other error
+ */
 int thread_destroy(Thread *t);
 
+/**
+ * @brief thread lock pop
+ * 
+ * @param t thread handle
+ * @return int 0-success, other error
+ */
 static inline int thread_lock(Thread *t) {
     if (!t) {
         return -1;
@@ -162,6 +191,13 @@ static inline int thread_lock(Thread *t) {
     }
     return -1;
 }
+
+/**
+ * @brief thread lock push
+ * 
+ * @param t thread handle
+ * @return int 0-success, other error
+ */
 static inline int thread_unlock(Thread *t) {
     if (!t) {
         return -1;
@@ -183,6 +219,13 @@ static inline int thread_unlock(Thread *t) {
     return 0;
 }
 
+/**
+ * @brief thread condtion wait
+ * 
+ * @param t thread-handle
+ * @param ms wait timeout, ms
+ * @return int 0-success, other error
+ */
 static inline int thread_wait(Thread *t, int64_t ms) {
     if (!t) {
         return -1;
@@ -201,6 +244,13 @@ static inline int thread_wait(Thread *t, int64_t ms) {
     return 0;
 }
 
+/**
+ * @brief 向线程发送信号
+ * 
+ * @param t 线程句柄
+ * @param all 广播，默认false
+ * @return int 0-成功，其他失败
+ */
 static inline int thread_signal(Thread *t, bool all=false) {
     if (!t) {
         return -1;
@@ -245,6 +295,12 @@ public:
         __thread_deinit(&thread_);
     }
 
+    /**
+     * @brief 线程启动
+     * 
+     * @param name 线程名称
+     * @return int 0成功，其他失败
+     */
     int start(const char *name=nullptr) {
         auto ret = thread_create(&thread_.tid, __thread_func, &thread_.attr, thread_.arg);
         if (ret != 0) {
@@ -257,24 +313,58 @@ public:
         return 0;
     }
 
+    /**
+     * @brief get thread id
+     * 
+     * @return thread_t thread id
+     */
     thread_t tid(void) {
         return thread_.tid;
     }
 
+    /**
+     * @brief set thread name
+     * 
+     * @param name thread name
+     * @return int 0 success, other failures
+     */
     int setname(const char *name) {
         return thread_set_name(&thread_, name);
     }
+
+    /**
+     * @brief get thread name
+     * 
+     * @return std::string thread name
+     */
     std::string name(void) {
         return std::string(thread_.name);
     }
 
+    /**
+     * @brief detach thread
+     * 
+     * @return int 0 success, other failures
+     */
     int detach(void) {
         return thread_detach(thread_.tid);
     }
+
+    /**
+     * @brief join thread
+     * 
+     * @param ret thread retval
+     * @return int 0 success, other failures
+     */
     int join(void **ret) {
         return thread_join(thread_.tid, ret);
     }
 
+    /**
+     * @brief 让出执行权
+     * 
+     * @return int 0 success, other failures
+     */
     int yield(void) {
         return thread_yield();
     }
@@ -296,6 +386,7 @@ public:
     int alive(void) {
         return thread_alive(thread_.tid);
     }
+
     int cancel(void) {
         return thread_cancel(thread_.tid);
     }
@@ -303,6 +394,8 @@ public:
     bool state(void) {
         return thread_.run;
     }
+
+    /// 获取线程属性
     int attribute(thread_attr_t *attr) {
         if (!attr) {
             return -1;

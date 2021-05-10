@@ -318,7 +318,9 @@ static inline int thread_get_concurrency(void) {
 static inline int thread_set_name(thread_t tid, const char *name) {
 #ifdef __APPLE__
     if (tid) {}
-    return ::pthread_setname_np(name);
+    if (name.empty()) {}
+    // return ::pthread_setname_np(name);
+    return 0;
 #else
     return ::pthread_setname_np(tid, name);
 #endif

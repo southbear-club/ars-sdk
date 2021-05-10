@@ -31,7 +31,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "pystring.h"
+#include "aru/sdk/str/pystring.h"
 
 #include <algorithm>
 #include <cctype>

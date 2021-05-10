@@ -50,6 +50,7 @@ typedef void (*co_cb_t)(co_schedule_t *, void *ud);
 ///< 协程结束后的回调接口
 typedef void (*co_close_cb_t)(co_t *co, void *ud);
 
+/// 内存分配接口
 typedef void *(*co_malloc_t)(size_t size);
 typedef int (*co_memalign_t)(void **ptr, size_t align, size_t size);
 typedef void (*co_free_t)(void *ptr);

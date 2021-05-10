@@ -35,38 +35,77 @@ namespace sdk {
 
 // ref gear-lib --> ligplugin.h
 
+/**
+ * @brief 动态库版本
+ * 
+ */
 typedef struct dl_version_s {
-    int major;
-    int minor;
-    int patch;
+    int major;      ///< 主版本号
+    int minor;      ///< 次版本号
+    int patch;      ///< 补丁号
 } dl_version_t;
 
-// 每个库必须要有这个类型的全局变量来标识这个插件
+/// 每个库必须要有这个类型的全局变量来标识这个插件
 typedef struct {
-    char *name;
-    char *path;
-    dl_version_t version;
+    char *name;                         ///< 插件名称，用来标识该插件的全局变量名
+    char *path;                         ///< 路径
+    dl_version_t version;               ///< 版本
 
-    void *(*open)(void *arg);
-    void (*close)(void *arg);
-    void *(*call)(void *arg0, ...);
+    void *(*open)(void *arg);           ///< 打开时调用
+    void (*close)(void *arg);           ///< 关闭时调用
+    void *(*call)(void *arg0, ...);     ///< 执行启动
 
-    void *handle;
+    void *handle;                       ///< dl句柄
     struct list_head entry;
 } dl_plugin_t;
 
+/// 插件管理器
 typedef struct {
     struct list_head plugins;
 } dl_plugin_manager_t;
 
+/**
+ * @brief 创建管理器
+ * 
+ * @return dl_plugin_manager_t* 
+ */
 dl_plugin_manager_t *dl_plugin_manager_create(void);
+
+/**
+ * @brief 删除管理器
+ * 
+ */
 void dl_plugin_manager_destroy(dl_plugin_manager_t *);
 
 // 查找已经加载的动态库的插件
 dl_plugin_t *dl_plugin_lookup(dl_plugin_manager_t *pm, const char *name);
 
+/**
+ * @brief 加载插件
+ * 
+ * @param pm    管理器
+ * @param path  库路径
+ * @param name  名称
+ * @return dl_plugin_t* 插件句柄
+ */
 dl_plugin_t *dl_plugin_load(dl_plugin_manager_t *pm, const char *path, const char *name);
+
+/**
+ * @brief 卸载插件
+ * 
+ * @param pm 管理器
+ * @param name 插件名
+ */
 void dl_plugin_unload(dl_plugin_manager_t *pm, const char *name);
+
+/**
+ * @brief 插件重载
+ * 
+ * @param pm 管理器
+ * @param path 路径
+ * @param name 名称
+ * @return dl_plugin_t* 
+ */
 dl_plugin_t *dl_plugin_reload(dl_plugin_manager_t *pm, const char *path, const char *name);
 
 /*

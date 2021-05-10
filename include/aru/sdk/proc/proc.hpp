@@ -32,8 +32,13 @@ namespace aru {
 
 namespace sdk {
 
+/// 子进程执行函数
 typedef void (*procedure_t)(void* userdata);
 
+/**
+ * @brief 子进程上下文
+ * 
+ */
 typedef struct proc_ctx_s {
     pid_t           pid; // tid in Windows
     time_t          start_time;
@@ -46,6 +51,7 @@ typedef struct proc_ctx_s {
     void*           exit_userdata;
 } proc_ctx_t;
 
+/// 运行
 static inline void proc_run(proc_ctx_t* ctx) {
     if (ctx->init) {
         ctx->init(ctx->init_userdata);
@@ -58,6 +64,7 @@ static inline void proc_run(proc_ctx_t* ctx) {
     }
 }
 
+/// 创建子进程
 static inline int proc_spawn(proc_ctx_t* ctx) {
     ++ctx->spawn_cnt;
     ctx->start_time = time(NULL);

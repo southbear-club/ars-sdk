@@ -58,12 +58,35 @@ static inline CoSchedule *sch_ref(void) {
     return sch_ref(1 * 1024 * 1024, nullptr, nullptr, nullptr);
 }
 
+/**
+ * @brief 协程运行
+ * 
+ * @param sch 协程调度器，如果sch为空，则调度器为本线程的调度器
+ */
 void sch_run(CoSchedule *sch=nullptr);
+
+/**
+ * @brief 协程停止
+ * 
+ * @param sch 
+ */
 void sch_stop(CoSchedule *sch);
+
+/**
+ * @brief 让出执行权
+ * 
+ */
 void yield(void);
 
+/**
+ * @brief 内部接口，添加协程任务
+ * 
+ * @param stack 栈大小
+ * @param fn 协程函数
+ */
 void __add_co(size_t stack, proxy_co_fn fn);
 
+/// 添加协程任务，支持不定参数
 template <typename F, typename... Args>
 void new_co(F &&f, Args &&... args) {
 	auto call = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
@@ -71,6 +94,7 @@ void new_co(F &&f, Args &&... args) {
     __add_co(0, [call]() { call(); });
 }
 
+/// 添加协程任务，支持不定参数，协程栈大小
 template <typename F, typename... Args>
 void new_co(size_t stack, F &&f, Args &&... args) {
 	auto call = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
