@@ -31,11 +31,11 @@
 #include <condition_variable>
 #include <mutex>
 #include <stdio.h>
-#include "aru/sdk/schedule/co.hpp"
-#include "aru/sdk/schedule/_co.h"
-#include "aru/sdk/ds/list.hpp"
+#include "ars/sdk/schedule/co.hpp"
+#include "ars/sdk/schedule/_co.h"
+#include "ars/sdk/ds/list.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -283,4 +283,4 @@ void yield(void) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

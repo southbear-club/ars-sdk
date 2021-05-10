@@ -24,11 +24,11 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/ds/bitmap.hpp"
+#include "ars/sdk/ds/bitmap.hpp"
 #include <string.h>
-#include "aru/sdk/ds/hweight.hpp"
+#include "ars/sdk/ds/hweight.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -287,4 +287,4 @@ int bitmap_test_bit(const uint8_t* bitmap, size_t bits)
     
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

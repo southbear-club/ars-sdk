@@ -24,7 +24,7 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/os/os.hpp"
+#include "ars/sdk/os/os.hpp"
 #include <stdexcept>
 #include <sys/utsname.h>
 #include <unistd.h>
@@ -40,7 +40,7 @@
 #include <sys/sysctl.h>
 #endif
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -127,4 +127,4 @@ void daemon() {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

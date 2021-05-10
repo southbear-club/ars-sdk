@@ -1,11 +1,11 @@
-#include "aru/sdk/event/nlog.hpp"
-#include "aru/sdk/ds/list.hpp"
-#include "aru/sdk/lock/lock.hpp"
-#include "aru/sdk/macros/defs.hpp"
-#include "aru/sdk/memory/mem.hpp"
-#include "aru/sdk/net/sock.hpp"
+#include "ars/sdk/event/nlog.hpp"
+#include "ars/sdk/ds/list.hpp"
+#include "ars/sdk/lock/lock.hpp"
+#include "ars/sdk/macros/defs.hpp"
+#include "ars/sdk/memory/mem.hpp"
+#include "ars/sdk/net/sock.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -36,7 +36,7 @@ static void on_close(io_t* io) {
         list_del(&client->node);
         mutex_unlock(&s_mutex);
 
-        ARU_FREE(client);
+        ARS_FREE(client);
     }
 }
 
@@ -62,7 +62,7 @@ static void on_accept(io_t* io) {
 
     // free on_close
     nlog_client* client;
-    ARU_ALLOC_SIZEOF(client);
+    ARS_ALLOC_SIZEOF(client);
     client->io = io;
     aru_event_set_userdata(io, client);
 
@@ -95,4 +95,4 @@ io_t* nlog_listen(loop_t* loop, int port) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

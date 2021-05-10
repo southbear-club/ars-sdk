@@ -24,13 +24,13 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/encoding/html-entities.hpp"
+#include "ars/sdk/encoding/html-entities.hpp"
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -278,4 +278,4 @@ int html_entities_encode(char* dst, const char* src, int srcLen)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

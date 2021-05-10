@@ -24,9 +24,9 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/crypto/crc16.hpp"
+#include "ars/sdk/crypto/crc16.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -119,4 +119,4 @@ uint16_t crc16(const void* p, size_t n, uint16_t crc) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

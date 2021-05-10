@@ -24,8 +24,8 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/str/str.hpp"
-#include "aru/sdk/macros/defs.hpp"
+#include "ars/sdk/str/str.hpp"
+#include "ars/sdk/macros/defs.hpp"
 #include <stddef.h>
 #include <string.h>
 #include <assert.h>
@@ -34,7 +34,7 @@
 #include <stdarg.h>
 #include <memory>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -391,4 +391,4 @@ std::string strip(const std::string& s, const std::string& c, char d) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

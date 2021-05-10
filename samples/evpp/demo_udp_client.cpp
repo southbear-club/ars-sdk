@@ -1,8 +1,8 @@
-#include "aru/components/evpp/UdpClient.hpp"
-#include "aru/sdk/time/time.hpp"
+#include "ars/components/evpp/UdpClient.hpp"
+#include "ars/sdk/time/time.hpp"
 
-using namespace aru::evpp;
-using namespace aru::sdk;
+using namespace ars::evpp;
+using namespace ars::sdk;
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 
     // sendto(time) every 3s
     cli.loop()->setInterval(3000, [&cli](TimerID timerID) {
-        char str[ARU_DATETIME_FMT_BUFLEN] = {0};
+        char str[ARS_DATETIME_FMT_BUFLEN] = {0};
         datetime_t dt = time_now();
         datetime_fmt(&dt, str);
         cli.sendto(str);

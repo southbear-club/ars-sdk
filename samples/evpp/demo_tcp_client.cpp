@@ -1,8 +1,8 @@
-#include "aru/components/evpp/TcpClient.hpp"
-#include "aru/sdk/time/time.hpp"
+#include "ars/components/evpp/TcpClient.hpp"
+#include "ars/sdk/time/time.hpp"
 
-using namespace aru::evpp;
-using namespace aru::sdk;
+using namespace ars::evpp;
+using namespace ars::sdk;
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
             // send(time) every 3s
             setInterval(3000, [channel](TimerID timerID){
                 if (channel->isConnected()) {
-                    char str[ARU_DATETIME_FMT_BUFLEN] = {0};
+                    char str[ARS_DATETIME_FMT_BUFLEN] = {0};
                     datetime_t dt = time_now();
                     datetime_fmt(&dt, str);
                     channel->send(str);

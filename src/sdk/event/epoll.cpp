@@ -1,22 +1,22 @@
-#include "aru/sdk/event/iowatcher.hpp"
+#include "ars/sdk/event/iowatcher.hpp"
 
 #ifdef EVENT_EPOLL
-#include "aru/sdk/ds/array.hpp"
-#include "aru/sdk/event/event.hpp"
-#include "aru/sdk/macros/defs.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/ds/array.hpp"
+#include "ars/sdk/event/event.hpp"
+#include "ars/sdk/macros/defs.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
 #include <sys/epoll.h>
 #include <unistd.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
 namespace event {
 
 #define EVENTS_INIT_SIZE 64
-ARU_ARRAY_DECL(struct epoll_event, events);
+ARS_ARRAY_DECL(struct epoll_event, events);
 
 typedef struct epoll_ctx_s {
     int epfd;
@@ -26,7 +26,7 @@ typedef struct epoll_ctx_s {
 int iowatcher_init(loop_t* loop) {
     if (loop->iowatcher) return 0;
     epoll_ctx_t* epoll_ctx;
-    ARU_ALLOC_SIZEOF(epoll_ctx);
+    ARS_ALLOC_SIZEOF(epoll_ctx);
     epoll_ctx->epfd = epoll_create(EVENTS_INIT_SIZE);
     events_init(&epoll_ctx->events, EVENTS_INIT_SIZE);
     loop->iowatcher = epoll_ctx;
@@ -38,7 +38,7 @@ int iowatcher_cleanup(loop_t* loop) {
     epoll_ctx_t* epoll_ctx = (epoll_ctx_t*)loop->iowatcher;
     close(epoll_ctx->epfd);
     events_cleanup(&epoll_ctx->events);
-    ARU_FREE(loop->iowatcher);
+    ARS_FREE(loop->iowatcher);
     return 0;
 }
 
@@ -53,17 +53,17 @@ int iowatcher_add_event(loop_t* loop, int fd, int events) {
     memset(&ee, 0, sizeof(ee));
     ee.data.fd = fd;
     // pre events
-    if (io->events & ARU_IO_READ) {
+    if (io->events & ARS_IO_READ) {
         ee.events |= EPOLLIN;
     }
-    if (io->events & ARU_IO_WRITE) {
+    if (io->events & ARS_IO_WRITE) {
         ee.events |= EPOLLOUT;
     }
     // now events
-    if (events & ARU_IO_READ) {
+    if (events & ARS_IO_READ) {
         ee.events |= EPOLLIN;
     }
-    if (events & ARU_IO_WRITE) {
+    if (events & ARS_IO_WRITE) {
         ee.events |= EPOLLOUT;
     }
     int op = io->events == 0 ? EPOLL_CTL_ADD : EPOLL_CTL_MOD;
@@ -86,17 +86,17 @@ int iowatcher_del_event(loop_t* loop, int fd, int events) {
     memset(&ee, 0, sizeof(ee));
     ee.data.fd = fd;
     // pre events
-    if (io->events & ARU_IO_READ) {
+    if (io->events & ARS_IO_READ) {
         ee.events |= EPOLLIN;
     }
-    if (io->events & ARU_IO_WRITE) {
+    if (io->events & ARS_IO_WRITE) {
         ee.events |= EPOLLOUT;
     }
     // now events
-    if (events & ARU_IO_READ) {
+    if (events & ARS_IO_READ) {
         ee.events &= ~EPOLLIN;
     }
-    if (events & ARU_IO_WRITE) {
+    if (events & ARS_IO_WRITE) {
         ee.events &= ~EPOLLOUT;
     }
     int op = ee.events == 0 ? EPOLL_CTL_DEL : EPOLL_CTL_MOD;
@@ -128,12 +128,12 @@ int iowatcher_poll_events(loop_t* loop, int timeout) {
             io_t* io = loop->ios.ptr[fd];
             if (io) {
                 if (revents & (EPOLLIN | EPOLLHUP | EPOLLERR)) {
-                    io->revents |= ARU_IO_READ;
+                    io->revents |= ARS_IO_READ;
                 }
                 if (revents & (EPOLLOUT | EPOLLHUP | EPOLLERR)) {
-                    io->revents |= ARU_IO_WRITE;
+                    io->revents |= ARS_IO_WRITE;
                 }
-                ARU_EVENT_PENDING(io);
+                ARS_EVENT_PENDING(io);
             }
         }
         if (nevents == nepoll) break;
@@ -145,6 +145,6 @@ int iowatcher_poll_events(loop_t* loop, int timeout) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars
 
 #endif

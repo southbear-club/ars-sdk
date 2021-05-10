@@ -26,16 +26,16 @@
  */
 #pragma once
 
-#include "aru/log/log.hpp"
+#include "ars/log/log.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace log {
 
 LogFilter *get_log_filter(void);
 
-#define ARU_IN_LOG(severity) ARU_LOG(severity, aru::log::get_log_filter())
+#define ARS_IN_LOG(severity) ARS_LOG(severity, ars::log::get_log_filter())
 
 }  // namespace log
 
-}  // namespace aru
+}  // namespace ars

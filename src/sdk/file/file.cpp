@@ -24,8 +24,8 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/file/file.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/file/file.hpp"
+#include "ars/sdk/memory/mem.hpp"
 #include <assert.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -41,7 +41,7 @@
 #include <sys/mount.h>
 #include <fcntl.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -314,7 +314,7 @@ int file_get_systat(const char *path, struct file_systat *fi) {
     fi->size_total = stfs.f_bsize * stfs.f_blocks;
     fi->size_avail = stfs.f_bsize * stfs.f_bavail;
     fi->size_free  = stfs.f_bsize * stfs.f_bfree;
-    for (i = 0; i < (uint32_t)ARU_ARRAY_SIZE(fs_type_info); i++) {
+    for (i = 0; i < (uint32_t)ARS_ARRAY_SIZE(fs_type_info); i++) {
         if (stfs.f_type == fs_type_info[i].value) {
             stfs.f_type = i;
             strncpy(fi->fs_type_name, fs_type_info[i].name,
@@ -367,4 +367,4 @@ int file_get_info(const char *path, struct file_info *info)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

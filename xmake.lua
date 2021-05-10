@@ -1,10 +1,10 @@
 -- 工程名
-set_project("aru")
+set_project("ars")
 
 set_version("$(aruversion)", {build = "%Y%m%d%H%M%S"})
 
 -- 自定义配置
-set_configvar("ARU_ATHOR", "wotsen(astralrovers@outlook.com)")
+set_configvar("ARS_ATHOR", "wotsen(astralrovers@outlook.com)")
 
 -- 生成配置文件
 add_configfiles("src/configure.h.in")
@@ -29,7 +29,7 @@ set_warnings("all", "error")
 set_languages("c99", "c++17")
 
 -- 库目标
-target("aru")
+target("ars")
     set_kind("shared")
     set_options("debug")
     set_default(true)
@@ -45,13 +45,13 @@ target("aru")
 
     set_targetdir("dist/lib/")
     on_package(function (target)
-        os.mkdir("dist/include/aru", "dist/docs", "dist/lib", "dist/demo")
+        os.mkdir("dist/include/ars", "dist/docs", "dist/lib", "dist/demo")
         os.cp("samples/*", "dist/demo/")
         os.cp("docs/usr/*", "dist/docs/")
         os.cp("README.md", "dist/docs/")
-        os.cp("src/aru.hpp", "dist/include/aru/")
+        os.cp("src/ars.hpp", "dist/include/ars/")
         os.cd("dist")
-        os.execv("tar -zcf aru-$(aruversion)-$(mode).tar.gz include lib demo docs")
+        os.execv("tar -zcf ars-$(aruversion)-$(mode).tar.gz include lib demo docs")
         os.cd("..")
     end)
 
@@ -88,7 +88,7 @@ target("simples")
 target("ut")
     set_kind("binary")
     set_toolset("cxx", "clang++")
-    add_deps("aru")
+    add_deps("ars")
 
     -- 库路径
     add_linkdirs("/usr/lib")

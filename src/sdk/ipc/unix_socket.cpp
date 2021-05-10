@@ -33,9 +33,9 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <errno.h>
-#include "aru/sdk/ipc/ipc.hpp"
+#include "ars/sdk/ipc/ipc.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -208,6 +208,6 @@ struct ipc_ops socket_ops = {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars
 
 #endif

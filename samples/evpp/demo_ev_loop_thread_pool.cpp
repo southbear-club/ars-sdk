@@ -1,16 +1,16 @@
-#include "aru/components/evpp/EventLoopThreadPool.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/components/evpp/EventLoopThreadPool.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-using namespace aru::evpp;
+using namespace ars::evpp;
 
 static void onTimer(TimerID timerID, int n) {
-    printf("tid=%ld timerID=%lu time=%lus n=%d\n", aru::sdk::gettid(), (unsigned long)timerID, (unsigned long)time(NULL), n);
+    printf("tid=%ld timerID=%lu time=%lus n=%d\n", ars::sdk::gettid(), (unsigned long)timerID, (unsigned long)time(NULL), n);
 }
 
 int main(int argc, char* argv[]) {
-    aru::sdk::memcheck_register();
+    ars::sdk::memcheck_register();
 
-    printf("main tid=%ld\n", aru::sdk::gettid());
+    printf("main tid=%ld\n", ars::sdk::gettid());
 
     EventLoopThreadPool loop_threads(4);
     loop_threads.start(true);
@@ -26,11 +26,11 @@ int main(int argc, char* argv[]) {
         });
 
         loop->queueInLoop([](){
-            printf("queueInLoop tid=%ld\n", aru::sdk::gettid());
+            printf("queueInLoop tid=%ld\n", ars::sdk::gettid());
         });
 
         loop->runInLoop([](){
-            printf("runInLoop tid=%ld\n", aru::sdk::gettid());
+            printf("runInLoop tid=%ld\n", ars::sdk::gettid());
         });
     }
 

@@ -24,17 +24,17 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/protocol/icmp.hpp"
-#include "aru/sdk/macros/defs.hpp"
-#include "aru/sdk/err/err.hpp"
-#include "aru/sdk/net/sock.hpp"
-#include "aru/sdk/net/inet.hpp"
-#include "aru/sdk/time/time.hpp"
+#include "ars/sdk/protocol/icmp.hpp"
+#include "ars/sdk/macros/defs.hpp"
+#include "ars/sdk/err/err.hpp"
+#include "ars/sdk/net/sock.hpp"
+#include "ars/sdk/net/inet.hpp"
+#include "ars/sdk/time/time.hpp"
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -160,4 +160,4 @@ error:
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

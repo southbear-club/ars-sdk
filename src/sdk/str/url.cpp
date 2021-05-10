@@ -24,16 +24,16 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/str/url.hpp"
-#include "aru/sdk/macros/defs.hpp"
+#include "ars/sdk/str/url.hpp"
+#include "ars/sdk/macros/defs.hpp"
 #include <stdio.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
 static inline bool is_unambiguous(char c) {
-    return ARU_IS_ALPHANUM(c) ||
+    return ARS_IS_ALPHANUM(c) ||
            c == '-' ||
            c == '_' ||
            c == '.' ||
@@ -67,8 +67,8 @@ std::string url_unescape(const char* istr) {
     const char* p = istr;
     while (*p != '\0') {
         if (*p == '%' &&
-            ARU_IS_HEX(p[1]) &&
-            ARU_IS_HEX(p[2])) {
+            ARS_IS_HEX(p[1]) &&
+            ARS_IS_HEX(p[2])) {
             ostr += ((hex2i(p[1]) << 4) | hex2i(p[2]));
             p += 3;
         }
@@ -82,4 +82,4 @@ std::string url_unescape(const char* istr) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

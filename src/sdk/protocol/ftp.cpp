@@ -24,12 +24,12 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/protocol/ftp.hpp"
-#include "aru/sdk/err/err.hpp"
-#include "aru/sdk/net/sock.hpp"
+#include "ars/sdk/protocol/ftp.hpp"
+#include "ars/sdk/err/err.hpp"
+#include "ars/sdk/net/sock.hpp"
 #include <unistd.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -74,7 +74,7 @@ int ftp_connect(ftp_handle_t* hftp, const char* host, int port) {
     memset(hftp->recvbuf, 0, FTP_RECV_BUFSIZE);
     int nrecv = recv(sockfd, hftp->recvbuf, FTP_RECV_BUFSIZE, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     status_code = atoi(hftp->recvbuf);
@@ -114,14 +114,14 @@ int ftp_exec(ftp_handle_t* hftp, const char* cmd, const char* param) {
     int ret = 0;
     nsend = send(hftp->sockfd, buf, len, 0);
     if (nsend != len) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     //printf("> %s", buf);
     memset(hftp->recvbuf, 0, FTP_RECV_BUFSIZE);
     nrecv = recv(hftp->sockfd, hftp->recvbuf, FTP_RECV_BUFSIZE, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     //printf("< %s", hftp->recvbuf);
@@ -135,7 +135,7 @@ static int ftp_parse_pasv(const char* resp, char* host, int* port) {
     // 227 Entering Passive Mode (127,0,0,1,4,51)
     const char* str = strchr(resp, '(');
     if (str == NULL) {
-        return ARU_ERR_RESPONSE;
+        return ARS_ERR_RESPONSE;
     }
     int arr[6];
     sscanf(str, "(%d,%d,%d,%d,%d,%d)",
@@ -162,7 +162,7 @@ int ftp_download_with_cb(ftp_handle_t* hftp, const char* filepath, ftp_download_
     int nsend = send(hftp->sockfd, request, len, 0);
     if (nsend != len) {
         close(hftp->sockfd);
-        return ARU_ERR_SEND;
+        return ARS_ERR_SEND;
     }
     //printf("> %s", request);
     int sockfd = sock_tcp_creat();
@@ -182,7 +182,7 @@ int ftp_download_with_cb(ftp_handle_t* hftp, const char* filepath, ftp_download_
     int nrecv = recv(hftp->sockfd, hftp->recvbuf, FTP_RECV_BUFSIZE, 0);
     if (nrecv <= 0) {
         close(hftp->sockfd);
-        return ARU_ERR_RECV;
+        return ARS_ERR_RECV;
     }
     //printf("< %s", hftp->recvbuf);
     {
@@ -202,7 +202,7 @@ int ftp_download_with_cb(ftp_handle_t* hftp, const char* filepath, ftp_download_
     nrecv = recv(hftp->sockfd, hftp->recvbuf, FTP_RECV_BUFSIZE, 0);
     if (nrecv <= 0) {
         close(hftp->sockfd);
-        return ARU_ERR_RECV;
+        return ARS_ERR_RECV;
     }
     //printf("< %s", hftp->recvbuf);
     status_code = atoi(hftp->recvbuf);
@@ -227,7 +227,7 @@ int ftp_upload(ftp_handle_t* hftp, const char* local_filepath, const char* remot
     int nsend = send(hftp->sockfd, request, len, 0);
     if (nsend != len) {
         close(hftp->sockfd);
-        return ARU_ERR_SEND;
+        return ARS_ERR_SEND;
     }
     //printf("> %s", request);
 
@@ -248,7 +248,7 @@ int ftp_upload(ftp_handle_t* hftp, const char* local_filepath, const char* remot
     int nrecv = recv(hftp->sockfd, hftp->recvbuf, FTP_RECV_BUFSIZE, 0);
     if (nrecv <= 0) {
         close(hftp->sockfd);
-        return ARU_ERR_RECV;
+        return ARS_ERR_RECV;
     }
     //printf("< %s", hftp->recvbuf);
     {
@@ -256,7 +256,7 @@ int ftp_upload(ftp_handle_t* hftp, const char* local_filepath, const char* remot
         FILE* fp = fopen(local_filepath, "rb");
         if (fp == NULL) {
             close(sockfd);
-            return ARU_ERR_OPEN_FILE;
+            return ARS_ERR_OPEN_FILE;
         }
         char sendbuf[1024];
         int nread, nsend;
@@ -274,7 +274,7 @@ int ftp_upload(ftp_handle_t* hftp, const char* local_filepath, const char* remot
     nrecv = recv(hftp->sockfd, hftp->recvbuf, FTP_RECV_BUFSIZE, 0);
     if (nrecv <= 0) {
         close(hftp->sockfd);
-        return ARU_ERR_RECV;
+        return ARS_ERR_RECV;
     }
     //printf("< %s", hftp->recvbuf);
     status_code = atoi(hftp->recvbuf);
@@ -296,7 +296,7 @@ static int s_ftp_download_cb(ftp_handle_t* hftp, char* buf, int len) {
 int ftp_download(ftp_handle_t* hftp, const char* remote_filepath, const char* local_filepath) {
     FILE* fp = fopen(local_filepath, "wb");
     if (fp == NULL) {
-        return ARU_ERR_OPEN_FILE;
+        return ARS_ERR_OPEN_FILE;
     }
     hftp->userdata = (void*)fp;
     int ret = ftp_download_with_cb(hftp, remote_filepath, s_ftp_download_cb);
@@ -310,4 +310,4 @@ int ftp_download(ftp_handle_t* hftp, const char* remote_filepath, const char* lo
     
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

@@ -29,9 +29,9 @@
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
-#include "aru/sdk/algorithm/algorithm.hpp"
+#include "ars/sdk/algorithm/algorithm.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -126,4 +126,4 @@ int lcs(const char* s1, const char* s2, char* seq, int len) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

@@ -24,10 +24,10 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/thread/thread.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/thread/thread.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
     
@@ -142,4 +142,4 @@ int thread_destroy(Thread *t) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

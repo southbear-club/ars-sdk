@@ -27,7 +27,7 @@
 #include "sort_common.hpp"
 #include <stdint.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -69,4 +69,4 @@ int quick_sort(void *array, size_t num, size_t size, fp_cmp cmp)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

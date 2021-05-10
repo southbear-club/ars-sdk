@@ -24,12 +24,12 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/encoding/unicode.hpp"
+#include "ars/sdk/encoding/unicode.hpp"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -136,4 +136,4 @@ int url_decode(const char* source, int srcBytes, char* target, int tgtBytes)
     
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

@@ -24,7 +24,7 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/net/ifconfig.hpp"
+#include "ars/sdk/net/ifconfig.hpp"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -44,7 +44,7 @@
 #error "not support"
 #endif
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -183,4 +183,4 @@ int ifconfig(std::vector<ifconfig_t>& ifcs) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

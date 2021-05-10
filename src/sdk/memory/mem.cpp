@@ -24,13 +24,13 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/memory/mem.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <atomic>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -138,4 +138,4 @@ void aru_free(void *ptr) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

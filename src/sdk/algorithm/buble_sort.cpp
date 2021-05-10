@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -77,4 +77,4 @@ int bubble_sort(void *array, size_t num, size_t size, fp_cmp cmp)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

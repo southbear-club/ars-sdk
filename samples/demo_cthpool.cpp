@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <stdint.h>
-#include "aru/sdk/thread/thpool.h"
+#include "ars/sdk/thread/thpool.h"
 
 void task(void *arg){
 	printf("Thread #%u working on %d\n", (int)pthread_self(), (int) arg);

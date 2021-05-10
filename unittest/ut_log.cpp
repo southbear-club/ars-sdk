@@ -24,14 +24,14 @@
  * @copyright MIT
  * 
  */
-#define ARU_LOG_MODULE_NAME "log"
+#define ARS_LOG_MODULE_NAME "log"
 #include <gtest/gtest.h>
 
 #include "ut_log.hpp"
 
-static aru::log::LogFilter log_filter;
+static ars::log::LogFilter log_filter;
 
-aru::log::LogFilter *get_log_filter(void) {
+ars::log::LogFilter *get_log_filter(void) {
     return &log_filter;
 }
 

@@ -24,10 +24,10 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/encoding/base64.hpp"
+#include "ars/sdk/encoding/base64.hpp"
 #include <stdio.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -156,4 +156,4 @@ int base64_decode(const char *in, unsigned int inlen, unsigned char *out) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

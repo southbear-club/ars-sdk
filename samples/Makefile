@@ -7,15 +7,15 @@ OBJS = $(patsubst $(SRC_DIR)/%.cpp,%,$(SRCS))
 CXX := $(TOOL_PREFIX)g++
 OUTPUT_DIR := output
 
-ifneq ($(ARU_INC_DIR),)
-ARU_INC = -I$(ARU_INC_DIR)
+ifneq ($(ARS_INC_DIR),)
+ARS_INC = -I$(ARS_INC_DIR)
 endif
-ifneq ($(ARU_LIB_DIR),)
-ARU_LIB = -L$(ARU_LIB_DIR)
+ifneq ($(ARS_LIB_DIR),)
+ARS_LIB = -L$(ARS_LIB_DIR)
 endif
 
-INC = $(ARU_INC) -I/usr/local/include
-LIB = $(ARU_LIB) -L/usr/lib -L/usr/local/lib
+INC = $(ARS_INC) -I/usr/local/include
+LIB = $(ARS_LIB) -L/usr/lib -L/usr/local/lib
 ifeq ($(OS_NAME), Darwin)
 INC += -I/usr/local/opt/openssl@1.1/include
 LIB += -L/usr/local/opt/openssl@1.1/lib
@@ -24,7 +24,7 @@ endif
 LIB += -laru -lssl -lcrypto -lglog -lpthread -lc
 
 CFLAGS = -DWITH_OPENSSL -std=c++17 -g -W -Wall -o2 \
-		-Wl,-rpath,$(ARU_LIB_DIR) \
+		-Wl,-rpath,$(ARS_LIB_DIR) \
 		-Wno-deprecated-declarations \
 		-Wno-class-memaccess -Wno-unknown-warning-option -Wno-unused-parameter -Wno-format
 

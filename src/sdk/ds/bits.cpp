@@ -24,10 +24,10 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/ds/bits.hpp"
+#include "ars/sdk/ds/bits.hpp"
 #include <assert.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -249,4 +249,4 @@ void bits_test(void)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

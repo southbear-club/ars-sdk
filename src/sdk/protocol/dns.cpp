@@ -24,23 +24,23 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/protocol/dns.hpp"
-#include "aru/sdk/macros/defs.hpp"
-#include "aru/sdk/err/err.hpp"
-#include "aru/sdk/memory/mem.hpp"
-#include "aru/sdk/net/sock.hpp"
+#include "ars/sdk/protocol/dns.hpp"
+#include "ars/sdk/macros/defs.hpp"
+#include "ars/sdk/err/err.hpp"
+#include "ars/sdk/memory/mem.hpp"
+#include "ars/sdk/net/sock.hpp"
 #include <unistd.h>
 #include <string.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
 void dns_free(dns_t* dns) {
-    ARU_SAFE_FREE(dns->questions);
-    ARU_SAFE_FREE(dns->answers);
-    ARU_SAFE_FREE(dns->authorities);
-    ARU_SAFE_FREE(dns->addtionals);
+    ARS_SAFE_FREE(dns->questions);
+    ARS_SAFE_FREE(dns->answers);
+    ARS_SAFE_FREE(dns->authorities);
+    ARS_SAFE_FREE(dns->addtionals);
 }
 
 // www.example.com => 3www7example3com
@@ -222,7 +222,7 @@ int dns_unpack(char* buf, int len, dns_t* dns) {
     int i;
     if (hdr->nquestion) {
         int bytes = hdr->nquestion * sizeof(dns_rr_t);
-        ARU_ALLOC(dns->questions, bytes);
+        ARS_ALLOC(dns->questions, bytes);
         for (i = 0; i < hdr->nquestion; ++i) {
             int packetlen = dns_rr_unpack(buf+off, len-off, dns->questions+i, 1);
             if (packetlen < 0) return -1;
@@ -231,7 +231,7 @@ int dns_unpack(char* buf, int len, dns_t* dns) {
     }
     if (hdr->nanswer) {
         int bytes = hdr->nanswer * sizeof(dns_rr_t);
-        ARU_ALLOC(dns->answers, bytes);
+        ARS_ALLOC(dns->answers, bytes);
         for (i = 0; i < hdr->nanswer; ++i) {
             int packetlen = dns_rr_unpack(buf+off, len-off, dns->answers+i, 0);
             if (packetlen < 0) return -1;
@@ -240,7 +240,7 @@ int dns_unpack(char* buf, int len, dns_t* dns) {
     }
     if (hdr->nauthority) {
         int bytes = hdr->nauthority * sizeof(dns_rr_t);
-        ARU_ALLOC(dns->authorities, bytes);
+        ARS_ALLOC(dns->authorities, bytes);
         for (i = 0; i < hdr->nauthority; ++i) {
             int packetlen = dns_rr_unpack(buf+off, len-off, dns->authorities+i, 0);
             if (packetlen < 0) return -1;
@@ -249,7 +249,7 @@ int dns_unpack(char* buf, int len, dns_t* dns) {
     }
     if (hdr->naddtional) {
         int bytes = hdr->naddtional * sizeof(dns_rr_t);
-        ARU_ALLOC(dns->addtionals, bytes);
+        ARS_ALLOC(dns->addtionals, bytes);
         for (i = 0; i < hdr->naddtional; ++i) {
             int packetlen = dns_rr_unpack(buf+off, len-off, dns->addtionals+i, 0);
             if (packetlen < 0) return -1;
@@ -270,7 +270,7 @@ int dns_query(dns_t* query, dns_t* response, const char* nameserver) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
         perror("socket");
-        return ARU_ERR_SOCKET;
+        return ARS_ERR_SOCKET;
     }
     sock_set_send_timeout(sockfd, 5000);
     sock_set_recv_timeout(sockfd, 5000);
@@ -282,26 +282,26 @@ int dns_query(dns_t* query, dns_t* response, const char* nameserver) {
     memset(&addr, 0, addrlen);
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = inet_addr(nameserver);
-    addr.sin_port = htons(ARU_DNS_PORT);
+    addr.sin_port = htons(ARS_DNS_PORT);
     nsend = sendto(sockfd, buf, buflen, 0, (struct sockaddr*)&addr, addrlen);
     if (nsend != buflen) {
-        ret = ARU_ERR_SENDTO;
+        ret = ARS_ERR_SENDTO;
         goto error;
     }
     nrecv = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr*)&addr, &addrlen);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECVFROM;
+        ret = ARS_ERR_RECVFROM;
         goto error;
     }
 
     nparse = dns_unpack(buf, nrecv, response);
     if (nparse != nrecv) {
-        ret = -ARU_ERR_INVALID_PACKAGE;
+        ret = -ARS_ERR_INVALID_PACKAGE;
         goto error;
     }
 
 error:
-    if (sockfd != ARU_INVALID_SOCKET) {
+    if (sockfd != ARS_INVALID_SOCKET) {
         close(sockfd);
     }
     return ret;
@@ -311,15 +311,15 @@ int nslookup(const char* domain, uint32_t* addrs, int naddr, const char* nameser
     dns_t query;
     memset(&query, 0, sizeof(query));
     query.hdr.transaction_id = getpid();
-    query.hdr.qr = ARU_DNS_QUERY;
+    query.hdr.qr = ARS_DNS_QUERY;
     query.hdr.rd = 1;
     query.hdr.nquestion = 1;
 
     dns_rr_t question;
     memset(&question, 0, sizeof(question));
     snprintf(question.name, sizeof(question.name), "%s", domain);
-    question.rtype = ARU_DNS_TYPE_A;
-    question.rclass = ARU_DNS_CLASS_IN;
+    question.rtype = ARS_DNS_TYPE_A;
+    question.rclass = ARS_DNS_CLASS_IN;
 
     query.questions = &question;
 
@@ -333,9 +333,9 @@ int nslookup(const char* domain, uint32_t* addrs, int naddr, const char* nameser
     dns_rr_t* rr = resp.answers;
     int addr_cnt = 0;
     if (resp.hdr.transaction_id != query.hdr.transaction_id ||
-        resp.hdr.qr != ARU_DNS_RESPONSE ||
+        resp.hdr.qr != ARS_DNS_RESPONSE ||
         resp.hdr.rcode != 0) {
-        ret = -ARU_ERR_MISMATCH;
+        ret = -ARS_ERR_MISMATCH;
         goto end;
     }
 
@@ -345,14 +345,14 @@ int nslookup(const char* domain, uint32_t* addrs, int naddr, const char* nameser
     }
 
     for (int i = 0; i < resp.hdr.nanswer; ++i, ++rr) {
-        if (rr->rtype == ARU_DNS_TYPE_A) {
+        if (rr->rtype == ARS_DNS_TYPE_A) {
             if (addr_cnt < naddr && rr->datalen == 4) {
                 memcpy(addrs+addr_cnt, rr->data, 4);
             }
             ++addr_cnt;
         }
         /*
-        else if (rr->rtype == ARU_DNS_TYPE_CNAME) {
+        else if (rr->rtype == ARS_DNS_TYPE_CNAME) {
             char name[256];
             dns_name_decode(rr->data, name);
         }
@@ -366,4 +366,4 @@ end:
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

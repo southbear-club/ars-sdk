@@ -24,17 +24,17 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/schedule/_co.h"
+#include "ars/sdk/schedule/_co.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <assert.h>
 #include <stdio.h>
 
-#include "aru/sdk/memory/mem.hpp"
-#include "aru/sdk/ds/list.hpp"
+#include "ars/sdk/memory/mem.hpp"
+#include "ars/sdk/ds/list.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -287,4 +287,4 @@ co_status_e co_status(co_t *co) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

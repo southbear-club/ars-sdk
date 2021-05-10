@@ -24,15 +24,15 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/file/file.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/file/file.hpp"
+#include "ars/sdk/memory/mem.hpp"
 #include <assert.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
     
@@ -206,4 +206,4 @@ struct file_ops io_ops = {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

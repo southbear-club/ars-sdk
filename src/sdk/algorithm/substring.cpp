@@ -29,9 +29,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "aru/sdk/algorithm/algorithm.hpp"
+#include "ars/sdk/algorithm/algorithm.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -137,4 +137,4 @@ int strsubstring(const char* s1, const char* s2, char* sub, int len) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

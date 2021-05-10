@@ -25,9 +25,9 @@
  * 
  */
 #pragma once
-#include "aru/sdk/algorithm/sort.hpp"
+#include "ars/sdk/algorithm/sort.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -68,4 +68,4 @@ static inline __attribute__((unused)) int default_cmp(const void *a, const void 
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

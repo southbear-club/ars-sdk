@@ -24,12 +24,12 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/file/dir.hpp"
-#include "aru/sdk/file/file.hpp"
+#include "ars/sdk/file/dir.hpp"
+#include "ars/sdk/file/file.hpp"
 #include <sys/stat.h>
 #include <dirent.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -85,7 +85,7 @@ static int dfs_dir_size(const char *path, uint64_t *size)
 {
     DIR *pdir = NULL;
     struct dirent *ent = NULL;
-    char full_path[ARU_MAX_PATH];
+    char full_path[ARS_MAX_PATH];
     int ret;
     pdir = opendir(path);
     if (!pdir) {
@@ -146,4 +146,4 @@ int num_in_dir(const char *path)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

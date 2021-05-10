@@ -77,10 +77,10 @@ public:
         FLAGS_colorlogtostderr = true;
         FLAGS_minloglevel = google::GLOG_INFO;
 
-        std::vector<aru::log::LogConfig> logs = {
-            {"main", aru::log::LOG_INFO},
-            {"log", aru::log::LOG_INFO},
-            {"memory", aru::log::LOG_INFO},
+        std::vector<ars::log::LogConfig> logs = {
+            {"main", ars::log::LOG_INFO},
+            {"log", ars::log::LOG_INFO},
+            {"memory", ars::log::LOG_INFO},
         };
 
         get_log_filter()->setup_log(logs);
@@ -90,7 +90,7 @@ public:
 
 int main(int argc, char** argv) {
 #ifdef DEBUG
-    printf("-------------------------aru unittest-----------------------\n");
+    printf("-------------------------ars unittest-----------------------\n");
 #endif
 
     testing::AddGlobalTestEnvironment(new AruEnvironment);

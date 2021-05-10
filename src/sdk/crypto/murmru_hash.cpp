@@ -31,9 +31,9 @@
  * For business purposes, Murmurhash is under the MIT license.
  */
 
-#include "aru/sdk/crypto/murmur_hash.hpp"
+#include "ars/sdk/crypto/murmur_hash.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -146,4 +146,4 @@ uint64_t murmur_hash64(const void* key, size_t len, uint64_t seed) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

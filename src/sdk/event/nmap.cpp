@@ -1,16 +1,16 @@
-#include "aru/sdk/event/nmap.hpp"
+#include "ars/sdk/event/nmap.hpp"
 #include <unistd.h>
-#include "aru/sdk/event/event.hpp"
-#include "aru/sdk/event/loop.hpp"
-#include "aru/sdk/macros/attr.hpp"
-#include "aru/sdk/net/inet.hpp"
-#include "aru/sdk/net/sock.hpp"
-#include "aru/sdk/str/str.hpp"
+#include "ars/sdk/event/event.hpp"
+#include "ars/sdk/event/loop.hpp"
+#include "ars/sdk/macros/attr.hpp"
+#include "ars/sdk/net/inet.hpp"
+#include "ars/sdk/net/sock.hpp"
+#include "ars/sdk/str/str.hpp"
 
 #define MAX_RECVFROM_TIMEOUT 5000  // ms
 #define MAX_SENDTO_PERSOCKET 1024
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -63,7 +63,7 @@ static void on_recvfrom(io_t* io, void* buf, int readbytes) {
 
 int nmap_discover(Nmap* nmap) {
     loop_t* loop = loop_new(0);
-    uint64_t ARU_UNUSED(start_hrtime) = loop_now_hrtime(loop);
+    uint64_t ARS_UNUSED(start_hrtime) = loop_now_hrtime(loop);
 
     nmap_udata_t udata;
     udata.nmap = nmap;
@@ -128,7 +128,7 @@ int nmap_discover(Nmap* nmap) {
     idle_add(loop, on_idle, 3);
 
     loop_run(loop);
-    uint64_t ARU_UNUSED(end_hrtime) = loop_now_hrtime(loop);
+    uint64_t ARS_UNUSED(end_hrtime) = loop_now_hrtime(loop);
     loop_free(&loop);
 
     // print result
@@ -184,4 +184,4 @@ int nmap_host_discover(const char* segment24, Nmap* nmap) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

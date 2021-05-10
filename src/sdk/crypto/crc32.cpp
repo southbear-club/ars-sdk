@@ -24,9 +24,9 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/crypto/crc32.hpp"
+#include "ars/sdk/crypto/crc32.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -187,4 +187,4 @@ unsigned int crc32(unsigned int crc, const unsigned char *buffer, unsigned int s
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

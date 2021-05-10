@@ -26,10 +26,10 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include "aru/sdk/ds/darray.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/ds/darray.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -454,4 +454,4 @@ void darray_swap(const size_t element_size, struct darray *dst,
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

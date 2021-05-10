@@ -20,7 +20,7 @@
 #include <sys/prctl.h>
 #endif
 
-#include "aru/sdk/thread/thpool.h"
+#include "ars/sdk/thread/thpool.h"
 
 #ifdef THPOOL_DEBUG
 #define THPOOL_DEBUG 1

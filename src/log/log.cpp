@@ -24,9 +24,9 @@
  * @copyright MIT
  * 
  */
-#include "aru/log/log.hpp"
+#include "ars/log/log.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace log {
 

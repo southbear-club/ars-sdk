@@ -26,8 +26,8 @@
  */
 #pragma once
 
-#include "aru/log/log.hpp"
+#include "ars/log/log.hpp"
 
-aru::log::LogFilter *get_log_filter(void);
+ars::log::LogFilter *get_log_filter(void);
 
-#define UT_LOG(severity) ARU_LOG(severity, get_log_filter())
+#define UT_LOG(severity) ARS_LOG(severity, get_log_filter())

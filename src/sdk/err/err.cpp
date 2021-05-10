@@ -24,10 +24,10 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/err/err.hpp"
+#include "ars/sdk/err/err.hpp"
 #include <string.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -39,7 +39,7 @@ const char *strerror(int err) {
     switch (err) {
 #define F(errcode, name, errmsg) \
     case errcode: return errmsg;
-    ARU_FOREACH_ERR(F)
+    ARS_FOREACH_ERR(F)
 #undef  F
     default:
         return "Undefined error";
@@ -48,4 +48,4 @@ const char *strerror(int err) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

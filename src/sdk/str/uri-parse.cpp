@@ -31,14 +31,14 @@
 // gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
 // sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 
-#include "aru/sdk/str/uri.hpp"
+#include "ars/sdk/str/uri.hpp"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -468,4 +468,4 @@ int uri_userinfo(const struct uri_t* uri, char* usr, int n1, char* pwd, int n2)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

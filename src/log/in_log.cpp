@@ -25,9 +25,9 @@
  * 
  */
 #include "in_log.hpp"
-#include "aru/aru.hpp"
+#include "ars/ars.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace log {
 
@@ -38,28 +38,28 @@ LogFilter *get_log_filter(void) { return &log_filter; }
 
 }  // namespace log
 
-}  // namespace aru
+}  // namespace ars
 
-namespace aru {
+namespace ars {
 
 namespace lib {
 
 // 一键设置日志等级
-void set_log_level(aru::log::LogLevel level) {
+void set_log_level(ars::log::LogLevel level) {
 #define XX(m, name) name,
-    const char *logs[] = {ARU_MODULE_TABLE(XX)};
+    const char *logs[] = {ARS_MODULE_TABLE(XX)};
 #undef XX
 
     for (auto item : logs) {
-        aru::log::log_filter.set_module_level(item, level);
+        ars::log::log_filter.set_module_level(item, level);
     }
 }
 
 // 设置单个模块日志等级
-void set_log_level(const std::string &module_name, aru::log::LogLevel level) {
-    aru::log::log_filter.set_module_level(module_name, level);
+void set_log_level(const std::string &module_name, ars::log::LogLevel level) {
+    ars::log::log_filter.set_module_level(module_name, level);
 }
 
 }  // namespace lib
 
-}  // namespace aru
+}  // namespace ars

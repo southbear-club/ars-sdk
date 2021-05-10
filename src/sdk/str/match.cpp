@@ -24,10 +24,10 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/str/match.hpp"
+#include "ars/sdk/str/match.hpp"
 #include <regex>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -63,4 +63,4 @@ bool ipv6_match(const std::string &ip) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

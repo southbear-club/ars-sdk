@@ -24,14 +24,14 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/protocol/smtp.hpp"
-#include "aru/sdk/err/err.hpp"
-#include "aru/sdk/net/sock.hpp"
-#include "aru/sdk/encoding/base64.hpp"
+#include "ars/sdk/protocol/smtp.hpp"
+#include "ars/sdk/err/err.hpp"
+#include "ars/sdk/net/sock.hpp"
+#include "ars/sdk/encoding/base64.hpp"
 #include <unistd.h>
 #include <stdio.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -100,7 +100,7 @@ int sendmail(const char* smtp_server,
     int ret, nsend, nrecv;
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     status_code = atoi(buf);
@@ -112,12 +112,12 @@ int sendmail(const char* smtp_server,
     cmdlen = smtp_build_command(SMTP_EHLO, smtp_server, buf, buflen);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     status_code = atoi(buf);
@@ -129,12 +129,12 @@ int sendmail(const char* smtp_server,
     cmdlen = smtp_build_command(SMTP_AUTH, "PLAIN", buf, buflen);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     status_code = atoi(buf);
@@ -153,18 +153,18 @@ int sendmail(const char* smtp_server,
         basiclen = 1 + usernamelen + 1 + passwordlen;
     }
     base64_encode((unsigned char*)basic, basiclen, buf);
-    cmdlen = ARU_BASE64_ENCODE_OUT_SIZE(basiclen);
+    cmdlen = ARS_BASE64_ENCODE_OUT_SIZE(basiclen);
     buf[cmdlen] = '\r';
     buf[cmdlen+1] = '\n';
     cmdlen += 2;
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     status_code = atoi(buf);
@@ -176,12 +176,12 @@ int sendmail(const char* smtp_server,
     cmdlen = smtp_build_command(SMTP_MAIL, mail->from, buf, buflen);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     status_code = atoi(buf);
@@ -193,12 +193,12 @@ int sendmail(const char* smtp_server,
     cmdlen = smtp_build_command(SMTP_RCPT, mail->to, buf, buflen);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     status_code = atoi(buf);
@@ -210,12 +210,12 @@ int sendmail(const char* smtp_server,
     cmdlen = smtp_build_command(SMTP_DATA, NULL, buf, buflen);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     status_code = atoi(buf);
@@ -228,39 +228,39 @@ int sendmail(const char* smtp_server,
     cmdlen = snprintf(buf, buflen, "From:%s\r\n", mail->from);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     // To:
     cmdlen = snprintf(buf, buflen, "To:%s\r\n", mail->to);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     // Subject:
     cmdlen = snprintf(buf, buflen, "Subject:%s\r\n\r\n", mail->subject);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     // body
     cmdlen = strlen(mail->body);
     nsend = send(sockfd, mail->body, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     // EOB
     nsend = send(sockfd, SMTP_EOB, SMTP_EOB_LEN, 0);
     if (nsend != SMTP_EOB_LEN) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     status_code = atoi(buf);
@@ -272,12 +272,12 @@ int sendmail(const char* smtp_server,
     cmdlen = smtp_build_command(SMTP_QUIT, NULL, buf, buflen);
     nsend = send(sockfd, buf, cmdlen, 0);
     if (nsend != cmdlen) {
-        ret = ARU_ERR_SEND;
+        ret = ARS_ERR_SEND;
         goto error;
     }
     nrecv = recv(sockfd, buf, buflen, 0);
     if (nrecv <= 0) {
-        ret = ARU_ERR_RECV;
+        ret = ARS_ERR_RECV;
         goto error;
     }
     /*
@@ -290,7 +290,7 @@ int sendmail(const char* smtp_server,
     ret = SMTP_STATUS_OK;
 
 error:
-    if (sockfd != ARU_INVALID_SOCKET) {
+    if (sockfd != ARS_INVALID_SOCKET) {
         close(sockfd);
     }
     return ret;
@@ -298,4 +298,4 @@ error:
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

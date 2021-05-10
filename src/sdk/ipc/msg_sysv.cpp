@@ -36,10 +36,10 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
-#include "aru/sdk/ipc/ipc.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/ipc/ipc.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -350,4 +350,4 @@ struct ipc_ops ipc_msgq_sysv_ops = {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

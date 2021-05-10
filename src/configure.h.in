@@ -27,29 +27,29 @@
 #pragma once
 
 // 版本
-#define ARU_VERSION "@version@"
-#define ARU_VERSION_MAJOR @version_major@
-#define ARU_VERSION_MINOR @version_minor@
-#define ARU_VERSION_ALTER @version_alter@
-#define ARU_VERSION_BUILD @version_build@
-#define ARU_BUILD_TIME    "@build_time@"
+#define ARS_VERSION "@version@"
+#define ARS_VERSION_MAJOR @version_major@
+#define ARS_VERSION_MINOR @version_minor@
+#define ARS_VERSION_ALTER @version_alter@
+#define ARS_VERSION_BUILD @version_build@
+#define ARS_BUILD_TIME    "@build_time@"
 
 // 平台
-#define ARU_ARCH "@arch@"
-#define ARU_PLAT "@plat@"
-#define ARU_PROCESSOR "@processor@"
-#define ARU_PLAT_VERSION "@plat_version@"
-#define ARU_OS "@os@"
+#define ARS_ARCH "@arch@"
+#define ARS_PLAT "@plat@"
+#define ARS_PROCESSOR "@processor@"
+#define ARS_PLAT_VERSION "@plat_version@"
+#define ARS_OS "@os@"
 
 // 编译发布模式
-#define ARU_MODE "@mode@"
-#define ARU_DEBUG @debug@
+#define ARS_MODE "@mode@"
+#define ARS_DEBUG @debug@
 
 // 编译器
-#define ARU_COMPILER "@compiler@"
+#define ARS_COMPILER "@compiler@"
 
 // 作者
-#define ARU_AUTHOR "@aru_athor@"
+#define ARS_AUTHOR "@aru_athor@"
 
 // 发布者
-#define ARU_RELEASE_USER "@release_user@"
+#define ARS_RELEASE_USER "@release_user@"

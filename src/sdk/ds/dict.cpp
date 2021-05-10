@@ -24,15 +24,15 @@
  * @copyright MIT
  *
  */
-#include "aru/sdk/ds/dict.hpp"
+#include "ars/sdk/ds/dict.hpp"
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -448,4 +448,4 @@ void dict_get_key_list(dict *d, key_list **klist) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

@@ -1,9 +1,9 @@
 
-#ifndef ARU_LOG_MODULE_NAME
-#define ARU_LOG_MODULE_NAME "DEMO"
+#ifndef ARS_LOG_MODULE_NAME
+#define ARS_LOG_MODULE_NAME "DEMO"
 #endif
 
-#include "aru/log/log.hpp"
+#include "ars/log/log.hpp"
 
 class DemoLog {
 public:
@@ -20,12 +20,12 @@ public:
     }
 };
 
-#define DEMO_LOG(severity) ARU_LOG(severity, &__log)
+#define DEMO_LOG(severity) ARS_LOG(severity, &__log)
 
-static std::vector<aru::log::LogConfig> __config = {
-    { ARU_LOG_MODULE_NAME, aru::log::LOG_INFO },
+static std::vector<ars::log::LogConfig> __config = {
+    { ARS_LOG_MODULE_NAME, ars::log::LOG_INFO },
 };
 
-static aru::log::LogFilter __log(__config);
+static ars::log::LogFilter __log(__config);
 
 static DemoLog __demo_log;

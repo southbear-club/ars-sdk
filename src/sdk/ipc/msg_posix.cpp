@@ -29,12 +29,12 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <signal.h>
-#include "aru/sdk/ipc/msg_posix.hpp"
-#include "aru/sdk/ipc/sem.hpp"
-#include "aru/sdk/ipc/ipc.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/ipc/msg_posix.hpp"
+#include "ars/sdk/ipc/sem.hpp"
+#include "ars/sdk/ipc/ipc.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -312,6 +312,6 @@ struct ipc_ops ipc_msgq_posix_ops = {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars
 
 #endif

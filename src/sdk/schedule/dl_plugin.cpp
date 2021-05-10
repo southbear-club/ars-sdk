@@ -27,10 +27,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "aru/sdk/schedule/dl_plugin.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/schedule/dl_plugin.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
     
@@ -135,4 +135,4 @@ dl_plugin_t *dl_plugin_reload(dl_plugin_manager_t *pm, const char *path, const c
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

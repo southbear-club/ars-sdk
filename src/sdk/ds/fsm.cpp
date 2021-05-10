@@ -27,10 +27,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "aru/sdk/ds/fsm.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/ds/fsm.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -89,4 +89,4 @@ out:
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

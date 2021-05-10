@@ -24,10 +24,10 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/thread/thread.hpp"
-#include "aru/sdk/thread/thread_local_storage.hpp"
+#include "ars/sdk/thread/thread.hpp"
+#include "ars/sdk/thread/thread_local_storage.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -45,5 +45,5 @@ const char* ThreadLocalStorage::threadName() {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars
 

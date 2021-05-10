@@ -24,10 +24,10 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/crypto/md5.hpp"
+#include "ars/sdk/crypto/md5.hpp"
 #include <string.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -272,6 +272,6 @@ static const uint8_t *md5_body(md5_t *ctx, const uint8_t *data,
     return p;
 }
 
-}  // namespace aru
+}  // namespace ars
 
 }  // namespace sdk

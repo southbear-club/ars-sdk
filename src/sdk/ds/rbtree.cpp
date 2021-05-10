@@ -30,10 +30,10 @@
 // 3. All leaves (NIL) are black.
 // 4. If a node is red, then both its children are black.
 // 5. Every path from a given node to any of its descendant NIL nodes contains the same number of black nodes. Some definitions: the number of black nodes from the root to a node is the node's black depth; the uniform number of black nodes in all paths from root to the leaves is called the black-height of the red-Cblack tree.
-#include "aru/sdk/ds/rbtree.hpp"
+#include "ars/sdk/ds/rbtree.hpp"
 #include <assert.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -546,4 +546,4 @@ const struct rbtree_node_t* rbtree_next(const struct rbtree_node_t* node)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

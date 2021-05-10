@@ -24,9 +24,9 @@
  * @copyright MIT
  * 
  */
-#include "aru/components/consul/consul.hpp"
+#include "ars/components/consul/consul.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace consul {
 
@@ -34,4 +34,4 @@ namespace consul {
 
 } // namespace consul
 
-} // namespace aru
+} // namespace ars

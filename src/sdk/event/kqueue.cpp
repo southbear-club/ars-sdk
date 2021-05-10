@@ -1,14 +1,14 @@
 
-#include "aru/sdk/event/iowatcher.hpp"
+#include "ars/sdk/event/iowatcher.hpp"
 
 #ifdef EVENT_KQUEUE
-#include "aru/sdk/event/event.hpp"
-#include "aru/sdk/macros/defs.hpp"
+#include "ars/sdk/event/event.hpp"
+#include "ars/sdk/macros/defs.hpp"
 
 #include <sys/event.h>
 #include <unistd.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -40,13 +40,13 @@ static void kqueue_ctx_resize(kqueue_ctx_t* kqueue_ctx, int size) {
 int iowatcher_init(loop_t* loop) {
     if (loop->iowatcher) return 0;
     kqueue_ctx_t* kqueue_ctx;
-    ARU_ALLOC_SIZEOF(kqueue_ctx);
+    ARS_ALLOC_SIZEOF(kqueue_ctx);
     kqueue_ctx->kqfd = kqueue();
     kqueue_ctx->capacity = EVENTS_INIT_SIZE;
     kqueue_ctx->nchanges = 0;
     int bytes = sizeof(struct kevent) * kqueue_ctx->capacity;
-    ARU_ALLOC(kqueue_ctx->changes, bytes);
-    ARU_ALLOC(kqueue_ctx->events, bytes);
+    ARS_ALLOC(kqueue_ctx->changes, bytes);
+    ARS_ALLOC(kqueue_ctx->events, bytes);
     loop->iowatcher = kqueue_ctx;
     return 0;
 }
@@ -55,9 +55,9 @@ int iowatcher_cleanup(loop_t* loop) {
     if (loop->iowatcher == NULL) return 0;
     kqueue_ctx_t* kqueue_ctx = (kqueue_ctx_t*)loop->iowatcher;
     close(kqueue_ctx->kqfd);
-    ARU_FREE(kqueue_ctx->changes);
-    ARU_FREE(kqueue_ctx->events);
-    ARU_FREE(loop->iowatcher);
+    ARS_FREE(kqueue_ctx->changes);
+    ARS_FREE(kqueue_ctx->events);
+    ARS_FREE(loop->iowatcher);
     return 0;
 }
 
@@ -88,10 +88,10 @@ static int __add_event(loop_t* loop, int fd, int event) {
 }
 
 int iowatcher_add_event(loop_t* loop, int fd, int events) {
-    if (events & ARU_IO_READ) {
+    if (events & ARS_IO_READ) {
         __add_event(loop, fd, EVFILT_READ);
     }
-    if (events & ARU_IO_WRITE) {
+    if (events & ARS_IO_WRITE) {
         __add_event(loop, fd, EVFILT_WRITE);
     }
     return 0;
@@ -127,10 +127,10 @@ static int __del_event(loop_t* loop, int fd, int event) {
 }
 
 int iowatcher_del_event(loop_t* loop, int fd, int events) {
-    if (events & ARU_IO_READ) {
+    if (events & ARS_IO_READ) {
         __del_event(loop, fd, EVFILT_READ);
     }
-    if (events & ARU_IO_WRITE) {
+    if (events & ARS_IO_WRITE) {
         __del_event(loop, fd, EVFILT_WRITE);
     }
     return 0;
@@ -166,12 +166,12 @@ int iowatcher_poll_events(loop_t* loop, int timeout) {
         io_t* io = loop->ios.ptr[fd];
         if (io) {
             if (revents & EVFILT_READ) {
-                io->revents |= ARU_IO_READ;
+                io->revents |= ARS_IO_READ;
             }
             if (revents & EVFILT_WRITE) {
-                io->revents |= ARU_IO_WRITE;
+                io->revents |= ARS_IO_WRITE;
             }
-            ARU_EVENT_PENDING(io);
+            ARS_EVENT_PENDING(io);
         }
         if (nevents == nkqueue) break;
     }
@@ -182,6 +182,6 @@ int iowatcher_poll_events(loop_t* loop, int timeout) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars
 
 #endif

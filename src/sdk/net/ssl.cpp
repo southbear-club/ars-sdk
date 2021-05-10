@@ -24,14 +24,14 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/net/ssl.hpp"
+#include "ars/sdk/net/ssl.hpp"
 #include <stdio.h>
 #include <stddef.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -394,4 +394,4 @@ int ssl_close(ssl_t ssl) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

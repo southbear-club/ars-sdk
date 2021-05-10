@@ -1,6 +1,6 @@
 #include <stdio.h>
 
 int main(void) {
-    printf("-------------------------aru tcp-echo-----------------------\n");
+    printf("-------------------------ars tcp-echo-----------------------\n");
     return 0;
 }

@@ -24,7 +24,7 @@
  * @copyright MIT
  *
  */
-#include "aru/sdk/file/path.hpp"
+#include "ars/sdk/file/path.hpp"
 #include <assert.h>
 #include <errno.h>
 #include <stddef.h>
@@ -35,17 +35,17 @@
 #endif
 #include <sys/stat.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
-static char local_path[ARU_MAX_PATH];
+static char local_path[ARS_MAX_PATH];
 
 int mkdir_p(const char* dir) {
     if (access(dir, 0) == 0) {
         return EEXIST;
     }
-    char tmp[ARU_MAX_PATH] = "0";
+    char tmp[ARS_MAX_PATH] = "0";
     memcpy(tmp, dir, strlen(dir) < sizeof(tmp) ? strlen(dir) : sizeof(tmp));
     char* p = tmp;
     char delim = '/';
@@ -70,8 +70,8 @@ int rmdir_p(const char* dir) {
     if (rmdir(dir) != 0) {
         return EPERM;
     }
-    char tmp[ARU_MAX_PATH] = "";
-    memcpy(tmp, dir, strlen(dir) < ARU_MAX_PATH ? strlen(dir) : ARU_MAX_PATH);
+    char tmp[ARS_MAX_PATH] = "";
+    memcpy(tmp, dir, strlen(dir) < ARS_MAX_PATH ? strlen(dir) : ARS_MAX_PATH);
     char* p = tmp;
     while (*p) ++p;
     while (--p >= tmp) {
@@ -97,7 +97,7 @@ char* get_executable_path(char* buf, int size) {
 }
 
 char* get_executable_dir(char* buf, int size) {
-    char filepath[ARU_MAX_PATH];
+    char filepath[ARS_MAX_PATH];
     get_executable_path(filepath, sizeof(filepath));
     std::string dir = dirname(filepath);
     snprintf(buf, size, "%s", dir.c_str());
@@ -106,7 +106,7 @@ char* get_executable_dir(char* buf, int size) {
 }
 
 char* get_executable_file(char* buf, int size) {
-    char filepath[ARU_MAX_PATH];
+    char filepath[ARS_MAX_PATH];
     get_executable_path(filepath, sizeof(filepath));
     std::string f = basename(filepath);
     snprintf(buf, size, "%s", f.c_str());
@@ -238,4 +238,4 @@ std::string suffixname(const std::string& str) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

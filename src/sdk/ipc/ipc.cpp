@@ -30,12 +30,12 @@
 #include <sys/time.h>
 #include <string.h>
 #include <errno.h>
-#include "aru/sdk/ipc/ipc.hpp"
-#include "aru/sdk/ipc/sem.hpp"
-#include "aru/sdk/memory/mem.hpp"
-#include "aru/sdk/macros/defs.hpp"
+#include "ars/sdk/ipc/ipc.hpp"
+#include "ars/sdk/ipc/sem.hpp"
+#include "ars/sdk/memory/mem.hpp"
+#include "ars/sdk/macros/defs.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -119,7 +119,7 @@ static int unpack_msg(struct ipc_packet *pkt, uint32_t *func_id,
         printf("func_id is invalid!\n");
         return -1;
     }
-    *out_len = ARU_MIN(hdr->payload_len, MAX_IPC_MESSAGE_SIZE);
+    *out_len = ARS_MIN(hdr->payload_len, MAX_IPC_MESSAGE_SIZE);
     memcpy(out_arg, pkt->payload, *out_len);
     return 0;
 }
@@ -378,5 +378,5 @@ void ipc_destroy(ipc_t *ipc)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars
 

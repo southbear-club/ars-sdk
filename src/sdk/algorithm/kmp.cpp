@@ -32,9 +32,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "aru/sdk/algorithm/algorithm.hpp"
+#include "ars/sdk/algorithm/algorithm.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -94,4 +94,4 @@ const char* kmp(const char* s, const char* pattern) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

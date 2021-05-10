@@ -1,11 +1,11 @@
-#include "aru/sdk/event/event.hpp"
+#include "ars/sdk/event/event.hpp"
 #include <atomic>
-#include "aru/sdk/atomic/atomic.hpp"
-#include "aru/sdk/macros/attr.hpp"
-#include "aru/sdk/memory/mem.hpp"
-#include "aru/sdk/net/sock.hpp"
+#include "ars/sdk/atomic/atomic.hpp"
+#include "ars/sdk/macros/attr.hpp"
+#include "ars/sdk/memory/mem.hpp"
+#include "ars/sdk/net/sock.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -59,14 +59,14 @@ void io_set_type(io_t* io, io_type_e type) { io->io_type = type; }
 
 void io_set_localaddr(io_t* io, struct sockaddr* addr, int addrlen) {
     if (io->localaddr == NULL) {
-        ARU_ALLOC(io->localaddr, sizeof(aru::sdk::sock_addr_t));
+        ARS_ALLOC(io->localaddr, sizeof(ars::sdk::sock_addr_t));
     }
     memcpy(io->localaddr, addr, addrlen);
 }
 
 void io_set_peeraddr(io_t* io, struct sockaddr* addr, int addrlen) {
     if (io->peeraddr == NULL) {
-        ARU_ALLOC(io->peeraddr, sizeof(aru::sdk::sock_addr_t));
+        ARS_ALLOC(io->peeraddr, sizeof(ars::sdk::sock_addr_t));
     }
     memcpy(io->peeraddr, addr, addrlen);
 }
@@ -80,8 +80,8 @@ void io_set_readbuf(io_t* io, void* buf, size_t len) {
     if (buf == NULL || len == 0) {
         loop_t* loop = io->loop;
         if (loop && (loop->readbuf.base == NULL || loop->readbuf.len == 0)) {
-            loop->readbuf.len = ARU_LOOP_READ_BUFSIZE;
-            ARU_ALLOC(loop->readbuf.base, loop->readbuf.len);
+            loop->readbuf.len = ARS_LOOP_READ_BUFSIZE;
+            ARS_ALLOC(loop->readbuf.base, loop->readbuf.len);
             io->readbuf = loop->readbuf;
         }
     } else {
@@ -97,8 +97,8 @@ void io_set_close_timeout(io_t* io, int timeout_ms) { io->close_timeout = timeou
 static void __keepalive_timeout_cb(timer_t* timer) {
     io_t* io = (io_t*)timer->privdata;
     if (io) {
-        char ARU_UNUSED(localaddrstr[ARU_SOCKADDR_STRLEN]) = {0};
-        char ARU_UNUSED(peeraddrstr[ARU_SOCKADDR_STRLEN]) = {0};
+        char ARS_UNUSED(localaddrstr[ARS_SOCKADDR_STRLEN]) = {0};
+        char ARS_UNUSED(peeraddrstr[ARS_SOCKADDR_STRLEN]) = {0};
         // hlogw("keepalive timeout [%s] <=> [%s]",
         //         SOCKADDR_STR(io->localaddr, localaddrstr),
         //         SOCKADDR_STR(io->peeraddr, peeraddrstr));
@@ -151,4 +151,4 @@ void io_set_heartbeat(io_t* io, int interval_ms, hio_send_heartbeat_fn fn) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

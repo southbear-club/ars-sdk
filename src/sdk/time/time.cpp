@@ -24,13 +24,13 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/time/time.hpp"
+#include "ars/sdk/time/time.hpp"
 #include <stdint.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -245,10 +245,10 @@ int days_of_month(int y, int m) {
         {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
         {0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
     };
-    return days[m == 2 && ARU_IS_LEAP_YEAR(y)][m];
+    return days[m == 2 && ARS_IS_LEAP_YEAR(y)][m];
 
     // int days = s_days[month-1];
-    // return (month == 2 && ARU_IS_LEAP_YEAR(year)) ? ++days : days;
+    // return (month == 2 && ARS_IS_LEAP_YEAR(year)) ? ++days : days;
 }
 
 datetime_t* datetime_past(datetime_t* dt, int days) {
@@ -295,12 +295,12 @@ char* duration_fmt(time_t sec, char* buf) {
     s = sec % 60;
     h = m / 60;
     m = m % 60;
-    sprintf(buf, ARU_TIME_FMT, (int)h, (int)m, (int)s);
+    sprintf(buf, ARS_TIME_FMT, (int)h, (int)m, (int)s);
     return buf;
 }
 
 char* datetime_fmt(datetime_t* dt, char* buf) {
-    sprintf(buf, ARU_DATETIME_FMT,
+    sprintf(buf, ARS_DATETIME_FMT,
         dt->year, dt->month, dt->day,
         dt->hour, dt->min, dt->sec);
     return buf;
@@ -308,8 +308,8 @@ char* datetime_fmt(datetime_t* dt, char* buf) {
 
 char* gmtime_fmt(time_t time, char* buf) {
     struct tm* tm = gmtime(&time);
-    //strftime(buf, ARU_GMTIME_FMT_BUFLEN, "%a, %d %b %Y %H:%M:%S GMT", tm);
-    sprintf(buf, ARU_GMTIME_FMT,
+    //strftime(buf, ARS_GMTIME_FMT_BUFLEN, "%a, %d %b %Y %H:%M:%S GMT", tm);
+    sprintf(buf, ARS_GMTIME_FMT,
         s_weekdays[tm->tm_wday],
         tm->tm_mday, s_months[tm->tm_mon], tm->tm_year + 1900,
         tm->tm_hour, tm->tm_min, tm->tm_sec);
@@ -394,7 +394,7 @@ time_t cron_next_timeout(int minute, int hour, int day, int week, int month) {
 
     tt_round = mktime(&tm);
     if (week >= 0) {
-        tt_round = tt + (week-tm.tm_wday)*ARU_SECONDS_PER_DAY;
+        tt_round = tt + (week-tm.tm_wday)*ARS_SECONDS_PER_DAY;
     }
     if (tt_round > tt) {
         return tt_round;
@@ -402,13 +402,13 @@ time_t cron_next_timeout(int minute, int hour, int day, int week, int month) {
 
     switch(period_type) {
     case HOURLY:
-        tt_round += ARU_SECONDS_PER_HOUR;
+        tt_round += ARS_SECONDS_PER_HOUR;
         return tt_round;
     case DAILY:
-        tt_round += ARU_SECONDS_PER_DAY;
+        tt_round += ARS_SECONDS_PER_DAY;
         return tt_round;
     case WEEKLY:
-        tt_round += ARU_SECONDS_PER_WEEK;
+        tt_round += ARS_SECONDS_PER_WEEK;
         return tt_round;
     case MONTHLY:
         if (++tm.tm_mon == 12) {
@@ -593,4 +593,4 @@ bool timestamp_valid(const timestamp_t* tsp) {
 
 } // namesapce sdk
 
-} // namesapce aru
+} // namesapce ars

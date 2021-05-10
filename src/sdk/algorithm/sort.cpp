@@ -27,10 +27,10 @@
 #include "sort_common.hpp"
 #include <stdint.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

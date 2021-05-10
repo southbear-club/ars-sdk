@@ -24,13 +24,13 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/str/uri.hpp"
+#include "ars/sdk/str/uri.hpp"
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -165,4 +165,4 @@ void uri_query_test(void)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

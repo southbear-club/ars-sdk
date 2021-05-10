@@ -24,9 +24,9 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/algorithm/bserach.hpp"
+#include "ars/sdk/algorithm/bserach.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -134,4 +134,4 @@ void bsearch_test(void)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

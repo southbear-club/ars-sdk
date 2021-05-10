@@ -1,13 +1,13 @@
-#include "aru/sdk/event/iowatcher.hpp"
+#include "ars/sdk/event/iowatcher.hpp"
 #ifndef EVENT_IOCP
 #include <unistd.h>
-#include "aru/sdk/event/event.hpp"
-#include "aru/sdk/macros/attr.hpp"
-#include "aru/sdk/net/sock.hpp"
-#include "aru/sdk/net/ssl.hpp"
-#include "aru/sdk/thread/thread.hpp"
+#include "ars/sdk/event/event.hpp"
+#include "ars/sdk/macros/attr.hpp"
+#include "ars/sdk/net/sock.hpp"
+#include "ars/sdk/net/ssl.hpp"
+#include "ars/sdk/thread/thread.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -16,8 +16,8 @@ namespace event {
 static void __connect_timeout_cb(timer_t* timer) {
     io_t* io = (io_t*)timer->privdata;
     if (io) {
-        char ARU_UNUSED(localaddrstr[ARU_SOCKADDR_STRLEN]) = {0};
-        char ARU_UNUSED(peeraddrstr[ARU_SOCKADDR_STRLEN]) = {0};
+        char ARS_UNUSED(localaddrstr[ARS_SOCKADDR_STRLEN]) = {0};
+        char ARS_UNUSED(peeraddrstr[ARS_SOCKADDR_STRLEN]) = {0};
         // hlogw("connect timeout [%s] <=> [%s]",
         //         SOCKADDR_STR(io->localaddr, localaddrstr),
         //         SOCKADDR_STR(io->peeraddr, peeraddrstr));
@@ -29,8 +29,8 @@ static void __connect_timeout_cb(timer_t* timer) {
 static void __close_timeout_cb(timer_t* timer) {
     io_t* io = (io_t*)timer->privdata;
     if (io) {
-        char ARU_UNUSED(localaddrstr[ARU_SOCKADDR_STRLEN]) = {0};
-        char ARU_UNUSED(peeraddrstr[ARU_SOCKADDR_STRLEN]) = {0};
+        char ARS_UNUSED(localaddrstr[ARS_SOCKADDR_STRLEN]) = {0};
+        char ARS_UNUSED(peeraddrstr[ARS_SOCKADDR_STRLEN]) = {0};
         // hlogw("close timeout [%s] <=> [%s]",
         //         SOCKADDR_STR(io->localaddr, localaddrstr),
         //         SOCKADDR_STR(io->peeraddr, peeraddrstr));
@@ -141,14 +141,14 @@ static void ssl_server_handshark(io_t* io) {
     int ret = ssl_accept(io->ssl);
     if (ret == 0) {
         // handshark finish
-        iowatcher_del_event(io->loop, io->fd, ARU_IO_READ);
-        io->events &= ~ARU_IO_READ;
+        iowatcher_del_event(io->loop, io->fd, ARS_IO_READ);
+        io->events &= ~ARS_IO_READ;
         io->cb = NULL;
         printd("ssl handshark finished.\n");
         __accept_cb(io);
     } else if (ret == SSL_WANT_READ) {
-        if ((io->events & ARU_IO_READ) == 0) {
-            io_add(io, ssl_server_handshark, ARU_IO_READ);
+        if ((io->events & ARS_IO_READ) == 0) {
+            io_add(io, ssl_server_handshark, ARS_IO_READ);
         }
     } else {
         // hloge("ssl handshake failed: %d", ret);
@@ -161,14 +161,14 @@ static void ssl_client_handshark(io_t* io) {
     int ret = ssl_connect(io->ssl);
     if (ret == 0) {
         // handshark finish
-        iowatcher_del_event(io->loop, io->fd, ARU_IO_READ);
-        io->events &= ~ARU_IO_READ;
+        iowatcher_del_event(io->loop, io->fd, ARS_IO_READ);
+        io->events &= ~ARS_IO_READ;
         io->cb = NULL;
         printd("ssl handshark finished.\n");
         __connect_cb(io);
     } else if (ret == SSL_WANT_READ) {
-        if ((io->events & ARU_IO_READ) == 0) {
-            io_add(io, ssl_client_handshark, ARU_IO_READ);
+        if ((io->events & ARS_IO_READ) == 0) {
+            io_add(io, ssl_client_handshark, ARS_IO_READ);
         }
     } else {
         // hloge("ssl handshake failed: %d", ret);
@@ -298,7 +298,7 @@ static int __nio_write(io_t* io, const void* buf, int len) {
             break;
         case IO_TYPE_UDP:
         case IO_TYPE_IP:
-            nwrite = sendto(io->fd, buf, len, 0, io->peeraddr, ARU_SOCKADDR_LEN(io->peeraddr));
+            nwrite = sendto(io->fd, buf, len, 0, io->peeraddr, ARS_SOCKADDR_LEN(io->peeraddr));
             break;
         default:
             nwrite = write(io->fd, buf, len);
@@ -377,7 +377,7 @@ write:
     __write_cb(io, buf, nwrite);
     pbuf->offset += nwrite;
     if (nwrite == len) {
-        ARU_FREE(pbuf->base);
+        ARS_FREE(pbuf->base);
         write_queue_pop_front(&io->write_queue);
         // write next
         goto write;
@@ -391,7 +391,7 @@ disconnect:
 }
 
 static void hio_handle_events(io_t* io) {
-    if ((io->events & ARU_IO_READ) && (io->revents & ARU_IO_READ)) {
+    if ((io->events & ARS_IO_READ) && (io->revents & ARS_IO_READ)) {
         if (io->accept) {
             nio_accept(io);
         } else {
@@ -399,12 +399,12 @@ static void hio_handle_events(io_t* io) {
         }
     }
 
-    if ((io->events & ARU_IO_WRITE) && (io->revents & ARU_IO_WRITE)) {
-        // NOTE: del ARU_IO_WRITE, if write_queue empty
+    if ((io->events & ARS_IO_WRITE) && (io->revents & ARS_IO_WRITE)) {
+        // NOTE: del ARS_IO_WRITE, if write_queue empty
         mutex_lock(&io->write_mutex);
         if (write_queue_empty(&io->write_queue)) {
-            iowatcher_del_event(io->loop, io->fd, ARU_IO_WRITE);
-            io->events &= ~ARU_IO_WRITE;
+            iowatcher_del_event(io->loop, io->fd, ARS_IO_WRITE);
+            io->events &= ~ARS_IO_WRITE;
         }
         mutex_unlock(&io->write_mutex);
         if (io->connect) {
@@ -423,12 +423,12 @@ static void hio_handle_events(io_t* io) {
 
 int io_accept(io_t* io) {
     io->accept = 1;
-    io_add(io, hio_handle_events, ARU_IO_READ);
+    io_add(io, hio_handle_events, ARS_IO_READ);
     return 0;
 }
 
 int io_connect(io_t* io) {
-    int ret = connect(io->fd, io->peeraddr, ARU_SOCKADDR_LEN(io->peeraddr));
+    int ret = connect(io->fd, io->peeraddr, ARS_SOCKADDR_LEN(io->peeraddr));
 #ifdef OS_WIN
     if (ret < 0 && socket_errno() != WSAEWOULDBLOCK) {
 #else
@@ -443,11 +443,11 @@ int io_connect(io_t* io) {
         __connect_cb(io);
         return 0;
     }
-    int timeout = io->connect_timeout ? io->connect_timeout : ARU_IO_DEFAULT_CONNECT_TIMEOUT;
+    int timeout = io->connect_timeout ? io->connect_timeout : ARS_IO_DEFAULT_CONNECT_TIMEOUT;
     io->connect_timer = timer_add(io->loop, __connect_timeout_cb, timeout, 1);
     io->connect_timer->privdata = io;
     io->connect = 1;
-    return io_add(io, hio_handle_events, ARU_IO_WRITE);
+    return io_add(io, hio_handle_events, ARS_IO_WRITE);
 }
 
 int io_read(io_t* io) {
@@ -455,7 +455,7 @@ int io_read(io_t* io) {
         // hloge("io_read called but fd[%d] already closed!", io->fd);
         return -1;
     }
-    return io_add(io, hio_handle_events, ARU_IO_READ);
+    return io_add(io, hio_handle_events, ARS_IO_READ);
 }
 
 int io_write(io_t* io, const void* buf, size_t len) {
@@ -490,14 +490,14 @@ int io_write(io_t* io, const void* buf, size_t len) {
             return nwrite;
         }
     enqueue:
-        io_add(io, hio_handle_events, ARU_IO_WRITE);
+        io_add(io, hio_handle_events, ARS_IO_WRITE);
     }
     if (nwrite < (int)len) {
         offset_buf_t rest;
         rest.len = len;
         rest.offset = nwrite;
         // NOTE: free in nio_write
-        ARU_ALLOC(rest.base, rest.len);
+        ARS_ALLOC(rest.base, rest.len);
         memcpy(rest.base, buf, rest.len);
         if (io->write_queue.maxsize == 0) {
             write_queue_init(&io->write_queue, 4);
@@ -537,7 +537,7 @@ int io_close(io_t* io) {
         mutex_unlock(&io->write_mutex);
         io->close = 1;
         // hlogw("write_queue not empty, close later.");
-        int timeout_ms = io->close_timeout ? io->close_timeout : ARU_IO_DEFAULT_CLOSE_TIMEOUT;
+        int timeout_ms = io->close_timeout ? io->close_timeout : ARS_IO_DEFAULT_CLOSE_TIMEOUT;
         io->close_timer = timer_add(io->loop, __close_timeout_cb, timeout_ms, 1);
         io->close_timer->privdata = io;
         return 0;
@@ -561,6 +561,6 @@ int io_close(io_t* io) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars
 
 #endif

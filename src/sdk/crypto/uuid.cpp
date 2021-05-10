@@ -35,14 +35,14 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/crypto/uuid.hpp"
+#include "ars/sdk/crypto/uuid.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
 #include <unistd.h> // access
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -134,7 +134,7 @@ void uuid_generate_simple(char s[37])
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars
 
 /**
  * @}

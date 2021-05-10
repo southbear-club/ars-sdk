@@ -26,10 +26,10 @@
  */
 #include <stdio.h>
 #include <unistd.h>
-#include "aru/sdk/ds/serializer.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/ds/serializer.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -226,4 +226,4 @@ void s_wbd(struct serializer *s, double d)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

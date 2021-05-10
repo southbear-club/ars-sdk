@@ -27,7 +27,7 @@
 #include "sort_common.hpp"
 #include <stdint.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -126,4 +126,4 @@ void heap_sort(void *base, size_t num, size_t size, fp_cmp cmp) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

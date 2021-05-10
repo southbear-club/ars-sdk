@@ -24,11 +24,11 @@
  * @copyright MIT
  *
  */
-#include "aru/sdk/net/submask.hpp"
+#include "ars/sdk/net/submask.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -379,4 +379,4 @@ int submask_iserror(char ip[16], char mask[16]) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

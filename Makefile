@@ -1,5 +1,5 @@
 # 目标
-TARGET := aru
+TARGET := ars
 # 单元测试目标
 UNIT_TEST_TARGET := $(TARGET)_ut
 ROOT_DIR := $(shell pwd)
@@ -60,7 +60,7 @@ $(TARGET): $(OBJECTS)
 # 示例代码编译
 .PHONY: demo
 demo: $(TARGET)
-	@make -C samples ARU_INC_DIR=$(ROOT_DIR)/include ARU_LIB_DIR=$(ROOT_DIR)/build OUTPUT_DIR=$(ROOT_DIR)/build/samples
+	@make -C samples ARS_INC_DIR=$(ROOT_DIR)/include ARS_LIB_DIR=$(ROOT_DIR)/build OUTPUT_DIR=$(ROOT_DIR)/build/samples
 
 # 单元测试
 ut: $(TARGET) $(UT_OBJECTS)
@@ -77,7 +77,7 @@ api:
 pack: $(TARGET) api
 	@echo "\033[35m[----------- package start -------------]\033[0m"
 	@rm -rf $(DIST_DIR)
-	@mkdir -p $(DIST_DIR)/include/aru
+	@mkdir -p $(DIST_DIR)/include/ars
 	@mkdir -p $(DIST_DIR)/lib
 	@mkdir -p $(DIST_DIR)/docs
 	@mkdir -p $(DIST_DIR)/demo
@@ -94,18 +94,18 @@ pack: $(TARGET) api
 	@cp -f build/lib$(TARGET).so $(DIST_DIR)/lib/
 
 	@echo "\033[32mcopy headers\033[0m"
-	@cp src/aru.hpp $(DIST_DIR)/include/aru/
-	@mkdir -p $(DIST_DIR)/include/aru/log/
-	@cp src/log/log.hpp $(DIST_DIR)/include/aru/log/
-	@mkdir -p $(DIST_DIR)/include/aru/sdk/crypto/
-	@cp src/sdk/crypto/md5.hpp $(DIST_DIR)/include/aru/sdk/crypto/
+	@cp src/ars.hpp $(DIST_DIR)/include/ars/
+	@mkdir -p $(DIST_DIR)/include/ars/log/
+	@cp src/log/log.hpp $(DIST_DIR)/include/ars/log/
+	@mkdir -p $(DIST_DIR)/include/ars/sdk/crypto/
+	@cp src/sdk/crypto/md5.hpp $(DIST_DIR)/include/ars/sdk/crypto/
 
-	@echo "\033[32mtar -zcf aru-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz include lib demo docs README.md\033[0m"
-	@cd $(DIST_DIR) && tar -zcf aru-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz include lib demo docs README.md
+	@echo "\033[32mtar -zcf ars-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz include lib demo docs README.md\033[0m"
+	@cd $(DIST_DIR) && tar -zcf ars-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz include lib demo docs README.md
 	@mkdir -p target/$(PLAT_NAME)/$(MODE)/
 
-	@echo "\033[32mcopy aru-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz to target/$(PLAT_NAME)/$(MODE)/\033[0m"
-	@cp $(DIST_DIR)/aru-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz target/$(PLAT_NAME)/$(MODE)/
+	@echo "\033[32mcopy ars-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz to target/$(PLAT_NAME)/$(MODE)/\033[0m"
+	@cp $(DIST_DIR)/ars-$(PLAT_NAME)-$(RELEASE_VERSION)-$(MODE).tar.gz target/$(PLAT_NAME)/$(MODE)/
 
 	@echo "\033[35m[---------- package success ------------]\033[0m"
 	@echo ""

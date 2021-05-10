@@ -26,7 +26,7 @@
  */
 #include "sort_common.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -55,4 +55,4 @@ int select_sort(void *array, size_t num, size_t size, fp_cmp cmp)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

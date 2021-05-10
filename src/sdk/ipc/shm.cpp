@@ -29,9 +29,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#include "aru/sdk/ipc/ipc.hpp"
+#include "ars/sdk/ipc/ipc.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -77,4 +77,4 @@ struct ipc_ops shm_ops = {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

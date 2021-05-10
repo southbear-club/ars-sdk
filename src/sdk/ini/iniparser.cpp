@@ -24,16 +24,16 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/ini/iniparser.hpp"
-#include "aru/sdk/macros/defs.hpp"
-#include "aru/sdk/file/file.hpp"
-#include "aru/sdk/file/file_obj.hpp"
-#include "aru/sdk/err/err.hpp"
-#include "aru/sdk/str/str.hpp"
+#include "ars/sdk/ini/iniparser.hpp"
+#include "ars/sdk/macros/defs.hpp"
+#include "ars/sdk/file/file.hpp"
+#include "ars/sdk/file/file_obj.hpp"
+#include "ars/sdk/err/err.hpp"
+#include "ars/sdk/str/str.hpp"
 #include <list>
 #include <sstream>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -118,8 +118,8 @@ public:
 };
 
 IniParser::IniParser() {
-    _comment = ARU_DEFAULT_INI_COMMENT;
-    _delim = ARU_DEFAULT_INI_DELIM;
+    _comment = ARS_DEFAULT_INI_COMMENT;
+    _delim = ARS_DEFAULT_INI_DELIM;
     root_ = NULL;
 }
 
@@ -128,7 +128,7 @@ IniParser::~IniParser() {
 }
 
 int IniParser::Unload() {
-    ARU_SAFE_DELETE(root_);
+    ARS_SAFE_DELETE(root_);
     return 0;
 }
 
@@ -141,7 +141,7 @@ int IniParser::LoadFromFile(const char* filepath) {
 
     File file;
     if (file.open(filepath, "r") != 0) {
-        return ARU_ERR_OPEN_FILE;
+        return ARS_ERR_OPEN_FILE;
     }
 
     std::string str;
@@ -302,7 +302,7 @@ int IniParser::SaveAs(const char* filepath) {
 
     File file;
     if (file.open(filepath, "w") != 0) {
-        return ARU_ERR_SAVE_FILE;
+        return ARS_ERR_SAVE_FILE;
     }
     file.write(str.c_str(), str.length());
 
@@ -385,4 +385,4 @@ void IniParser::Set(const string& key, const float& value, const string& section
     
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

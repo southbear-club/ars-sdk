@@ -27,11 +27,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "aru/sdk/ds/ringbuffer.hpp"
-#include "aru/sdk/macros/defs.hpp"
-#include "aru/sdk/memory/mem.hpp"
+#include "ars/sdk/ds/ringbuffer.hpp"
+#include "ars/sdk/macros/defs.hpp"
+#include "ars/sdk/memory/mem.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -130,7 +130,7 @@ ssize_t rb_read(struct ringbuffer *rb, void *buf, size_t len)
     if (!rb) {
         return -1;
     }
-    size_t rlen = ARU_MIN(len, rb_get_space_used(rb));
+    size_t rlen = ARS_MIN(len, rb_get_space_used(rb));
 
     if ((rb->length - rb->start) < rlen) {
         int half_tail = rb->length - rb->start;
@@ -190,4 +190,4 @@ void rb_cleanup(struct ringbuffer *rb)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

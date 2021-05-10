@@ -1,13 +1,13 @@
-#include "aru/sdk/event/loop.hpp"
-#include "aru/sdk/event/event.hpp"
-#include "aru/sdk/event/iowatcher.hpp"
-#include "aru/sdk/macros/attr.hpp"
-#include "aru/sdk/math/math.hpp"
-#include "aru/sdk/net/sock.hpp"
-#include "aru/sdk/thread/thread.hpp"
-#include "aru/sdk/time/time.hpp"
+#include "ars/sdk/event/loop.hpp"
+#include "ars/sdk/event/event.hpp"
+#include "ars/sdk/event/iowatcher.hpp"
+#include "ars/sdk/macros/attr.hpp"
+#include "ars/sdk/math/math.hpp"
+#include "ars/sdk/net/sock.hpp"
+#include "ars/sdk/thread/thread.hpp"
+#include "ars/sdk/time/time.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -27,7 +27,7 @@ static void __hidle_del(idle_t* idle);
 static void __htimer_del(timer_t* timer);
 
 static int timers_compare(const struct heap_node* lhs, const struct heap_node* rhs) {
-    return ARU_TIMER_ENTRY(lhs)->next_timeout < ARU_TIMER_ENTRY(rhs)->next_timeout;
+    return ARS_TIMER_ENTRY(lhs)->next_timeout < ARS_TIMER_ENTRY(rhs)->next_timeout;
 }
 
 static int hloop_process_idles(loop_t* loop) {
@@ -35,7 +35,7 @@ static int hloop_process_idles(loop_t* loop) {
     struct list_node* node = loop->idles.next;
     idle_t* idle = NULL;
     while (node != &loop->idles) {
-        idle = ARU_IDLE_ENTRY(node);
+        idle = ARS_IDLE_ENTRY(node);
         node = node->next;
         if (idle->repeat != INFINITE) {
             --idle->repeat;
@@ -45,7 +45,7 @@ static int hloop_process_idles(loop_t* loop) {
             // Real deletion occurs after hloop_process_pendings.
             __hidle_del(idle);
         }
-        ARU_EVENT_PENDING(idle);
+        ARS_EVENT_PENDING(idle);
         ++nidles;
     }
     return nidles;
@@ -57,7 +57,7 @@ static int hloop_process_timers(loop_t* loop) {
     uint64_t now_hrtime = loop_now_hrtime(loop);
     while (loop->timers.root) {
         // NOTE: root of minheap has min timeout.
-        timer = ARU_TIMER_ENTRY(loop->timers.root);
+        timer = ARS_TIMER_ENTRY(loop->timers.root);
         if (timer->next_timeout > now_hrtime) {
             break;
         }
@@ -83,7 +83,7 @@ static int hloop_process_timers(loop_t* loop) {
             }
             heap_insert(&loop->timers, &timer->node);
         }
-        ARU_EVENT_PENDING(timer);
+        ARS_EVENT_PENDING(timer);
         ++ntimers;
     }
     return ntimers;
@@ -105,7 +105,7 @@ static int hloop_process_pendings(loop_t* loop) {
     event_t* next = NULL;
     int ncbs = 0;
     // NOTE: invoke event callback from high to low sorted by priority.
-    for (int i = ARU_EVENT_PRIORITY_SIZE - 1; i >= 0; --i) {
+    for (int i = ARS_EVENT_PRIORITY_SIZE - 1; i >= 0; --i) {
         cur = loop->pendings[i];
         while (cur) {
             next = cur->pending_next;
@@ -117,7 +117,7 @@ static int hloop_process_pendings(loop_t* loop) {
                 cur->pending = 0;
                 // NOTE: Now we can safely delete event marked as destroy.
                 if (cur->destroy) {
-                    ARU_EVENT_DEL(cur);
+                    ARS_EVENT_DEL(cur);
                 }
             }
             cur = next;
@@ -131,7 +131,7 @@ static int hloop_process_pendings(loop_t* loop) {
 // hloop_process_ios -> hloop_process_timers -> hloop_process_idles -> hloop_process_pendings
 static int hloop_process_events(loop_t* loop) {
     // ios -> timers -> idles
-    int ARU_UNUSED(nios);
+    int ARS_UNUSED(nios);
     int ntimers;
     int nidles;
     nios = ntimers = nidles = 0;
@@ -140,12 +140,12 @@ static int hloop_process_events(loop_t* loop) {
     int32_t blocktime = HLOOP_MAX_BLOCK_TIME;
     if (loop->timers.root) {
         loop_update_time(loop);
-        uint64_t next_min_timeout = ARU_TIMER_ENTRY(loop->timers.root)->next_timeout;
+        uint64_t next_min_timeout = ARS_TIMER_ENTRY(loop->timers.root)->next_timeout;
         int64_t blocktime_us = next_min_timeout - loop_now_hrtime(loop);
         if (blocktime_us <= 0) goto process_timers;
         blocktime = blocktime_us / 1000;
         ++blocktime;
-        blocktime = ARU_MIN(blocktime, HLOOP_MAX_BLOCK_TIME);
+        blocktime = ARS_MIN(blocktime, HLOOP_MAX_BLOCK_TIME);
     }
 
     if (loop->nios) {
@@ -178,8 +178,8 @@ process_timers:
     return ncbs;
 }
 
-static void ARU_UNUSED(hloop_stat_timer_cb)(timer_t* timer) {
-    loop_t* ARU_UNUSED(loop) = timer->loop;
+static void ARS_UNUSED(hloop_stat_timer_cb)(timer_t* timer) {
+    loop_t* ARS_UNUSED(loop) = timer->loop;
     // hlog_set_level(LOG_LEVEL_DEBUG);
     // hlogd("[loop] pid=%ld tid=%ld uptime=%lluus cnt=%llu nactives=%u nios=%d ntimers=%d
     // nidles=%u",
@@ -266,8 +266,8 @@ static void hloop_init(loop_t* loop) {
     io_array_init(&loop->ios, IO_ARRAY_INIT_SIZE);
 
     // readbuf
-    loop->readbuf.len = ARU_LOOP_READ_BUFSIZE;
-    ARU_ALLOC(loop->readbuf.base, loop->readbuf.len);
+    loop->readbuf.len = ARS_LOOP_READ_BUFSIZE;
+    ARS_ALLOC(loop->readbuf.base, loop->readbuf.len);
 
     // iowatcher
     iowatcher_init(loop);
@@ -288,7 +288,7 @@ static void hloop_init(loop_t* loop) {
 static void hloop_cleanup(loop_t* loop) {
     // pendings
     printd("cleanup pendings...\n");
-    for (int i = 0; i < ARU_EVENT_PRIORITY_SIZE; ++i) {
+    for (int i = 0; i < ARS_EVENT_PRIORITY_SIZE; ++i) {
         loop->pendings[i] = NULL;
     }
 
@@ -307,9 +307,9 @@ static void hloop_cleanup(loop_t* loop) {
     struct list_node* node = loop->idles.next;
     idle_t* idle;
     while (node != &loop->idles) {
-        idle = ARU_IDLE_ENTRY(node);
+        idle = ARS_IDLE_ENTRY(node);
         node = node->next;
-        ARU_FREE(idle);
+        ARS_FREE(idle);
     }
     list_init(&loop->idles);
 
@@ -317,15 +317,15 @@ static void hloop_cleanup(loop_t* loop) {
     printd("cleanup timers...\n");
     timer_t* timer;
     while (loop->timers.root) {
-        timer = ARU_TIMER_ENTRY(loop->timers.root);
+        timer = ARS_TIMER_ENTRY(loop->timers.root);
         heap_dequeue(&loop->timers);
-        ARU_FREE(timer);
+        ARS_FREE(timer);
     }
     heap_init(&loop->timers, NULL);
 
     // readbuf
     if (loop->readbuf.base && loop->readbuf.len) {
-        ARU_FREE(loop->readbuf.base);
+        ARS_FREE(loop->readbuf.base);
         loop->readbuf.base = NULL;
         loop->readbuf.len = 0;
     }
@@ -347,7 +347,7 @@ static void hloop_cleanup(loop_t* loop) {
 
 loop_t* loop_new(int flags) {
     loop_t* loop;
-    ARU_ALLOC_SIZEOF(loop);
+    ARS_ALLOC_SIZEOF(loop);
     hloop_init(loop);
     loop->flags |= flags;
     return loop;
@@ -356,7 +356,7 @@ loop_t* loop_new(int flags) {
 void loop_free(loop_t** pp) {
     if (pp && *pp) {
         hloop_cleanup(*pp);
-        ARU_FREE(*pp);
+        ARS_FREE(*pp);
         *pp = NULL;
     }
 }
@@ -387,20 +387,20 @@ int loop_run(loop_t* loop) {
         }
         ++loop->loop_cnt;
         if (loop->nactives <= intern_events &&
-            loop->flags & ARU_LOOP_FLAG_QUIT_WHEN_NO_ACTIVE_EVENTS) {
+            loop->flags & ARS_LOOP_FLAG_QUIT_WHEN_NO_ACTIVE_EVENTS) {
             break;
         }
         hloop_process_events(loop);
-        if (loop->flags & ARU_LOOP_FLAG_RUN_ONCE) {
+        if (loop->flags & ARS_LOOP_FLAG_RUN_ONCE) {
             break;
         }
     }
     loop->status = LOOP_STATUS_STOP;
     loop->end_hrtime = gethrtime_us();
 
-    if (loop->flags & ARU_LOOP_FLAG_AUTO_FREE) {
+    if (loop->flags & ARS_LOOP_FLAG_AUTO_FREE) {
         hloop_cleanup(loop);
-        ARU_FREE(loop);
+        ARS_FREE(loop);
     }
     return 0;
 }
@@ -419,7 +419,7 @@ int loop_stop(loop_t* loop) {
     if ((long)gettid() != loop->tid) {
         event_t ev;
         memset(&ev, 0, sizeof(ev));
-        ev.priority = ARU_EVENT_HIGHEST_PRIORITY;
+        ev.priority = ARS_EVENT_HIGHEST_PRIORITY;
         ev.cb = hloop_stop_event_cb;
         loop_post_event(loop, &ev);
     }
@@ -444,7 +444,7 @@ loop_status_e loop_status(loop_t* loop) { return loop->status; }
 
 void loop_update_time(loop_t* loop) {
     loop->cur_hrtime = gethrtime_us();
-    if (ARU_ABS((int64_t)loop_now(loop) - (int64_t)time(NULL)) > 1) {
+    if (ARS_ABS((int64_t)loop_now(loop) - (int64_t)time(NULL)) > 1) {
         // systemtime changed, we adjust start_ms
         loop->start_ms = gettimeofday_ms() - (loop->cur_hrtime - loop->start_hrtime) / 1000;
     }
@@ -472,12 +472,12 @@ void* loop_userdata(loop_t* loop) { return loop->userdata; }
 
 idle_t* idle_add(loop_t* loop, idle_cb cb, uint32_t repeat) {
     idle_t* idle;
-    ARU_ALLOC_SIZEOF(idle);
+    ARS_ALLOC_SIZEOF(idle);
     idle->event_type = EVENT_TYPE_IDLE;
-    idle->priority = ARU_EVENT_LOWEST_PRIORITY;
+    idle->priority = ARS_EVENT_LOWEST_PRIORITY;
     idle->repeat = repeat;
     list_add(&idle->node, &loop->idles);
-    ARU_EVENT_ADD(loop, idle, cb);
+    ARS_EVENT_ADD(loop, idle, cb);
     loop->nidles++;
     return idle;
 }
@@ -492,21 +492,21 @@ static void __hidle_del(idle_t* idle) {
 void idle_del(idle_t* idle) {
     if (!idle->active) return;
     __hidle_del(idle);
-    ARU_EVENT_DEL(idle);
+    ARS_EVENT_DEL(idle);
 }
 
 timer_t* timer_add(loop_t* loop, timer_cb cb, uint32_t timeout, uint32_t repeat) {
     if (timeout == 0) return NULL;
     timeout_t* timer;
-    ARU_ALLOC_SIZEOF(timer);
+    ARS_ALLOC_SIZEOF(timer);
     timer->event_type = EVENT_TYPE_TIMEOUT;
-    timer->priority = ARU_EVENT_HIGHEST_PRIORITY;
+    timer->priority = ARS_EVENT_HIGHEST_PRIORITY;
     timer->repeat = repeat;
     timer->timeout = timeout;
     loop_update_time(loop);
     timer->next_timeout = loop_now_hrtime(loop) + timeout * 1000;
     heap_insert(&loop->timers, &timer->node);
-    ARU_EVENT_ADD(loop, timer, cb);
+    ARS_EVENT_ADD(loop, timer, cb);
     loop->ntimers++;
     return (timer_t*)timer;
 }
@@ -527,7 +527,7 @@ void timer_reset(timer_t* timer) {
     }
     timer->next_timeout = loop_now_hrtime(loop) + timeout->timeout * 1000;
     heap_insert(&loop->timers, &timer->node);
-    ARU_EVENT_RESET(timer);
+    ARS_EVENT_RESET(timer);
 }
 
 timer_t* timer_add_period(loop_t* loop, timer_cb cb, int8_t minute, int8_t hour, int8_t day,
@@ -536,9 +536,9 @@ timer_t* timer_add_period(loop_t* loop, timer_cb cb, int8_t minute, int8_t hour,
         return NULL;
     }
     period_t* timer;
-    ARU_ALLOC_SIZEOF(timer);
+    ARS_ALLOC_SIZEOF(timer);
     timer->event_type = EVENT_TYPE_PERIOD;
-    timer->priority = ARU_EVENT_HIGH_PRIORITY;
+    timer->priority = ARS_EVENT_HIGH_PRIORITY;
     timer->repeat = repeat;
     timer->minute = minute;
     timer->hour = hour;
@@ -547,7 +547,7 @@ timer_t* timer_add_period(loop_t* loop, timer_cb cb, int8_t minute, int8_t hour,
     timer->week = week;
     timer->next_timeout = cron_next_timeout(minute, hour, day, week, month) * 1000000;
     heap_insert(&loop->timers, &timer->node);
-    ARU_EVENT_ADD(loop, timer, cb);
+    ARS_EVENT_ADD(loop, timer, cb);
     loop->ntimers++;
     return (timer_t*)timer;
 }
@@ -562,7 +562,7 @@ static void __htimer_del(timer_t* timer) {
 void timer_del(timer_t* timer) {
     if (!timer->active) return;
     __htimer_del(timer);
-    ARU_EVENT_DEL(timer);
+    ARS_EVENT_DEL(timer);
 }
 
 const char* io_engine() {
@@ -628,13 +628,13 @@ static void hio_socket_init(io_t* io) {
     sock_set_nonblock(io->fd);
     // fill io->localaddr io->peeraddr
     if (io->localaddr == NULL) {
-        ARU_ALLOC(io->localaddr, sizeof(sock_addr_t));
+        ARS_ALLOC(io->localaddr, sizeof(sock_addr_t));
     }
     if (io->peeraddr == NULL) {
-        ARU_ALLOC(io->peeraddr, sizeof(sock_addr_t));
+        ARS_ALLOC(io->peeraddr, sizeof(sock_addr_t));
     }
     socklen_t addrlen = sizeof(sock_addr_t);
-    int ARU_UNUSED(ret) = getsockname(io->fd, io->localaddr, &addrlen);
+    int ARS_UNUSED(ret) = getsockname(io->fd, io->localaddr, &addrlen);
     printd("getsockname fd=%d ret=%d errno=%d\n", io->fd, ret, errno);
     // NOTE:
     // tcp_server peeraddr set by accept
@@ -713,13 +713,13 @@ void io_done(io_t* io) {
     if (!io->ready) return;
     io->ready = 0;
 
-    hio_del(io, ARU_IO_RDWR);
+    hio_del(io, ARS_IO_RDWR);
 
     offset_buf_t* pbuf = NULL;
     mutex_lock(&io->write_mutex);
     while (!write_queue_empty(&io->write_queue)) {
         pbuf = write_queue_front(&io->write_queue);
-        ARU_FREE(pbuf->base);
+        ARS_FREE(pbuf->base);
         write_queue_pop_front(&io->write_queue);
     }
     write_queue_cleanup(&io->write_queue);
@@ -733,9 +733,9 @@ void io_free(io_t* io) {
     // NOTE: call io_close to call close_cb
     io_close(io);
     mutex_lock_deinit(&io->write_mutex);
-    ARU_FREE(io->localaddr);
-    ARU_FREE(io->peeraddr);
-    ARU_FREE(io);
+    ARS_FREE(io->localaddr);
+    ARS_FREE(io->peeraddr);
+    ARS_FREE(io);
 }
 
 bool io_is_opened(io_t* io) {
@@ -757,7 +757,7 @@ io_t* io_get(loop_t* loop, int fd) {
 
     io_t* io = loop->ios.ptr[fd];
     if (io == NULL) {
-        ARU_ALLOC_SIZEOF(io);
+        ARS_ALLOC_SIZEOF(io);
         io_init(io);
         io->event_type = EVENT_TYPE_IO;
         io->loop = loop;
@@ -780,7 +780,7 @@ int io_add(io_t* io, io_cb cb, int events) {
 #endif
     loop_t* loop = io->loop;
     if (!io->active) {
-        ARU_EVENT_ADD(loop, io, cb);
+        ARS_EVENT_ADD(loop, io, cb);
         loop->nios++;
     }
 
@@ -813,8 +813,8 @@ int hio_del(io_t* io, int events) {
     }
     if (io->events == 0) {
         io->loop->nios--;
-        // NOTE: not ARU_EVENT_DEL, avoid free
-        ARU_EVENT_INACTIVE(io);
+        // NOTE: not ARS_EVENT_DEL, avoid free
+        ARS_EVENT_INACTIVE(io);
     }
     return 0;
 }
@@ -1009,4 +1009,4 @@ io_t* io_setup_udp_upstream(io_t* io, const char* host, int port) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

@@ -24,7 +24,7 @@
  * @copyright MIT
  *
  */
-#include "aru/sdk/net/sock.hpp"
+#include "ars/sdk/net/sock.hpp"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -38,10 +38,10 @@
 #include <sys/unistd.h>
 #include <unistd.h>
 
-#include "aru/sdk/macros/defs.hpp"
-#include "aru/sdk/net/poll.hpp"
+#include "ars/sdk/macros/defs.hpp"
+#include "ars/sdk/net/poll.hpp"
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -594,7 +594,7 @@ int sock_pair(int family, int type, int protocol, int sv[2]) {
         return -1;
     }
     int listenfd, connfd, acceptfd;
-    listenfd = connfd = acceptfd = ARU_INVALID_SOCKET;
+    listenfd = connfd = acceptfd = ARS_INVALID_SOCKET;
     struct sockaddr_in localaddr;
     socklen_t addrlen = sizeof(localaddr);
     memset(&localaddr, 0, addrlen);
@@ -634,13 +634,13 @@ int sock_pair(int family, int type, int protocol, int sv[2]) {
     sv[1] = acceptfd;
     return 0;
 error:
-    if (listenfd != ARU_INVALID_SOCKET) {
+    if (listenfd != ARS_INVALID_SOCKET) {
         close(listenfd);
     }
-    if (connfd != ARU_INVALID_SOCKET) {
+    if (connfd != ARS_INVALID_SOCKET) {
         close(connfd);
     }
-    if (acceptfd != ARU_INVALID_SOCKET) {
+    if (acceptfd != ARS_INVALID_SOCKET) {
         close(acceptfd);
     }
     return -1;
@@ -658,7 +658,7 @@ socklen_t sock_addr_len(sock_addr_t *addr) {
 }
 
 const char *sock_addr_str(sock_addr_t *addr, char *buf, int len) {
-    char ip[ARU_SOCKADDR_STRLEN] = {0};
+    char ip[ARS_SOCKADDR_STRLEN] = {0};
     uint16_t port = 0;
     if (addr->sa.sa_family == AF_INET) {
         inet_ntop(AF_INET, &addr->sin.sin_addr, ip, len);
@@ -750,4 +750,4 @@ int sock_set_ipport(sock_addr_t *addr, const char *host, int port) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

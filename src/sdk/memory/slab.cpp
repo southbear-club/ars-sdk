@@ -24,19 +24,19 @@
  * @copyright MIT
  * 
  */
-#define ARU_LOG_MODULE_NAME "sdk-memory-slab"
+#define ARS_LOG_MODULE_NAME "sdk-memory-slab"
 
-#include "aru/sdk/memory/slab.hpp"
+#include "ars/sdk/memory/slab.hpp"
 #include "log/in_log.hpp"
 
 #include <string.h>
 #include <unistd.h>
 
-#include "aru/sdk/macros/defs.hpp"
+#include "ars/sdk/macros/defs.hpp"
 
-#define SLAB_LOG(severity) ARU_IN_LOG(severity)
+#define SLAB_LOG(severity) ARS_IN_LOG(severity)
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -875,4 +875,4 @@ void MemorySlab::stat(slab_stat_t &st) { impl_->stat(st); }
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars

@@ -24,15 +24,15 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/lock/spinlock.hpp"
-#include "aru/sdk/atomic/atomic.hpp"
+#include "ars/sdk/lock/spinlock.hpp"
+#include "ars/sdk/atomic/atomic.hpp"
 #include <pthread.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sched.h>
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -124,4 +124,4 @@ int spin_trylock(spin_lock_t *lock) {
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

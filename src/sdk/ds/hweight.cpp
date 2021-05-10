@@ -24,12 +24,12 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/ds/hweight.hpp"
+#include "ars/sdk/ds/hweight.hpp"
 #if defined(DEBUG) || defined(_DEBUG)
 #include <assert.h>
 #endif
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -106,4 +106,4 @@ void hweight_test(void)
 
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

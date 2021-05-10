@@ -1,6 +1,6 @@
 #include <stdio.h>
 
 int main(void) {
-    printf("-------------------------aru udp-echo-----------------------\n");
+    printf("-------------------------ars udp-echo-----------------------\n");
     return 0;
 }

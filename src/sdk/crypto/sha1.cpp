@@ -44,12 +44,12 @@ A million repetitions of "a"
 
 #define SHA1HANDSOFF
 
-#include "aru/sdk/crypto/sha1.hpp"
+#include "ars/sdk/crypto/sha1.hpp"
 #include <stdio.h>
 #include <string.h>
-#include "aru/sdk/macros/defs.hpp"
+#include "ars/sdk/macros/defs.hpp"
 
-namespace aru {
+namespace ars {
     
 namespace sdk {
 
@@ -57,10 +57,10 @@ namespace sdk {
 
 /* blk0() and blk() perform the initial expand. */
 /* I got the idea of expanding during the round function from SSLeay */
-#if ARU_BYTE_ORDER == ARU_LITTLE_ENDIAN
+#if ARS_BYTE_ORDER == ARS_LITTLE_ENDIAN
 #define blk0(i) (block->l[i] = (rol(block->l[i],24)&0xFF00FF00) \
     |(rol(block->l[i],8)&0x00FF00FF))
-#elif ARU_BYTE_ORDER == ARU_BIG_ENDIAN
+#elif ARS_BYTE_ORDER == ARS_BIG_ENDIAN
 #define blk0(i) block->l[i]
 #else
 #error "Endianness not defined!"
@@ -346,4 +346,4 @@ void aru_sha1_hex(unsigned char* input, uint32_t inputlen, char* output, uint32_
     
 } // namespace sdk
 
-} // namespace aru
+} // namespace ars

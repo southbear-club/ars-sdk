@@ -24,7 +24,7 @@
  * @copyright MIT
  * 
  */
-#include "aru/sdk/os/coredump.hpp"
+#include "ars/sdk/os/coredump.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,7 +33,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-namespace aru {
+namespace ars {
 
 namespace sdk {
 
@@ -79,4 +79,4 @@ bool setup_coredump(const char *path_dir, size_t core_size) {
 
 }  // namespace sdk
 
-}  // namespace aru
+}  // namespace ars
