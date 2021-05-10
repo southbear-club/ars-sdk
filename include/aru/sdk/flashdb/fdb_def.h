@@ -12,6 +12,10 @@
 #ifndef _FDB_DEF_H_
 #define _FDB_DEF_H_
 
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -149,7 +153,7 @@ struct fdb_kv {
     uint32_t len;                                /**< node total length (header + name + value), must align by FDB_WRITE_GRAN */
     uint32_t value_len;                          /**< value length */
     char name[FDB_KV_NAME_MAX];                  /**< name */
-    struct {
+    struct fdb_kv_addr__t {
         uint32_t start;                          /**< node start address */
         uint32_t value;                          /**< value start address */
     } addr;

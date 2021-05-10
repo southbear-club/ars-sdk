@@ -344,6 +344,8 @@ struct ipc_ops ipc_msgq_sysv_ops = {
     .register_recv_cb = _mq_set_recv_cb,
     .send = _mq_send,
     .recv = _mq_recv,
+    .unicast = nullptr,
+    .broadcast = nullptr,
 };
 
 }  // namespace sdk

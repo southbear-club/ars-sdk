@@ -910,7 +910,7 @@ static fdb_err_t del_kv(fdb_kvdb_t db, const char *key, fdb_kv_t old_kv, bool co
 static fdb_err_t move_kv(fdb_kvdb_t db, fdb_kv_t kv)
 {
     fdb_err_t result = FDB_NO_ERR;
-    uint8_t status_table[KV_STATUS_TABLE_SIZE];
+    uint8_t status_table[KV_STATUS_TABLE_SIZE] = {0};
     uint32_t kv_addr;
     struct kvdb_sec_info sector;
 
@@ -1011,6 +1011,8 @@ static bool do_gc(kv_sec_info_t sector, void *arg1, void *arg2)
     struct fdb_kv kv;
     fdb_kvdb_t db = (fdb_kvdb_t)arg1;
 
+    memset(&kv, 0, sizeof(kv));
+
     if (sector->check_ok && (sector->status.dirty == FDB_SECTOR_DIRTY_TRUE || sector->status.dirty == FDB_SECTOR_DIRTY_GC)) {
         uint8_t status_table[FDB_DIRTY_STATUS_TABLE_SIZE];
         /* change the sector status to GC */
@@ -1042,6 +1044,8 @@ static void gc_collect(fdb_kvdb_t db)
 {
     struct kvdb_sec_info sector;
     size_t empty_sec = 0;
+
+    memset(&sector, 0, sizeof(sector));
 
     /* GC check the empty sector number */
     sector_iterator(db, &sector, FDB_SECTOR_STORE_EMPTY, &empty_sec, NULL, gc_check_cb, false);

@@ -99,21 +99,18 @@ char* get_executable_path(char* buf, int size) {
 char* get_executable_dir(char* buf, int size) {
     char filepath[ARU_MAX_PATH];
     get_executable_path(filepath, sizeof(filepath));
-    char* pos = strrchr_dir(filepath);
-    if (pos) {
-        *pos = '\0';
-        strncpy(buf, filepath, size);
-    }
+    std::string dir = dirname(filepath);
+    snprintf(buf, size, "%s", dir.c_str());
+
     return buf;
 }
 
 char* get_executable_file(char* buf, int size) {
     char filepath[ARU_MAX_PATH];
     get_executable_path(filepath, sizeof(filepath));
-    char* pos = strrchr_dir(filepath);
-    if (pos) {
-        strncpy(buf, pos + 1, size);
-    }
+    std::string f = basename(filepath);
+    snprintf(buf, size, "%s", f.c_str());
+
     return buf;
 }
 

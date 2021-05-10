@@ -51,9 +51,6 @@ static const uint32_t Pow10[10] = {
 static const uint16_t DayOffset[13] = {
     0, 306, 337, 0, 31, 61, 92, 122, 153, 184, 214, 245, 275
 };
-// static const uint8_t s_days[] = \
-// //   1       3       5       7   8       10      12
-//     {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 static int parse_2d(const unsigned char* const p, size_t i, uint16_t* vp) {
     unsigned char d0, d1;
@@ -583,15 +580,6 @@ struct tm* timestamp_to_tm_local(const timestamp_t* tsp, struct tm* tmp) {
 
 struct tm* timestamp_to_tm_utc(const timestamp_t* tsp, struct tm* tmp) {
     return timestamp_to_tm(tsp, tmp, false);
-}
-
-bool timestamp_valid(const timestamp_t* tsp) {
-    const int64_t sec = tsp->sec + tsp->offset * 60;
-    if (sec < MIN_SEC || sec > MAX_SEC ||
-        tsp->nsec < 0 || tsp->nsec > 999999999 ||
-        tsp->offset < -1439 || tsp->offset > 1439)
-        return false;
-    return true;
 }
 
 bool timestamp_valid(const timestamp_t* tsp) {

@@ -68,7 +68,8 @@ DMARCROS += -D__const__= -pipe -W -Wall -Wno-unused-parameter \
 			-fPIC -fno-omit-frame-pointer -Wno-implicit-fallthrough \
 			-fstack-protector-all -Wno-deprecated-declarations \
 			-Wno-class-memaccess -Wno-unknown-warning-option \
-			-Wno-tautological-constant-out-of-range-compare
+			-Wno-tautological-constant-out-of-range-compare \
+			-Wno-unused-result -Wno-maybe-uninitialized
 
 # -ggdb
 CCFLAG += -c $(INC) -Wall -std=c++17 $(DMARCROS)

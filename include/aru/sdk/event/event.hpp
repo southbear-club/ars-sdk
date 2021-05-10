@@ -116,11 +116,11 @@ struct io_s {
     struct write_queue write_queue;  // for ev_write
     mutex_lock_t write_mutex;        // lock write and write_queue
     // callbacks
-    read_cb read_cb;
-    write_cb write_cb;
-    close_cb close_cb;
-    accept_cb accept_cb;
-    connect_cb connect_cb;
+    event::read_cb read_cb;
+    event::write_cb write_cb;
+    event::close_cb close_cb;
+    event::accept_cb accept_cb;
+    event::connect_cb connect_cb;
     // timers
     int connect_timeout;  // ms
     timer_t* connect_timer;

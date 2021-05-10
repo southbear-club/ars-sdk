@@ -86,7 +86,6 @@ bool strcontains(const char* str, const char* sub);
 bool getboolean(const char* str);
 
 /// 字符串格式化
-// std::string asprintf(const char* fmt, ...);
 std::string format(const char *fmt, ...);
 
 // 以指定字符分割字符串. x,y,z

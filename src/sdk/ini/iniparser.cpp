@@ -263,7 +263,7 @@ void IniParser::DumpString(IniNode* pNode, string& str) {
     }
     break;
     case IniNode::INI_NODE_TYPE_KEY_VALUE: {
-        str += asprintf("%s %s %s", pNode->label.c_str(), _delim.c_str(), pNode->value.c_str());
+        str += format("%s %s %s", pNode->label.c_str(), _delim.c_str(), pNode->value.c_str());
     }
     break;
     case IniNode::INI_NODE_TYPE_DIV: {
@@ -375,12 +375,12 @@ void IniParser::Set(const string& key, const bool& value, const string& section)
 
 template<>
 void IniParser::Set(const string& key, const int& value, const string& section) {
-    SetValue(key, asprintf("%d", value), section);
+    SetValue(key, format("%d", value), section);
 }
 
 template<>
 void IniParser::Set(const string& key, const float& value, const string& section) {
-    SetValue(key, asprintf("%f", value), section);
+    SetValue(key, format("%f", value), section);
 }
     
 } // namespace sdk

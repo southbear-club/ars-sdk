@@ -178,12 +178,14 @@ void s_wl64(struct serializer *s, uint64_t u64)
 
 void s_wlf(struct serializer *s, float f)
 {
-    s_wl32(s, *(uint32_t *)&f);
+    uint32_t _f = (uint32_t)f;
+    s_wl32(s, _f);
 }
 
 void s_wld(struct serializer *s, double d)
 {
-    s_wl64(s, *(uint64_t *)&d);
+    uint64_t _d = (uint64_t)d;
+    s_wl64(s, _d);
 }
 
 void s_wb16(struct serializer *s, uint16_t u16)
@@ -212,12 +214,14 @@ void s_wb64(struct serializer *s, uint64_t u64)
 
 void s_wbf(struct serializer *s, float f)
 {
-    s_wb32(s, *(uint32_t *)&f);
+    uint32_t _f = (uint32_t)f;
+    s_wb32(s, _f);
 }
 
 void s_wbd(struct serializer *s, double d)
 {
-    s_wb64(s, *(uint64_t *)&d);
+    uint64_t _d = (uint64_t)d;
+    s_wb64(s, _d);
 }
 
 } // namespace sdk

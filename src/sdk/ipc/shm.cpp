@@ -71,6 +71,8 @@ struct ipc_ops shm_ops = {
     .register_recv_cb = NULL,
     .send             = shm_write,
     .recv             = shm_read,
+    .unicast = nullptr,
+    .broadcast = nullptr,
 };
 
 } // namespace sdk

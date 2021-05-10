@@ -30,6 +30,7 @@
 #include <sys/time.h>
 #include <signal.h>
 #include "aru/sdk/ipc/msg_posix.hpp"
+#include "aru/sdk/ipc/sem.hpp"
 #include "aru/sdk/ipc/ipc.hpp"
 #include "aru/sdk/memory/mem.hpp"
 
@@ -123,7 +124,7 @@ static int _mq_connect(ipc_t *ipc, const char *name) {  // for client
     /* Convert to timespec */
     abs_time.tv_sec = now.tv_sec;
     abs_time.tv_nsec = now.tv_usec * 1000;
-    if (-1 == sem_pop_wait(&ctx->sem, &abs_time)) {
+    if (-1 == sem_timedwait(&ctx->sem, &abs_time)) {
         // printf("connect %s failed %d: %s\n", name, errno, strerror(errno));
         return -1;
     }
@@ -190,7 +191,7 @@ static void on_connect(union sigval sv) {
         return;
     }
     if (ctx->role == IPC_SERVER) {
-        strncpy(ctx->mq_wr_name, buf, sizeof(ctx->mq_wr_name));
+        memcpy(ctx->mq_wr_name, buf, std::min(sizeof(ctx->mq_wr_name), strlen(buf)));
     } else {  // IPC_CLIENT
         if (strcmp(buf, ctx->mq_rd_name)) {
             // printf("buf = %s\n", buf);
@@ -203,7 +204,7 @@ static void on_connect(union sigval sv) {
 
 static void *_mq_init(ipc_t *ipc, uint16_t port, enum ipc_role role) {
     struct mq_attr attr;
-    struct mq_posix_ctx *ctx = calloc(1, sizeof(struct mq_posix_ctx));
+    struct mq_posix_ctx *ctx = (struct mq_posix_ctx *)aru_calloc(1, sizeof(struct mq_posix_ctx));
     if (!ctx) {
         // printf("malloc failed!\n");
         return NULL;
@@ -233,7 +234,7 @@ static void *_mq_init(ipc_t *ipc, uint16_t port, enum ipc_role role) {
         // printf("sem_init failed %d:%s\n", errno, strerror(errno));
         return NULL;
     }
-    _mq_recv_buf = calloc(1, MAX_IPC_MESSAGE_SIZE);
+    _mq_recv_buf = aru_calloc(1, MAX_IPC_MESSAGE_SIZE);
     if (!_mq_recv_buf) {
         // printf("malloc failed!\n");
         return NULL;
@@ -253,7 +254,7 @@ failed:
         mq_close(ctx->mq_rd);
     }
     if (ctx) {
-        free(ctx);
+        aru_free(ctx);
     }
     return NULL;
 }
@@ -273,9 +274,9 @@ static void _mq_deinit(ipc_t *ipc) {
     mq_unlink(ctx->mq_rd_name);
     sem_destroy(&ctx->sem);
     if (_mq_recv_buf) {
-        free(_mq_recv_buf);
+        aru_free(_mq_recv_buf);
     }
-    free(ctx);
+    aru_free(ctx);
 }
 
 static int _mq_send(ipc_t *ipc, const void *buf, size_t len) {
@@ -305,6 +306,8 @@ struct ipc_ops ipc_msgq_posix_ops = {
     .register_recv_cb = _mq_set_recv_cb,
     .send = _mq_send,
     .recv = _mq_recv,
+    .unicast = nullptr,
+    .broadcast = nullptr,
 };
 
 }  // namespace sdk
