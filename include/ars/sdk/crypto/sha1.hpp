@@ -48,10 +48,10 @@ void SHA1Final(unsigned char digest[20], SHA1_CTX * context);
 
 void SHA1(char *hash_out, const char *str, int len);
 
-void aru_sha1(unsigned char* input, uint32_t inputlen, unsigned char digest[20]);
+void ars_sha1(unsigned char* input, uint32_t inputlen, unsigned char digest[20]);
 
 // NOTE: if outputlen > 40: output[40] = '\0'
-void aru_sha1_hex(unsigned char* input, uint32_t inputlen, char* output, uint32_t outputlen);
+void ars_sha1_hex(unsigned char* input, uint32_t inputlen, char* output, uint32_t outputlen);
 
 } // namespace sdk
 

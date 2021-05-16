@@ -75,7 +75,7 @@ co_schedule_t *co_creat(const co_schedule_conf_t *conf, co_entry_t entry, void *
     if (!entry || !conf) {
         return NULL;
     }
-    co_schedule_t *sch = (co_schedule_t *)aru_malloc(sizeof(co_schedule_t));
+    co_schedule_t *sch = (co_schedule_t *)ars_malloc(sizeof(co_schedule_t));
 
     if (!sch) {
         return NULL;
@@ -89,19 +89,19 @@ co_schedule_t *co_creat(const co_schedule_conf_t *conf, co_entry_t entry, void *
     if (conf->malloc) {
         sch->conf.malloc = conf->malloc;
     } else {
-        sch->conf.malloc = aru_malloc;
+        sch->conf.malloc = ars_malloc;
     }
 
     if (conf->memalign) {
         sch->conf.memalign = conf->memalign;
     } else {
-        sch->conf.memalign = aru_memalign;
+        sch->conf.memalign = ars_memalign;
     }
 
     if (conf->free) {
         sch->conf.free = conf->free;
     } else {
-        sch->conf.free = aru_free;
+        sch->conf.free = ars_free;
     }
 
     sch->entry = entry;

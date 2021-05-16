@@ -16,8 +16,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file algorithm.hpp
- * @brief 
- * @author  ()
+ * @brief 算法相关
+ * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-07
  * 
@@ -30,26 +30,24 @@ namespace ars {
     
 namespace sdk {
 
-///longest common sequence
-///@param[in] s1 string source
-///@param[in] s2 string source
-///@param[out] seq result sequence
-///@param[in] len seq buffer size(bytes)
-///@return <0-error, 0-ok, >0=need more buffer
+/**
+ * @brief 最长公共子串1
+ * 
+ * @param s1 字符串1
+ * @param s2 字符串2
+ * @param seq[out] 字串
+ * @param len 子串seq可用的长度
+ * @return int 小于0异常，0正常，大于0为seq内存不足
+ */
 int lcs(const char* s1, const char* s2, char* seq, int len);
 
-///longest common substring
-///@param[in] s1 string source
-///@param[in] s2 string source
-///@param[out] sub common substring
-///@param[in] len substring buffer size(bytes)
-///@return <0-error, 0-ok, >0=need more buffer
-int strsubstring(const char* s1, const char* s2, char* sub, int len);
-
-///Knuth-Morris-Pratt Algorithm
-///@param[in] s string
-///@param[in] pattern substring
-///@return 0-can't find substring, other-substring pointer
+/**
+ * @brief KMP算法，Knuth-Morris-Pratt
+ * 
+ * @param s 原字符串
+ * @param pattern 匹配串
+ * @return const char* NULL-没找到，结果为字串的结果位置
+ */
 const char* kmp(const char* s, const char* pattern);
 
 } // namespace sdk

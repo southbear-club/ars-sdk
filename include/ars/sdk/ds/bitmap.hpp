@@ -34,15 +34,23 @@ namespace sdk {
 
 /// 位图操作
 
+/// 清零
 void bitmap_zero(uint8_t* bitmap, size_t nbits);
+/// 填充全1
 void bitmap_fill(uint8_t* bitmap, size_t nbits);
+/// 拷贝
 void bitmap_copy(uint8_t *bitmap, const uint8_t *src, size_t nbits);
 
+/// 置位
 void bitmap_set(uint8_t *bitmap, size_t start, size_t len);
+/// 清除
 void bitmap_clear(uint8_t *bitmap, size_t start, size_t len);
 
+/// 或
 void bitmap_or(uint8_t* result, const uint8_t* src1, const uint8_t* src2, size_t nbits);
+/// 与
 void bitmap_and(uint8_t* result, const uint8_t* src1, const uint8_t* src2, size_t nbits);
+/// 异或
 void bitmap_xor(uint8_t* result, const uint8_t* src1, const uint8_t* src2, size_t nbits);
 
 size_t bitmap_count_leading_zero(const uint8_t* bitmap, size_t nbits);

@@ -35,7 +35,7 @@ namespace ars {
 namespace sdk {
     
 dl_plugin_manager_t *dl_plugin_manager_create(void) {
-    dl_plugin_manager_t *pm = (dl_plugin_manager_t*)aru_calloc(1, sizeof(dl_plugin_manager_t));
+    dl_plugin_manager_t *pm = (dl_plugin_manager_t*)ars_calloc(1, sizeof(dl_plugin_manager_t));
     if (!pm) {
         return nullptr;
     }
@@ -48,7 +48,7 @@ void dl_plugin_manager_destroy(dl_plugin_manager_t *pm) {
         return ;
     }
 
-    aru_free(pm);
+    ars_free(pm);
 }
 
 static void *plugin_get_func(dl_plugin_t *p, const char *name)
@@ -95,7 +95,7 @@ dl_plugin_t *dl_plugin_load(dl_plugin_manager_t *pm, const char *path, const cha
     if (!sym) {
         goto failed;
     }
-    p = (dl_plugin_t*)aru_calloc(1, sizeof(dl_plugin_t));
+    p = (dl_plugin_t*)ars_calloc(1, sizeof(dl_plugin_t));
     if (!p) {
         goto failed;
     }
@@ -108,9 +108,9 @@ dl_plugin_t *dl_plugin_load(dl_plugin_manager_t *pm, const char *path, const cha
 failed:
     if (handle) dlclose(handle);
     if (p) {
-        aru_free(p->name);
-        aru_free(p->path);
-        aru_free(p);
+        ars_free(p->name);
+        ars_free(p->path);
+        ars_free(p);
     }
     return nullptr;
 }
@@ -122,9 +122,9 @@ void dl_plugin_unload(dl_plugin_manager_t *pm, const char *name) {
         dl_plugin_t *p = list_entry(pos, dl_plugin_t, entry);
         dlclose(p->handle);
         list_del(&p->entry);
-        aru_free(p->name);
-        aru_free(p->path);
-        aru_free(p);
+        ars_free(p->name);
+        ars_free(p->path);
+        ars_free(p);
     }
 }
 

@@ -58,7 +58,7 @@ static void array_free(void *param)
 
 int serializer_array_init(struct serializer *s)
 {
-    struct array_data *data = (struct array_data*)aru_calloc(1, sizeof(struct array_data));
+    struct array_data *data = (struct array_data*)ars_calloc(1, sizeof(struct array_data));
     memset(s, 0, sizeof(struct serializer));
     da_init(data->bytes);
     s->data   = data;

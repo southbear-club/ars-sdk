@@ -36,7 +36,7 @@ namespace sdk {
 
 struct fsm *fsm_create()
 {
-    struct fsm *fsm = (struct fsm *)aru_calloc(1, sizeof(struct fsm));
+    struct fsm *fsm = (struct fsm *)ars_calloc(1, sizeof(struct fsm));
     if (!fsm) {
         printf("malloc failed!\n");
         return NULL;
@@ -50,7 +50,7 @@ void fsm_destroy(struct fsm *fsm)
 {
     if (fsm) {
         mutex_lock_deinit(&fsm->mutex);
-        aru_free(fsm);
+        ars_free(fsm);
     }
 }
 

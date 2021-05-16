@@ -30,6 +30,7 @@ namespace ars {
     
 namespace sdk {
 
+/// 比较函数
 typedef int (*fp_cmp)(const void *a, const void *b, size_t size);
 
 /**
@@ -40,9 +41,39 @@ typedef int (*fp_cmp)(const void *a, const void *b, size_t size);
  * @param size 每个数据的长度
  * @param cmp 比较函数
  */
-void heap_sort(void *base, size_t num, size_t size, fp_cmp cmp);
+// void heap_sort(void *base, size_t num, size_t size, fp_cmp cmp);
+
+/**
+ * @brief 冒泡排序
+ * 
+ * @param array 数据
+ * @param num 数据个数
+ * @param size 每个数据的长度
+ * @param cmp 比较函数
+ * @return int 0正常，小于0异常
+ */
 int bubble_sort(void *array, size_t num, size_t size, fp_cmp cmp);
+
+/**
+ * @brief 快速排序
+ * 
+ * @param array 数据
+ * @param num 数据个数
+ * @param size 每个数据的长度
+ * @param cmp 比较函数
+ * @return int 0正常，小于0异常
+ */
 int quick_sort(void *array, size_t num, size_t size, fp_cmp cmp);
+
+/**
+ * @brief 选择排序
+ * 
+ * @param array 数据
+ * @param num 数据个数
+ * @param size 每个数据的长度
+ * @param cmp 比较函数
+ * @return int 0正常，小于0异常
+ */
 int select_sort(void *array, size_t num, size_t size, fp_cmp cmp);
 
 } // namespace sdk

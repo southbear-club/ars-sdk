@@ -16,7 +16,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file defs.hpp
- * @brief 
+ * @brief 全局定义
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-04
@@ -130,8 +130,8 @@ ASCII:
 #define ARS_LOWER(c)    ((c) | 0x20)
 #define ARS_UPPER(c)    ((c) & ~0x20)
 
-#define aru_align(d, a) (((d) + (a - 1)) & ~(a - 1))
-#define aru_align_ptr(p, a) \
+#define ars_align(d, a) (((d) + (a - 1)) & ~(a - 1))
+#define ars_align_ptr(p, a) \
     (uint8_t *)(((uintptr_t)(p) + ((uintptr_t)a - 1)) & ~((uintptr_t)a - 1))
 
 // LD, LU, LLD, LLU for explicit conversion of integer

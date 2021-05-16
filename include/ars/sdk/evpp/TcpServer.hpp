@@ -64,7 +64,7 @@ public:
         loop_threads.start(wait_threads_started, [this](const EventLoopPtr& loop){
             assert(listenfd >= 0);
             sdk::event::io_t* listenio = sdk::event::ev_accept(loop->loop(), listenfd, onAccept);
-            aru_event_set_userdata(listenio, this);
+            ars_event_set_userdata(listenio, this);
             if (tls) {
                 sdk::event::io_enable_ssl(listenio);
             }
@@ -115,7 +115,7 @@ public:
 
 private:
     static void onAccept(sdk::event::io_t* connio) {
-        TcpServer* server = (TcpServer*)aru_event_userdata(connio);
+        TcpServer* server = (TcpServer*)ars_event_userdata(connio);
         if (server->connectionNum() >= server->max_connections) {
             // hlogw("over max_connections");
             sdk::event::io_close(connio);

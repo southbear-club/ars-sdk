@@ -65,7 +65,7 @@ typedef struct {
 } mq_msg_t;
 
 static int msg_send(int msgid, int code, const void *buf, int size) {
-    mq_msg_t *msg = (mq_msg_t *)aru_calloc(1, sizeof(mq_msg_t) - 1 + size);
+    mq_msg_t *msg = (mq_msg_t *)ars_calloc(1, sizeof(mq_msg_t) - 1 + size);
     if (msg == NULL) {
         printf("malloc mq_msg_t failed\n");
         return -1;
@@ -78,13 +78,13 @@ static int msg_send(int msgid, int code, const void *buf, int size) {
         printf("msgsnd failed, errno %d\n", errno);
         size = -1;
     }
-    aru_free((void *)msg);
+    ars_free((void *)msg);
     return size;
 }
 
 static int msg_recv(int msgid, int *code, void *buf, int len) {
     int size;
-    mq_msg_t *msg = (mq_msg_t *)aru_calloc(1, sizeof(mq_msg_t) - 1 + len);
+    mq_msg_t *msg = (mq_msg_t *)ars_calloc(1, sizeof(mq_msg_t) - 1 + len);
     if (msg == NULL) {
         printf("malloc mq_msg_t failed\n");
         return -1;
@@ -100,7 +100,7 @@ static int msg_recv(int msgid, int *code, void *buf, int len) {
         memcpy(buf, msg->buf, size);
     }
 end:
-    aru_free((void *)msg);
+    ars_free((void *)msg);
     return size;
 }
 
@@ -185,7 +185,7 @@ static void *client_thread(void *arg) {
 }
 
 static void *_mq_init_client(ipc_t *ipc) {
-    struct mq_sysv_ctx *ctx = (struct mq_sysv_ctx*)aru_calloc(1, sizeof(struct mq_sysv_ctx));
+    struct mq_sysv_ctx *ctx = (struct mq_sysv_ctx*)ars_calloc(1, sizeof(struct mq_sysv_ctx));
     if (!ctx) {
         printf("malloc failed!\n");
         return NULL;
@@ -227,7 +227,7 @@ failed:
     if (ctx->msgid_c != -1) {
         msgctl(ctx->msgid_c, IPC_RMID, NULL);
     }
-    aru_free(ctx);
+    ars_free(ctx);
     return NULL;
 }
 
@@ -237,11 +237,11 @@ static void _mq_deinit_client(struct mq_sysv_ctx *ctx) {
     pthread_join(ctx->tid, NULL);
     msg_send(ctx->msgid_s, MQ_CMD_UNBIND, (const void *)&ctx->pid, sizeof(pid_t));
     msgctl(ctx->msgid_c, IPC_RMID, NULL);
-    aru_free(ctx);
+    ars_free(ctx);
 }
 
 static void *_mq_init_server(ipc_t *ipc) {
-    struct mq_sysv_ctx *ctx = (struct mq_sysv_ctx*)aru_calloc(1, sizeof(struct mq_sysv_ctx));
+    struct mq_sysv_ctx *ctx = (struct mq_sysv_ctx*)ars_calloc(1, sizeof(struct mq_sysv_ctx));
     if (!ctx) {
         printf("malloc failed!\n");
         return NULL;
@@ -265,7 +265,7 @@ failed:
     if (ctx->msgid_s != -1) {
         msgctl(ctx->msgid_s, IPC_RMID, NULL);
     }
-    aru_free(ctx);
+    ars_free(ctx);
     return NULL;
 }
 
@@ -274,7 +274,7 @@ static void _mq_deinit_server(struct mq_sysv_ctx *ctx) {
     msg_send(ctx->msgid_s, MQ_CMD_QUIT, "a", 1);
     pthread_join(ctx->tid, NULL);
     msgctl(ctx->msgid_s, IPC_RMID, NULL);
-    aru_free(ctx);
+    ars_free(ctx);
 }
 
 static void *_mq_init(ipc_t *ipc, uint16_t port, enum ipc_role role) {

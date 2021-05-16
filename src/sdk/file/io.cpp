@@ -43,7 +43,7 @@ namespace fs {
 static struct file_desc *io_open(const char *path, file_open_mode_t mode)
 {
     int flags = -1;
-    struct file_desc *file = (struct file_desc *)aru_calloc(1,
+    struct file_desc *file = (struct file_desc *)ars_calloc(1,
                              sizeof(struct file_desc));
     if (!file) {
         // printf("malloc failed:%d %s\n", errno, strerror(errno));
@@ -75,7 +75,7 @@ static struct file_desc *io_open(const char *path, file_open_mode_t mode)
     file->fd = open(path, flags, 0666);
     if (file->fd == -1) {
         // printf("open %s failed:%d %s\n", path, errno, strerror(errno));
-        aru_free(file);
+        ars_free(file);
         return NULL;
     }
     file->name = strdup(path);
@@ -187,8 +187,8 @@ static void io_close(struct file_desc *file)
 {
     if (file) {
         ::close(file->fd);
-        aru_free(file->name);
-        aru_free(file);
+        ars_free(file->name);
+        ars_free(file);
     }
 }
 

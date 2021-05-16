@@ -16,8 +16,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file lock_guard.hpp
- * @brief 
- * @author  ()
+ * @brief 守护锁
+ * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-11
  * 
@@ -30,7 +30,11 @@
 namespace ars {
     
 namespace sdk {
-    
+
+/**
+ * @brief 读锁守护锁
+ * 
+ */
 class RMutexGuard {
 public:
     explicit RMutexGuard(RwMutex& lock) : _lock(lock) { _lock.rlock(); }
@@ -46,6 +50,10 @@ private:
     DISALLOW_COPY_AND_ASSIGN(RMutexGuard);
 };
 
+/**
+ * @brief 写锁守护锁
+ * 
+ */
 class WMutexGuard {
 public:
     explicit WMutexGuard(RwMutex& lock) : _lock(lock) { _lock.wlock(); }

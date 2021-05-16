@@ -99,12 +99,12 @@ public:
 
     int startRead() {
         if (!isOpened()) return 0;
-        return aru_io_read_start(io_);
+        return ars_io_read_start(io_);
     }
 
     int stopRead() {
         if (!isOpened()) return 0;
-        return aru_io_read_stop(io_);
+        return ars_io_read_stop(io_);
     }
 
     int write(const void* data, int size) {

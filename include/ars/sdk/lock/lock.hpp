@@ -16,8 +16,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file lock.hpp
- * @brief 
- * @author  ()
+ * @brief 锁
+ * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-11
  * 
@@ -34,6 +34,7 @@ namespace ars {
 
 namespace sdk {
 
+/// 锁类型
 enum lock_type {
     THREAD_LOCK_SPIN = 0,
     THREAD_LOCK_MUTEX,
@@ -57,9 +58,6 @@ public:
     // 尝试锁
     virtual bool try_lock(time_t w = -1) = 0;
 };
-
-// todo:
-// mutex lock, sem lock spin lock
 
 } // namespace sdk
 

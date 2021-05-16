@@ -55,7 +55,7 @@ void memroy_check(void) {
     printf("Memcheck => alloc:%ld free:%ld\n", alloc_cnt(), free_cnt());
 }
 
-void aru_memory_init(const memory_conf_t &conf) {
+void ars_memory_init(const memory_conf_t &conf) {
     if (conf.malloc) {
         __malloc = conf.malloc;
     }
@@ -73,7 +73,7 @@ void aru_memory_init(const memory_conf_t &conf) {
     }
 }
 
-void *aru_malloc(size_t size) {
+void *ars_malloc(size_t size) {
     s_alloc_cnt++;
     void *ptr = __malloc(size);
     if (!ptr) {
@@ -83,7 +83,7 @@ void *aru_malloc(size_t size) {
     return ptr;
 }
 
-int aru_memalign(void **ptr, size_t alignment, size_t size) {
+int ars_memalign(void **ptr, size_t alignment, size_t size) {
     s_alloc_cnt++;
     int ret = __memalign(ptr, alignment, size);
     if (ret != 0) {
@@ -93,7 +93,7 @@ int aru_memalign(void **ptr, size_t alignment, size_t size) {
     return ret;
 }
 
-void *aru_realloc(void *oldptr, size_t newsize, size_t oldsize) {
+void *ars_realloc(void *oldptr, size_t newsize, size_t oldsize) {
     s_alloc_cnt++;
     s_free_cnt++;
     void* ptr = __realloc(oldptr, newsize);
@@ -107,7 +107,7 @@ void *aru_realloc(void *oldptr, size_t newsize, size_t oldsize) {
     return ptr;
 }
 
-void *aru_calloc(size_t nmemb, size_t size) {
+void *ars_calloc(size_t nmemb, size_t size) {
     s_alloc_cnt++;
     void* ptr =  __calloc(nmemb, size);
     if (!ptr) {
@@ -117,7 +117,7 @@ void *aru_calloc(size_t nmemb, size_t size) {
     return ptr;
 }
 
-void *aru_zalloc(size_t size) {
+void *ars_zalloc(size_t size) {
     s_alloc_cnt++;
     void* ptr = __malloc(size);
     if (!ptr) {
@@ -128,7 +128,7 @@ void *aru_zalloc(size_t size) {
     return ptr;
 }
 
-void aru_free(void *ptr) {
+void ars_free(void *ptr) {
     if (ptr) {
         free(ptr);
         ptr = NULL;

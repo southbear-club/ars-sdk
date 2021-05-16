@@ -28,9 +28,9 @@ static mutex_lock_t s_mutex;
 static void on_close(io_t* io) {
     printd("on_close fd=%d error=%d\n", io_fd(io), io_error(io));
 
-    nlog_client* client = (nlog_client*)aru_event_userdata(io);
+    nlog_client* client = (nlog_client*)ars_event_userdata(io);
     if (client) {
-        aru_event_set_userdata(io, NULL);
+        ars_event_set_userdata(io, NULL);
 
         mutex_lock(&s_mutex);
         list_del(&client->node);
@@ -64,7 +64,7 @@ static void on_accept(io_t* io) {
     nlog_client* client;
     ARS_ALLOC_SIZEOF(client);
     client->io = io;
-    aru_event_set_userdata(io, client);
+    ars_event_set_userdata(io, client);
 
     mutex_lock(&s_mutex);
     list_add(&client->node, &s_logger.clients);

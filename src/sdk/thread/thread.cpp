@@ -85,7 +85,7 @@ Thread *thread_create(void *(*func)(Thread *, void *), void *arg, const thread_a
     if (!func) {
         return nullptr;
     }
-    Thread *t = (Thread*)aru_calloc(1, sizeof(Thread));
+    Thread *t = (Thread*)ars_calloc(1, sizeof(Thread));
     if (!t) {
         return nullptr;
     }
@@ -93,14 +93,14 @@ Thread *thread_create(void *(*func)(Thread *, void *), void *arg, const thread_a
     try {
         __thread_init(t, func, arg, attr, type);
     } catch (const std::runtime_error &) {
-        aru_free(t);
+        ars_free(t);
         return nullptr;
     }
 
     auto ret = thread_create(&t->tid, __thread_func, &t->attr, t->arg);
     if (ret != 0) {
         thread_attr_destroy(&t->attr);
-        aru_free(t);
+        ars_free(t);
 
         return nullptr;
     }
@@ -135,7 +135,7 @@ int thread_destroy(Thread *t) {
     }
 
     __thread_deinit(t);
-    aru_free(t);
+    ars_free(t);
 
     return 0;
 }

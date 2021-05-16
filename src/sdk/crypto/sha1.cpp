@@ -321,7 +321,7 @@ void SHA1(
     hash_out[20] = '\0';
 }
 
-void aru_sha1(unsigned char* input, uint32_t inputlen, unsigned char digest[20]) {
+void ars_sha1(unsigned char* input, uint32_t inputlen, unsigned char digest[20]) {
     SHA1_CTX ctx;
     SHA1Init(&ctx);
     SHA1Update(&ctx, input, inputlen);
@@ -332,11 +332,11 @@ static inline char i2hex(unsigned char i) {
     return i < 10 ? i + '0' : i - 10 + 'a';
 }
 
-void aru_sha1_hex(unsigned char* input, uint32_t inputlen, char* output, uint32_t outputlen) {
+void ars_sha1_hex(unsigned char* input, uint32_t inputlen, char* output, uint32_t outputlen) {
     int i;
     unsigned char digest[20];
     if (outputlen < 40) return;
-    aru_sha1(input, inputlen, digest);
+    ars_sha1(input, inputlen, digest);
     for (i = 0; i < 20; ++i) {
         *output++ = i2hex(digest[i] >> 4);
         *output++ = i2hex(digest[i] & 0x0F);

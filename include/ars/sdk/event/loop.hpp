@@ -72,14 +72,14 @@ struct event_s {
     ARS_EVENT_FIELDS
 };
 
-#define aru_event_set_priority(ev, prio) ((ars::sdk::event::event_t*)(ev))->priority = prio
-#define aru_event_set_userdata(ev, udata) ((ars::sdk::event::event_t*)(ev))->userdata = (void*)udata
+#define ars_event_set_priority(ev, prio) ((ars::sdk::event::event_t*)(ev))->priority = prio
+#define ars_event_set_userdata(ev, udata) ((ars::sdk::event::event_t*)(ev))->userdata = (void*)udata
 
-#define aru_event_loop(ev) (((ars::sdk::event::event_t*)(ev))->loop)
-#define aru_event_type(ev) (((ars::sdk::event::event_t*)(ev))->event_type)
-#define aru_event_id(ev) (((ars::sdk::event::event_t*)(ev))->event_id)
-#define aru_event_priority(ev) (((ars::sdk::event::event_t*)(ev))->priority)
-#define aru_event_userdata(ev) (((ars::sdk::event::event_t*)(ev))->userdata)
+#define ars_event_loop(ev) (((ars::sdk::event::event_t*)(ev))->loop)
+#define ars_event_type(ev) (((ars::sdk::event::event_t*)(ev))->event_type)
+#define ars_event_id(ev) (((ars::sdk::event::event_t*)(ev))->event_id)
+#define ars_event_priority(ev) (((ars::sdk::event::event_t*)(ev))->priority)
+#define ars_event_userdata(ev) (((ars::sdk::event::event_t*)(ev))->userdata)
 
 typedef enum {
     IO_TYPE_UNKNOWN = 0,
@@ -126,7 +126,7 @@ void loop_update_time(loop_t* loop);
 uint64_t loop_now(loop_t* loop);         // s
 uint64_t loop_now_ms(loop_t* loop);      // ms
 uint64_t loop_now_hrtime(loop_t* loop);  // us
-#define aru_loop_now_us ars::sdk::event::loop_now_hrtime
+#define ars_loop_now_us ars::sdk::event::loop_now_hrtime
 // @return pid of loop_run
 long loop_pid(loop_t* loop);
 // @return tid of loop_run
@@ -253,8 +253,8 @@ int io_accept(io_t* io);
 int io_connect(io_t* io);
 // io_add(io, ARS_IO_READ) => read => read_cb
 int io_read(io_t* io);
-#define aru_io_read_start(io) ars::sdk::event::io_read(io)
-#define aru_io_read_stop(io) ars::sdk::event::hio_del(io, ARS_IO_READ)
+#define ars_io_read_start(io) ars::sdk::event::io_read(io)
+#define ars_io_read_stop(io) ars::sdk::event::hio_del(io, ARS_IO_READ)
 // NOTE: io_write is thread-safe, locked by recursive_mutex, allow to be called by other threads.
 // hio_try_write => io_add(io, ARS_IO_WRITE) => write => write_cb
 int io_write(io_t* io, const void* buf, size_t len);
@@ -330,7 +330,7 @@ io_t* io_get_upstream(io_t* io);
 // @return upstream_io
 // @see examples/tcp_proxy_server
 io_t* io_setup_tcp_upstream(io_t* io, const char* host, int port, int ssl = 0);
-#define aru_io_setup_ssl_upstream(io, host, port) ars::sdk::event::io_setup_tcp_upstream(io, host, port, 1)
+#define ars_io_setup_ssl_upstream(io, host, port) ars::sdk::event::io_setup_tcp_upstream(io, host, port, 1)
 
 // @udp_upstream: ev_create -> io_setup_upstream -> io_read_upstream
 // @return upstream_io

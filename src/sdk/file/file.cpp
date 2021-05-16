@@ -181,7 +181,7 @@ bool symlink(const char* dst, const char* lnk) {
 
 struct file *file_open(const char *path, file_open_mode_t mode)
 {
-    struct file *file = (struct file *)aru_calloc(1, sizeof(struct file));
+    struct file *file = (struct file *)ars_calloc(1, sizeof(struct file));
     if (!file) {
         // printf("malloc failed!\n");
         return nullptr;
@@ -197,7 +197,7 @@ void file_close(struct file *file)
         return;
     }
     file->ops->close(file->fd);
-    aru_free(file);
+    ars_free(file);
 }
 
 ssize_t file_read(struct file *file, void *data, size_t size)
@@ -276,13 +276,13 @@ struct iovec *file_dump(const char *path)
     if (size == 0) {
         return NULL;
     }
-    buf = (struct iovec *)aru_calloc(1, sizeof(struct iovec));
+    buf = (struct iovec *)ars_calloc(1, sizeof(struct iovec));
     if (!buf) {
         // printf("malloc failed!\n");
         return NULL;
     }
     buf->iov_len = size;
-    buf->iov_base = aru_calloc(1, buf->iov_len);
+    buf->iov_base = ars_calloc(1, buf->iov_len);
     if (!buf->iov_base) {
         // printf("malloc failed!\n");
         return NULL;
@@ -291,8 +291,8 @@ struct iovec *file_dump(const char *path)
     f = file_open(path, F_RDONLY);
     if (!f) {
         // printf("file open failed!\n");
-        aru_free(buf->iov_base);
-        aru_free(buf);
+        ars_free(buf->iov_base);
+        ars_free(buf);
         return NULL;
     }
     file_read(f, buf->iov_base, buf->iov_len);

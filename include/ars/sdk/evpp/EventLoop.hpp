@@ -104,9 +104,9 @@ public:
         sdk::event::timer_t* htimer = sdk::event::timer_add(loop_, onTimer, timeout_ms, repeat);
 
         Timer timer(htimer, cb, repeat);
-        aru_event_set_userdata(htimer, this);
+        ars_event_set_userdata(htimer, this);
 
-        TimerID timerID = aru_event_id(htimer);
+        TimerID timerID = ars_event_id(htimer);
 
         mutex_.lock();
         timers[timerID] = timer;
@@ -175,7 +175,7 @@ public:
         if (loop_ == NULL) return;
 
         EventPtr ev(new Event(cb));
-        aru_event_set_userdata(&ev->event, this);
+        ars_event_set_userdata(&ev->event, this);
         ev->event.cb = onCustomEvent;
 
         mutex_.lock();
@@ -187,9 +187,9 @@ public:
 
 private:
     static void onTimer(sdk::event::timer_t* htimer) {
-        EventLoop* loop = (EventLoop*)aru_event_userdata(htimer);
+        EventLoop* loop = (EventLoop*)ars_event_userdata(htimer);
 
-        TimerID timerID = aru_event_id(htimer);
+        TimerID timerID = ars_event_id(htimer);
         TimerCallback cb = NULL;
 
         loop->mutex_.lock();
@@ -218,7 +218,7 @@ private:
     }
 
     static void onCustomEvent(sdk::event::event_t* hev) {
-        EventLoop* loop = (EventLoop*)aru_event_userdata(hev);
+        EventLoop* loop = (EventLoop*)ars_event_userdata(hev);
 
         loop->mutex_.lock();
         EventPtr ev = loop->customEvents.front();

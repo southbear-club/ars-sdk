@@ -35,7 +35,7 @@ namespace ars {
     
 namespace sdk {
 
-#define CALLOC(size, type)  (type *)aru_calloc(size, sizeof(type))
+#define CALLOC(size, type)  (type *)ars_calloc(size, sizeof(type))
 
 size_t rb_get_space_free(struct ringbuffer *rb)
 {

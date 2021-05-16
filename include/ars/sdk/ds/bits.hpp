@@ -32,11 +32,15 @@ namespace ars {
 
 namespace sdk {
 
+/**
+ * @brief 位数据
+ * 
+ */
 struct bits_t {
-	uint8_t* data;
-	size_t size;
-	size_t bits; // offset bit
-	int error;
+	uint8_t* data;	///< 数据
+	size_t size;	///< 数据大小
+	size_t bits; 	///< offset bit
+	int error;		///< 错误码
 };
 
 #define bits_read_uint8(bits, n)		(uint8_t)ars::sdk::bits_read_n(bits, n)

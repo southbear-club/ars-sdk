@@ -36,9 +36,13 @@ namespace sdk {
 
 /// 自动扩容buf
 
+/**
+ * @brief buf结构体
+ * 
+ */
 typedef struct buf_s {
-    char*  base;
-    size_t len;
+    char*  base;            ///< 基地址
+    size_t len;             ///< 长度
 
     buf_s() {
         base = NULL;
@@ -51,10 +55,14 @@ typedef struct buf_s {
     }
 } buf_t;
 
+/**
+ * @brief buf偏移结构体
+ * 
+ */
 typedef struct offset_buf_s {
-    char*   base;
-    size_t  len;
-    size_t  offset;
+    char*   base;           ///< 基地址
+    size_t  len;            ///< 长度
+    size_t  offset;         ///< 当前偏移
     offset_buf_s() {
         base = NULL;
         len = offset = 0;
@@ -66,6 +74,10 @@ typedef struct offset_buf_s {
     }
 } offset_buf_t;
 
+/**
+ * @brief 自动扩容buf
+ * 
+ */
 class Buf : public buf_t {
 public:
     Buf() : buf_t() {
@@ -100,7 +112,7 @@ public:
             ARS_ALLOC(base, cap);
         }
         else {
-            base = (char*)ars::sdk::aru_realloc(base, cap, len);
+            base = (char*)ars::sdk::ars_realloc(base, cap, len);
         }
         len = cap;
         cleanup_ = true;
@@ -133,7 +145,7 @@ public:
     void push_front(void* ptr, size_t len) {
         if (len > this->len - _size) {
             size_t newsize = std::max(this->len, len)*2;
-            base = (char*)ars::sdk::aru_realloc(base, newsize, this->len);
+            base = (char*)ars::sdk::ars_realloc(base, newsize, this->len);
             this->len = newsize;
         }
 
@@ -151,7 +163,7 @@ public:
     void push_back(void* ptr, size_t len) {
         if (len > this->len - _size) {
             size_t newsize = std::max(this->len, len)*2;
-            base = (char*)ars::sdk::aru_realloc(base, newsize, this->len);
+            base = (char*)ars::sdk::ars_realloc(base, newsize, this->len);
             this->len = newsize;
         }
         else if (len > this->len - _offset - _size) {

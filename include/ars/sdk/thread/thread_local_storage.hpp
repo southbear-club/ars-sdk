@@ -34,10 +34,10 @@ namespace sdk {
 
 typedef pthread_key_t thread_key_t;
 #define ARS_INVALID_THREAD_KEY         0xFFFFFFFF
-#define aru_thread_key_create(pkey)    pthread_key_create(pkey, NULL)
-#define aru_thread_key_delete          pthread_key_delete
-#define aru_thread_get_value           pthread_getspecific
-#define aru_thread_set_value           pthread_setspecific
+#define ars_thread_key_create(pkey)    pthread_key_create(pkey, NULL)
+#define ars_thread_key_delete          pthread_key_delete
+#define ars_thread_get_value           pthread_getspecific
+#define ars_thread_set_value           pthread_setspecific
 
 class ThreadLocalStorage {
 public:
@@ -47,19 +47,19 @@ public:
         MAX_NUM     = 16,
     };
     ThreadLocalStorage() {
-        aru_thread_key_create(&key);
+        ars_thread_key_create(&key);
     }
 
     ~ThreadLocalStorage() {
-        aru_thread_key_delete(key);
+        ars_thread_key_delete(key);
     }
 
     void set(void* val) {
-        aru_thread_set_value(key, val);
+        ars_thread_set_value(key, val);
     }
 
     void* get() {
-        return aru_thread_get_value(key);
+        return ars_thread_get_value(key);
     }
 
     static void set(int idx, void* val) {

@@ -44,7 +44,7 @@ void darray_init(struct darray *dst)
 
 void darray_free(struct darray *dst)
 {
-    aru_free(dst->array);
+    ars_free(dst->array);
     dst->array = NULL;
     dst->num = 0;
     dst->capacity = 0;
@@ -78,11 +78,11 @@ void darray_reserve(const size_t element_size, struct darray *dst,
     if (capacity == 0 || capacity <= dst->num)
             return;
 
-    ptr = aru_malloc(element_size * capacity);
+    ptr = ars_malloc(element_size * capacity);
     if (dst->num)
             memcpy(ptr, dst->array, element_size * dst->num);
     if (dst->array)
-            aru_free(dst->array);
+            ars_free(dst->array);
     dst->array = ptr;
     dst->capacity = capacity;
 }
@@ -99,11 +99,11 @@ static void darray_ensure_capacity(const size_t element_size,
     new_cap = (!dst->capacity) ? new_size : dst->capacity * 2;
     if (new_size > new_cap)
             new_cap = new_size;
-    ptr = aru_malloc(element_size * new_cap);
+    ptr = ars_malloc(element_size * new_cap);
     if (dst->capacity)
             memcpy(ptr, dst->array, element_size * dst->capacity);
     if (dst->array)
-            aru_free(dst->array);
+            ars_free(dst->array);
     dst->array = ptr;
     dst->capacity = new_cap;
 }
@@ -411,7 +411,7 @@ void darray_move_item(const size_t element_size,
     if (from == to)
             return;
 
-    temp = aru_malloc(element_size);
+    temp = ars_malloc(element_size);
     p_from = darray_item(element_size, dst, from);
     p_to = darray_item(element_size, dst, to);
 
@@ -425,7 +425,7 @@ void darray_move_item(const size_t element_size,
                             element_size * (to - from));
 
     memcpy(p_to, temp, element_size);
-    aru_free(temp);
+    ars_free(temp);
 }
 
 void darray_swap(const size_t element_size, struct darray *dst,
@@ -441,7 +441,7 @@ void darray_swap(const size_t element_size, struct darray *dst,
     if (a == b)
             return;
 
-    temp = aru_malloc(element_size);
+    temp = ars_malloc(element_size);
     a_ptr = darray_item(element_size, dst, a);
     b_ptr = darray_item(element_size, dst, b);
 
@@ -449,7 +449,7 @@ void darray_swap(const size_t element_size, struct darray *dst,
     memcpy(a_ptr, b_ptr, element_size);
     memcpy(b_ptr, temp, element_size);
 
-    aru_free(temp);
+    ars_free(temp);
 }
 
 } // namespace sdk

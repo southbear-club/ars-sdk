@@ -67,7 +67,7 @@ static int dict_resize(dict *d);
 static char *xstrdup(char *s) {
     char *t;
     if (!s) return NULL;
-    t = (char *)aru_malloc(strlen(s) + 1);
+    t = (char *)ars_malloc(strlen(s) + 1);
     if (t) {
         strcpy(t, s);
     }
@@ -240,7 +240,7 @@ int dict_add(dict *d, char *key, char *val) {
 #if 0
         slot->val = val ? xstrdup(val) : val;
         if (val && !(slot->val)) {
-            aru_free(slot->key);
+            ars_free(slot->key);
             return -1;
         }
 #endif
@@ -281,7 +281,7 @@ static int dict_resize(dict *d) {
 #endif
     /* Shuffle pointers, re-allocate new table, re-insert data */
     oldtable = d->table;
-    d->table = (keypair *)aru_calloc(newsize, sizeof(keypair));
+    d->table = (keypair *)ars_calloc(newsize, sizeof(keypair));
     if (!(d->table)) {
         /* Memory allocation failure */
         // printf("%s: malloc failed %s\n", __func__, strerror(errno));
@@ -296,13 +296,13 @@ static int dict_resize(dict *d) {
             dict_add_p(d, oldtable[i].key, oldtable[i].val);
         }
     }
-    aru_free(oldtable);
+    ars_free(oldtable);
     return 0;
 }
 
 /** Public: allocate a new dict */
 dict *dict_new(void) {
-    dict *d = (dict *)aru_calloc(1, sizeof(dict));
+    dict *d = (dict *)ars_calloc(1, sizeof(dict));
     if (!d) {
         // printf("%s: malloc failed %s\n", __func__, strerror(errno));
         return NULL;
@@ -310,10 +310,10 @@ dict *dict_new(void) {
     d->size = DICT_MIN_SZ;
     d->used = 0;
     d->fill = 0;
-    d->table = (keypair *)aru_calloc(DICT_MIN_SZ, sizeof(keypair));
+    d->table = (keypair *)ars_calloc(DICT_MIN_SZ, sizeof(keypair));
     if (!d->table) {
         // printf("%s: malloc failed %s\n", __func__, strerror(errno));
-        aru_free(d);
+        ars_free(d);
         return NULL;
     }
     return d;
@@ -326,16 +326,16 @@ void dict_free(dict *d) {
 
     for (i = 0; i < d->size; i++) {
         if (d->table[i].key && d->table[i].key != DUMMY_PTR) {
-            aru_free(d->table[i].key);
+            ars_free(d->table[i].key);
 #if 0
 //val is not copyed, no need to free
             if (d->table[i].val)
-                aru_free(d->table[i].val);
+                ars_free(d->table[i].val);
 #endif
         }
     }
-    aru_free(d->table);
-    aru_free(d);
+    ars_free(d->table);
+    ars_free(d);
     return;
 }
 
@@ -368,11 +368,11 @@ int dict_del(dict *d, char *key) {
     hash = dict_hash(key, strlen(key));
     kp = dict_lookup(d, key, hash);
     if (!kp) return -1;
-    if (kp->key && kp->key != DUMMY_PTR) aru_free(kp->key);
+    if (kp->key && kp->key != DUMMY_PTR) ars_free(kp->key);
     kp->key = (char *)DUMMY_PTR;
 #if 0
     if (kp->val)
-        aru_free(kp->val);
+        ars_free(kp->val);
 #endif
     kp->val = NULL;
     d->used--;
@@ -432,7 +432,7 @@ void dict_get_key_list(dict *d, key_list **klist) {
     while (1) {
         rank = dict_enumerate(d, rank, &key, &val);
         if (rank < 0) break;
-        knode = (key_list *)aru_calloc(1, sizeof(key_list));
+        knode = (key_list *)ars_calloc(1, sizeof(key_list));
         knode->key = xstrdup(key);
         knode->next = NULL;
         if (*klist == NULL) {

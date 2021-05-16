@@ -95,7 +95,7 @@ static inline void atype##_cleanup(atype* p) {\
 \
 static inline void atype##_resize(atype* p, int maxsize) {\
     if (maxsize == 0) maxsize = ARRAY_INIT_SIZE;\
-    p->ptr = (type*)ars::sdk::aru_realloc(p->ptr, sizeof(type) * maxsize, sizeof(type) * p->maxsize);\
+    p->ptr = (type*)ars::sdk::ars_realloc(p->ptr, sizeof(type) * maxsize, sizeof(type) * p->maxsize);\
     p->maxsize = maxsize;\
 }\
 \

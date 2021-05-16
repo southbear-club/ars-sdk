@@ -16,7 +16,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file slab.hpp
- * @brief 
+ * @brief slab内存池
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-04
@@ -36,6 +36,7 @@ namespace sdk {
 typedef struct slab_pool_s slab_pool_t;
 class MemorySlabImpl;
 
+/// slab状态
 typedef struct {
     size_t pool_size, used_size, used_pct;
     size_t pages, free_page;
@@ -44,6 +45,7 @@ typedef struct {
     size_t max_free_pages;                  /* 最大的连续可用page数 */
 } slab_stat_t;
 
+/// 内存池
 class MemorySlab {
 public:
     MemorySlab(void *addr, size_t len, ILock *mem_lock,

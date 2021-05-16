@@ -16,7 +16,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file bserach.hpp
- * @brief 
+ * @brief 二分查找
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-05
@@ -31,13 +31,17 @@ namespace ars {
     
 namespace sdk {
 
-/// Binary search in array
-/// @param[in] key pointer to the keyword
-/// @param[in] arr pointer to the first object of the array
-/// @param[out] pos key position
-/// @param[in] num Number of elements in the array pointed to by arr
-/// @param[in] size Size in bytes of each element in the array.
-/// @return 0-find, other-not found, pos is insert position
+/**
+ * @brief 二分查找
+ * 
+ * @param key 要查找的key
+ * @param arr 数据集数组
+ * @param pos[out] key在arr中的位置
+ * @param num 数组的数量
+ * @param size 每个元素的大小
+ * @param cmp 比较函数
+ * @return int 0-查找到了，其他没找到
+ */
 int bsearch2(const void* key, const void* arr, const void** pos, size_t num, size_t size,
 	int(*cmp)(const void* key, const void* elt));
 

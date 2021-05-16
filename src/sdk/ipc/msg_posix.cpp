@@ -204,7 +204,7 @@ static void on_connect(union sigval sv) {
 
 static void *_mq_init(ipc_t *ipc, uint16_t port, enum ipc_role role) {
     struct mq_attr attr;
-    struct mq_posix_ctx *ctx = (struct mq_posix_ctx *)aru_calloc(1, sizeof(struct mq_posix_ctx));
+    struct mq_posix_ctx *ctx = (struct mq_posix_ctx *)ars_calloc(1, sizeof(struct mq_posix_ctx));
     if (!ctx) {
         // printf("malloc failed!\n");
         return NULL;
@@ -234,7 +234,7 @@ static void *_mq_init(ipc_t *ipc, uint16_t port, enum ipc_role role) {
         // printf("sem_init failed %d:%s\n", errno, strerror(errno));
         return NULL;
     }
-    _mq_recv_buf = aru_calloc(1, MAX_IPC_MESSAGE_SIZE);
+    _mq_recv_buf = ars_calloc(1, MAX_IPC_MESSAGE_SIZE);
     if (!_mq_recv_buf) {
         // printf("malloc failed!\n");
         return NULL;
@@ -254,7 +254,7 @@ failed:
         mq_close(ctx->mq_rd);
     }
     if (ctx) {
-        aru_free(ctx);
+        ars_free(ctx);
     }
     return NULL;
 }
@@ -274,9 +274,9 @@ static void _mq_deinit(ipc_t *ipc) {
     mq_unlink(ctx->mq_rd_name);
     sem_destroy(&ctx->sem);
     if (_mq_recv_buf) {
-        aru_free(_mq_recv_buf);
+        ars_free(_mq_recv_buf);
     }
-    aru_free(ctx);
+    ars_free(ctx);
 }
 
 static int _mq_send(ipc_t *ipc, const void *buf, size_t len) {

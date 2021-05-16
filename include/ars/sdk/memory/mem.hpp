@@ -16,7 +16,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  * @file mem.hpp
- * @brief 
+ * @brief 内存基础接口
  * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-04
@@ -47,14 +47,14 @@ typedef struct {
  * @brief 内存函数初始化
  * @param conf 配置
  */
-void aru_memory_init(const memory_conf_t &conf);
+void ars_memory_init(const memory_conf_t &conf);
 
 /**
  * @brief 内存分配
  * @param size 内存大小
  * @return 内存地址
  */
-void *aru_malloc(size_t size);
+void *ars_malloc(size_t size);
 
 /**
  * @brief
@@ -63,11 +63,11 @@ void *aru_malloc(size_t size);
  * @param size
  * @return
  */
-int aru_memalign(void **ptr, size_t alignment, size_t size);
-void *aru_realloc(void *oldptr, size_t newsize, size_t oldsize);
-void *aru_calloc(size_t nmemb, size_t size);
-void *aru_zalloc(size_t size);
-void aru_free(void *ptr);
+int ars_memalign(void **ptr, size_t alignment, size_t size);
+void *ars_realloc(void *oldptr, size_t newsize, size_t oldsize);
+void *ars_calloc(size_t nmemb, size_t size);
+void *ars_zalloc(size_t size);
+void ars_free(void *ptr);
 
 long alloc_cnt(void);
 long free_cnt(void);
@@ -79,7 +79,7 @@ static inline void memcheck_register(void) {
 
 #define ARS_ALLOC(ptr, size) \
     do {\
-        *(void**)&(ptr) = ars::sdk::aru_zalloc(size);\
+        *(void**)&(ptr) = ars::sdk::ars_zalloc(size);\
     } while (0)
 
 #define ARS_ALLOC_SIZEOF(ptr) ARS_ALLOC(ptr, sizeof(*(ptr)))
@@ -87,7 +87,7 @@ static inline void memcheck_register(void) {
 #define ARS_FREE(ptr) \
     do {\
         if (ptr) {\
-            ars::sdk::aru_free(ptr);\
+            ars::sdk::ars_free(ptr);\
             ptr = NULL;\
         }\
     } while (0)

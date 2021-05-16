@@ -323,7 +323,7 @@ static int on_return(ipc_t *ipc, void *buf, size_t len)
 
 ipc_t *ipc_create(enum ipc_role role, uint16_t port)
 {
-    ipc_t *ipc = (ipc_t*)aru_calloc(1, sizeof(ipc_t));
+    ipc_t *ipc = (ipc_t*)ars_calloc(1, sizeof(ipc_t));
     if (!ipc) {
         printf("malloc failed!\n");
         return NULL;
@@ -340,7 +340,7 @@ ipc_t *ipc_create(enum ipc_role role, uint16_t port)
         goto failed;
     }
     if (ipc->role == IPC_SERVER) {
-        _arg_buf = (struct ipc_packet *)aru_calloc(1, MAX_IPC_MESSAGE_SIZE);
+        _arg_buf = (struct ipc_packet *)ars_calloc(1, MAX_IPC_MESSAGE_SIZE);
         ipc->ops->register_recv_cb(ipc, process_msg);
     } else if (ipc->role == IPC_CLIENT) {
         ipc->async_cmd_list = dict_new();
@@ -348,15 +348,15 @@ ipc_t *ipc_create(enum ipc_role role, uint16_t port)
             printf("create async_cmd_list failed!\n");
             goto failed;
         }
-        ipc->resp_buf = aru_calloc(1, MAX_IPC_RESP_BUF_LEN);
-        _pkt_sbuf = (struct ipc_packet *)aru_calloc(1, MAX_IPC_MESSAGE_SIZE);
+        ipc->resp_buf = ars_calloc(1, MAX_IPC_RESP_BUF_LEN);
+        _pkt_sbuf = (struct ipc_packet *)ars_calloc(1, MAX_IPC_MESSAGE_SIZE);
         ipc->ops->register_recv_cb(ipc, on_return);
         sem_init(&ipc->sem, 0, 0);
     }
     return ipc;
 failed:
     if (ipc) {
-        aru_free(ipc);
+        ars_free(ipc);
     }
     return NULL;
 }
@@ -369,11 +369,11 @@ void ipc_destroy(ipc_t *ipc)
     sem_destroy(&ipc->sem);
     ipc->ops->deinit(ipc);
 
-    if (_arg_buf) aru_free(_arg_buf);
-    if (_pkt_sbuf) aru_free(_pkt_sbuf);
-    if (ipc->resp_buf) aru_free(ipc->resp_buf);
+    if (_arg_buf) ars_free(_arg_buf);
+    if (_pkt_sbuf) ars_free(_pkt_sbuf);
+    if (ipc->resp_buf) ars_free(ipc->resp_buf);
     if (ipc->async_cmd_list) dict_free(ipc->async_cmd_list);
-    aru_free(ipc);
+    ars_free(ipc);
 }
 
 } // namespace sdk

@@ -446,10 +446,10 @@ static inline thread_t gettid(void) {
 }
 
 /// 线程保护入栈
-#define aru_thread_cleanup_push(rountine, arg) pthread_cleanup_push(rountine, arg)
+#define ars_thread_cleanup_push(rountine, arg) pthread_cleanup_push(rountine, arg)
 
 /// 线程保护出栈
-#define aru_thread_cleanup_pop(execute) pthread_cleanup_pop(execute)
+#define ars_thread_cleanup_pop(execute) pthread_cleanup_pop(execute)
 
 /**
  * @brief 仅执行一次

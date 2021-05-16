@@ -17,7 +17,7 @@
  * 
  * @file heap_sort.cpp
  * @brief 
- * @author  ()
+ * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-10
  * 

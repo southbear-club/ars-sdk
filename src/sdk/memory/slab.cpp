@@ -721,7 +721,7 @@ private:
         pool_->pages->next = &pool_->free;
         pool_->pages->prev = (uintptr_t)&pool_->free;
 
-        pool_->start = (uint8_t *)aru_align_ptr(
+        pool_->start = (uint8_t *)ars_align_ptr(
             (uintptr_t)p + pages * sizeof(slab_page_t), pagesize_);
 
         real_pages_ = (pool_->end - pool_->start) / pagesize_;

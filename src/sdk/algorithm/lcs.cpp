@@ -17,7 +17,7 @@
  *
  * @file lcs.cpp
  * @brief
- * @author  ()
+ * @author wotsen (astralrovers@outlook.com)
  * @version 1.0.0
  * @date 2021-04-07
  *
@@ -77,6 +77,7 @@ static void lcs_sequence(const char* s1, const char* s2, int n1, int n2, const i
     }
 }
 
+#ifdef DEBUG
 static void lcs_print(const char* s1, const char* s2, int n1, int n2, int* m) {
     int i, j;
 
@@ -91,6 +92,7 @@ static void lcs_print(const char* s1, const char* s2, int n1, int n2, int* m) {
         printf("\n");
     }
 }
+#endif
 
 /// longest common sequence
 /// @param[in] s1 string source
@@ -111,7 +113,9 @@ int lcs(const char* s1, const char* s2, char* seq, int len) {
 
     lcs = lcs_alogrithm(s1, s2, n1, n2, m);
 
+#ifdef DEBUG
     lcs_print(s1, s2, n1, n2, m);
+#endif
 
     if (len < lcs) {
         free(m);
